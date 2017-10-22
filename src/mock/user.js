@@ -65,7 +65,7 @@ const adminUsers = [
     id: 3,
     username: 'zhangsan',
     password: '123456',
-    permissions: userPermission.DEFAULT,
+    permissions: userPermission.ADMIN,
   }
 ]
 

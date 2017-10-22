@@ -29,6 +29,9 @@ const Routers = function ({ history, app }) {
       models: () => [import('./models/login')],
       component: () => import('./routes/login/'),
     }, {
+      path: '/material',
+      component: () => import('./routes/material/'),
+    }, {
       path: '/request',
       component: () => import('./routes/request/'),
     }, {
@@ -62,7 +65,7 @@ const Routers = function ({ history, app }) {
       path: '/post',
       models: () => [import('./models/post')],
       component: () => import('./routes/post/'),
-    },
+    }
   ]
 
   return (

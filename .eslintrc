@@ -1,12 +1,12 @@
 {
   "extends": "airbnb",
   "rules": {
-    "semi": [2, "never"],
+    "semi": "off",
     "comma-dangle": [2, "always-multiline"],
     "max-len": 0,
     "react/jsx-first-prop-new-line": 0,
     "react/jsx-filename-extension": 0,
-    "space-before-function-paren": [2, "always"],
+    "space-before-function-paren": "off",
     "no-unused-expressions": [0, {
       "allowShortCircuit": true,
       "allowTernary": true
@@ -30,10 +30,12 @@
     "react/forbid-prop-types": 0,
     "react/no-string-refs": 0,
     "react/no-find-dom-node": 0,
+    "react/no-multi-comp": 0,
     "react/prefer-stateless-function": 0,
     "import/no-extraneous-dependencies": 0,
     "import/prefer-default-export": 0,
     "react/no-danger": 0,
+    "linebreak-style": 0,
     "jsx-a11y/no-static-element-interactions": 0
   },
   "parser": "babel-eslint",

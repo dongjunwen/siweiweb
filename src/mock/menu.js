@@ -16,11 +16,16 @@ let database = [
     route: '/user',
   },
   {
-    id: '7',
+    id: '8',
     bpid: '1',
-    name: 'Posts',
-    icon: 'shopping-cart',
-    route: '/post',
+    name: '基础资料',
+  },
+  {
+    id: '81',
+    bpid: '8',
+    mpid: '8',
+    name: '物料信息',
+    route: '/material',
   },
   {
     id: '21',
@@ -153,6 +158,13 @@ let database = [
     mpid: '62',
     name: 'Test Navigation22',
     route: '/navigation/navigation2/navigation2',
+  },
+  {
+    id: '7',
+    bpid: '1',
+    name: 'Posts',
+    icon: 'shopping-cart',
+    route: '/post',
   },
 ]
 
