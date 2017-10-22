@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Button, Row, Form, Input } from 'antd'
+import { Button, Row, Form, Input, notification } from 'antd'
 import { config } from 'utils'
 import styles from './index.less'
 
@@ -20,7 +20,7 @@ const Login = ({
       if (errors) {
         return
       }
-      dispatch({ type: 'login/login', payload: values })
+      dispatch({ type: 'login/login', payload: values }).catch(err => notification.error({ message: '登录失败', description: err.message }));
     })
   }
 
@@ -32,13 +32,13 @@ const Login = ({
       </div>
       <form>
         <FormItem hasFeedback>
-          {getFieldDecorator('username', {
+          {getFieldDecorator('name', {
             rules: [
               {
                 required: true,
               },
             ],
-          })(<Input size="large" onPressEnter={handleOk} placeholder="Username" />)}
+          })(<Input size="large" onPressEnter={handleOk} placeholder="用户名" />)}
         </FormItem>
         <FormItem hasFeedback>
           {getFieldDecorator('password', {
@@ -47,15 +47,15 @@ const Login = ({
                 required: true,
               },
             ],
-          })(<Input size="large" type="password" onPressEnter={handleOk} placeholder="Password" />)}
+          })(<Input size="large" type="password" onPressEnter={handleOk} placeholder="密码" />)}
         </FormItem>
         <Row>
           <Button type="primary" size="large" onClick={handleOk} loading={loading.effects.login}>
-            Sign in
+            登录
           </Button>
           <p>
-            <span>Username：guest</span>
-            <span>Password：guest</span>
+            <span>用户名：zhangsan</span>
+            <span>密码：123456</span>
           </p>
         </Row>
 

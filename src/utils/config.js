@@ -2,19 +2,19 @@ const APIV1 = '/api/v1'
 const APIV2 = '/api/v2'
 
 module.exports = {
-  name: 'AntD Admin',
-  prefix: 'antdAdmin',
-  footerText: 'Ant Design Admin  © 2017 zuiidea',
+  name: '思维纺织后台',
+  prefix: 'siweiAdmin',
+  footerText: '思维纺织管理后台  © 2017 Penpo',
   logo: '/logo.png',
   iconFontCSS: '/iconfont.css',
   iconFontJS: '/iconfont.js',
-  CORS: [],
+  CORS: ['http://localhost:8082'],
   openPages: ['/login'],
   apiPrefix: '/api/v1',
   APIV1,
   APIV2,
   api: {
-    userLogin: `${APIV1}/user/login`,
+    userLogin: 'http://localhost:8082/login',
     userLogout: `${APIV1}/user/logout`,
     userInfo: `${APIV1}/userInfo`,
     users: `${APIV1}/users`,

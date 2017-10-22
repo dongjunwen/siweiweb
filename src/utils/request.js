@@ -12,6 +12,7 @@ const fetch = (options) => {
     method = 'get',
     data,
     fetchType,
+    formUrlencoded,
     url,
   } = options
 
@@ -63,7 +64,7 @@ const fetch = (options) => {
         data: cloneData,
       })
     case 'post':
-      return axios.post(url, cloneData)
+      return axios.post(url, formUrlencoded ? qs.stringify(cloneData) : cloneData)
     case 'put':
       return axios.put(url, cloneData)
     case 'patch':

@@ -61,7 +61,12 @@ const adminUsers = [
     username: '吴彦祖',
     password: '123456',
     permissions: userPermission.DEVELOPER,
-  },
+  }, {
+    id: 3,
+    username: 'zhangsan',
+    password: '123456',
+    permissions: userPermission.DEFAULT,
+  }
 ]
 
 const queryArray = (array, key, keyAlias = 'key') => {
@@ -117,11 +122,12 @@ module.exports = {
     const cookies = qs.parse(cookie.replace(/\s/g, ''), { delimiter: ';' })
     const response = {}
     const user = {}
-    if (!cookies.token) {
-      res.status(200).send({ message: 'Not Login' })
-      return
-    }
-    const token = JSON.parse(cookies.token)
+    // 关闭mock登录状态验证
+    // if (!cookies.token) {
+    //   res.status(200).send({ message: 'Not Login' })
+    //   return
+    // }
+    const token = {"id":3,"deadline":1514592000000}
     if (token) {
       response.success = token.deadline > new Date().getTime()
     }
