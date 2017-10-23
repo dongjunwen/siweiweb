@@ -128,6 +128,7 @@ module.exports = {
     //   return
     // }
     const token = {"id":3,"deadline":1514592000000}
+    // const token = JSON.parse(cookies.token)
     if (token) {
       response.success = token.deadline > new Date().getTime()
     }

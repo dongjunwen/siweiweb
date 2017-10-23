@@ -1,5 +1,7 @@
 import React from 'react'
 import { Table, Form, Row, Col, Input, Button, Select, Modal, Popconfirm } from 'antd'
+import PropTypes from 'prop-types'
+import { request } from 'utils'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -128,25 +130,31 @@ class AdvancedSearchForm extends React.Component {
 }
 const WrappedAdvancedSearchForm = Form.create()(AdvancedSearchForm);
 
-export default class MaterialPage extends React.Component {
+class MaterialPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
+      data: [],
     };
+  }
+
+  getList(param) {
+    Object.assign(param, { pageSize: 10, currPage: 1 });
+    request({ url: '/api/material', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
   }
 
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm search={values => console.log(values)} />
+        <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
           rowKey={(record, key) => key}
           pagination={false}
           bordered
           columns={columns}
-          dataSource={[{ key: 33 }]}
+          dataSource={this.state.data}
         />
         <Modal
           visible={this.state.visible}
@@ -158,3 +166,8 @@ export default class MaterialPage extends React.Component {
     )
   }
 }
+
+MaterialPage.propTypes = {
+  dispatch: PropTypes.func,
+}
+export default MaterialPage
