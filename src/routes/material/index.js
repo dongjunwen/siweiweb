@@ -78,6 +78,10 @@ class AdvancedSearchForm extends React.Component {
     };
   }
 
+  setModal() {
+    console.log(this);
+  }
+
   handleSearch(e) {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -121,7 +125,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6} offset="1">
             <Button type="primary" htmlType="submit">查询</Button>
-            &emsp;<Button type="primary">新增</Button>
+            &emsp;<Button type="primary" onClick={this.setModal.bind(this)}>新增</Button>
           </Col>
         </Row>
       </Form>

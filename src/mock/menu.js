@@ -28,6 +28,13 @@ let database = [
     route: '/material',
   },
   {
+    id: '82',
+    bpid: '8',
+    mpid: '8',
+    name: '公式信息',
+    route: '/formular',
+  },
+  {
     id: '21',
     mpid: '-1',
     bpid: '2',
