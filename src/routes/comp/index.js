@@ -8,30 +8,46 @@ const FormItem = Form.Item;
 
 // 定义form项目
 const Fields = {
-  formularNo: {
-    name: 'formularNo',
-    userProps: { label: '公式代码', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+  compName: {
+    name: 'compName',
+    userProps: { label: '公司名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
 const deleteRecord = (id) => {
-  request({ url: `/api/formular/${id}`, method: 'delete' }).then(data => notification.success({ message: '操作成功', description: data.data })).catch(err => console.warn(err));
+  request({ url: `/api/comp/${id}`, method: 'delete' }).then(data => notification.success({ message: '操作成功', description: data.data })).catch(err => console.warn(err));
 }
 const columns = [
   {
-    title: '公式代码',
-    dataIndex: 'formularNo',
+    title: '公司编码',
+    dataIndex: 'compNo',
   },
   {
-    title: '描述',
-    dataIndex: 'formularType',
+    title: '公司名称',
+    dataIndex: 'compName',
   },
   {
-    title: '公式',
-    dataIndex: 'formularName',
+    title: '联系人',
+    dataIndex: 'contactName',
   },
   {
-    title: '备注',
-    dataIndex: 'memo',
+    title: '手机',
+    dataIndex: 'mobile',
+  },
+  {
+    title: '电话',
+    dataIndex: 'telphone',
+  },
+  {
+    title: '传真',
+    dataIndex: 'tax',
+  },
+  {
+    title: '邮箱',
+    dataIndex: 'email',
+  },
+  {
+    title: '地址',
+    dataIndex: 'addr',
   },
   {
     title: '操作',
@@ -44,7 +60,7 @@ const columns = [
         cancelText="取消"
         title="确定删除吗?"
         overlayStyle={{ width: '200px' }}
-        onConfirm={() => deleteRecord(record.formularNo)}
+        onConfirm={() => deleteRecord(record.compNo)}
       >
         <a> 删除</a>
       </Popconfirm>
@@ -89,8 +105,8 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem {...Fields.formularNo.userProps}>
-              {getFieldDecorator(Fields.formularNo.name, { ...Fields.formularNo.userRules })(
+            <FormItem {...Fields.compName.userProps}>
+              {getFieldDecorator(Fields.compName.name, { ...Fields.compName.userRules })(
                 <Input />
               )}
             </FormItem>
@@ -107,7 +123,7 @@ class AdvancedSearchForm extends React.Component {
 const WrappedAdvancedSearchForm = Form.create()(AdvancedSearchForm);
 const WrappedModalFrom = Form.create()(ModalFrom);
 
-class FormularPage extends React.Component {
+class CompPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -119,7 +135,7 @@ class FormularPage extends React.Component {
 
   getList(param) {
     Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+    request({ url: '/api/comp', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
   }
 
   render () {
@@ -136,7 +152,7 @@ class FormularPage extends React.Component {
         />
         <Modal
           visible={this.state.visible}
-          title="编辑公式"
+          title="编辑公司信息"
           width="700"
           onCancel={() => this.setState({ visible: false })}
         >
@@ -147,7 +163,7 @@ class FormularPage extends React.Component {
   }
 }
 
-FormularPage.propTypes = {
+CompPage.propTypes = {
   dispatch: PropTypes.func,
 }
-export default FormularPage
+export default CompPage

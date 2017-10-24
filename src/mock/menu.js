@@ -35,6 +35,13 @@ let database = [
     route: '/formular',
   },
   {
+    id: '83',
+    bpid: '8',
+    mpid: '8',
+    name: '公司信息',
+    route: '/comp',
+  },
+  {
     id: '21',
     mpid: '-1',
     bpid: '2',

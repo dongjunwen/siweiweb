@@ -35,6 +35,9 @@ const Routers = function ({ history, app }) {
       path: '/formular',
       component: () => import('./routes/formular/'),
     }, {
+      path: '/comp',
+      component: () => import('./routes/comp/'),
+    }, {
       path: '/request',
       component: () => import('./routes/request/'),
     }, {
