@@ -42,6 +42,13 @@ let database = [
     route: '/comp',
   },
   {
+    id: '84',
+    bpid: '8',
+    mpid: '8',
+    name: '部门信息',
+    route: '/depart',
+  },
+  {
     id: '21',
     mpid: '-1',
     bpid: '2',

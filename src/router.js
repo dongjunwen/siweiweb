@@ -38,6 +38,9 @@ const Routers = function ({ history, app }) {
       path: '/comp',
       component: () => import('./routes/comp/'),
     }, {
+      path: '/depart',
+      component: () => import('./routes/depart/'),
+    }, {
       path: '/request',
       component: () => import('./routes/request/'),
     }, {
