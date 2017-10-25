@@ -61,6 +61,13 @@ let database = [
     route: '/createOrder',
   },
   {
+    id: '92',
+    bpid: '9',
+    mpid: '9',
+    name: '订单查询',
+    route: '/orderList',
+  },
+  {
     id: '21',
     mpid: '-1',
     bpid: '2',
