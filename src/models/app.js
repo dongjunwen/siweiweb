@@ -65,9 +65,11 @@ export default {
     * query ({
       payload,
     }, { call, put, select }) {
-      const { success, user } = yield call(query, payload)
+      const { success, code } = yield call(query, payload)
+      console.log(success, code);
       const { locationPathname } = yield select(_ => _.app)
-      if (success && user) {
+      if (success && code !== '510') {
+        const user = { permissions: { role: 'admin' }, username: 'admin', id: 0 }
         const { list } = yield call(menusService.query)
         const { permissions } = user
         let menu = list

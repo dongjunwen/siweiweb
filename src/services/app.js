@@ -21,7 +21,7 @@ export async function logout (params) {
 
 export async function query (params) {
   return request({
-    url: user.replace('/:id', ''),
+    url: '/api/order',
     method: 'get',
     data: params,
   })
