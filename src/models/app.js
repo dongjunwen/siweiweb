@@ -66,7 +66,6 @@ export default {
       payload,
     }, { call, put, select }) {
       const { success, code } = yield call(query, payload)
-      console.log(success, code);
       const { locationPathname } = yield select(_ => _.app)
       if (success && code !== '510') {
         const user = { permissions: { role: 'admin' }, username: 'admin', id: 0 }

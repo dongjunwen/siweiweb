@@ -17,14 +17,6 @@ const Routers = function ({ history, app }) {
       models: () => [import('./models/dashboard')],
       component: () => import('./routes/dashboard/'),
     }, {
-      path: '/user',
-      models: () => [import('./models/user')],
-      component: () => import('./routes/user/'),
-    }, {
-      path: '/user/:id',
-      models: () => [import('./models/user/detail')],
-      component: () => import('./routes/user/detail/'),
-    }, {
       path: '/login',
       models: () => [import('./models/login')],
       component: () => import('./routes/login/'),
@@ -46,40 +38,6 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/orderList',
       component: () => import('./routes/order/orderList/'),
-    }, {
-      path: '/request',
-      component: () => import('./routes/request/'),
-    }, {
-      path: '/UIElement/iconfont',
-      component: () => import('./routes/UIElement/iconfont/'),
-    }, {
-      path: '/UIElement/search',
-      component: () => import('./routes/UIElement/search/'),
-    }, {
-      path: '/UIElement/dropOption',
-      component: () => import('./routes/UIElement/dropOption/'),
-    }, {
-      path: '/UIElement/layer',
-      component: () => import('./routes/UIElement/layer/'),
-    }, {
-      path: '/UIElement/dataTable',
-      component: () => import('./routes/UIElement/dataTable/'),
-    }, {
-      path: '/UIElement/editor',
-      component: () => import('./routes/UIElement/editor/'),
-    }, {
-      path: '/chart/lineChart',
-      component: () => import('./routes/chart/lineChart/'),
-    }, {
-      path: '/chart/barChart',
-      component: () => import('./routes/chart/barChart/'),
-    }, {
-      path: '/chart/areaChart',
-      component: () => import('./routes/chart/areaChart/'),
-    }, {
-      path: '/post',
-      models: () => [import('./models/post')],
-      component: () => import('./routes/post/'),
     }
   ]
 
