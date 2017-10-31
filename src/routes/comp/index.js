@@ -13,60 +13,6 @@ const Fields = {
     userProps: { label: '公司名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
-const deleteRecord = (id) => {
-  request({ url: `/api/comp/${id}`, method: 'delete' }).then(data => notification.success({ message: '操作成功', description: data.data })).catch(err => console.warn(err));
-}
-const columns = [
-  {
-    title: '公司编码',
-    dataIndex: 'compNo',
-  },
-  {
-    title: '公司名称',
-    dataIndex: 'compName',
-  },
-  {
-    title: '联系人',
-    dataIndex: 'contactName',
-  },
-  {
-    title: '手机',
-    dataIndex: 'mobile',
-  },
-  {
-    title: '电话',
-    dataIndex: 'telphone',
-  },
-  {
-    title: '传真',
-    dataIndex: 'tax',
-  },
-  {
-    title: '邮箱',
-    dataIndex: 'email',
-  },
-  {
-    title: '地址',
-    dataIndex: 'addr',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    render: (data, record) => (<div>
-      <a onClick={() => console.log(data)}>查看</a> |
-      <a> 修改</a> |
-      <Popconfirm
-        okText="删除"
-        cancelText="取消"
-        title="确定删除吗?"
-        overlayStyle={{ width: '200px' }}
-        onConfirm={() => deleteRecord(record.compNo)}
-      >
-        <a> 删除</a>
-      </Popconfirm>
-    </div>),
-  },
-];
 
 class AdvancedSearchForm extends React.Component {
   constructor(props) {
@@ -74,13 +20,6 @@ class AdvancedSearchForm extends React.Component {
     this.state = {
       marketNo: '',
     };
-  }
-
-  setModal() {
-    this.setState({
-      visible: true,
-      dataDetail: {},
-    })
   }
 
   handleSearch(e) {
@@ -113,7 +52,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6} offset="1">
             <Button type="primary" htmlType="submit">查询</Button>
-            &emsp;<Button type="primary" onClick={this.setModal.bind(this)}>新增</Button>
+            &emsp;<Button type="primary" onClick={this.props.setModal}>新增</Button>
           </Col>
         </Row>
       </Form>
@@ -127,36 +66,130 @@ class CompPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: false,
-      dataDetail: {},
       data: [],
+      total: 0,
+      pageSize: 10,
+      dataDetail: {},
+      currentPage: 1,
+      visible: false,
+      readOnly: false,
     };
+    this.columns = [
+      {
+        title: '公司编码',
+        dataIndex: 'compNo',
+      },
+      {
+        title: '公司名称',
+        dataIndex: 'compName',
+      },
+      {
+        title: '联系人',
+        dataIndex: 'contactName',
+      },
+      {
+        title: '手机',
+        dataIndex: 'mobile',
+      },
+      {
+        title: '电话',
+        dataIndex: 'telphone',
+      },
+      {
+        title: '传真',
+        dataIndex: 'tax',
+      },
+      {
+        title: '邮箱',
+        dataIndex: 'email',
+      },
+      {
+        title: '地址',
+        dataIndex: 'addr',
+      },
+      {
+        title: '操作',
+        dataIndex: 'action',
+        render: (data, record) => (<div>
+          <a onClick={() => this.setModal(record, false, true)}>查看</a> |
+          <a onClick={() => this.setModal(record, true, false)}> 修改</a> |
+          <Popconfirm
+            okText="删除"
+            cancelText="取消"
+            title="确定删除吗?"
+            overlayStyle={{ width: '200px' }}
+            onConfirm={() => this.deleteRecord(record.compNo)}
+          >
+            <a> 删除</a>
+          </Popconfirm>
+        </div>),
+      },
+    ];
+  }
+
+  componentWillMount() {
+    this.getList({});
+  }
+
+  setModal(data, modify, readOnly) {
+    this.setState({
+      visible: true,
+      dataDetail: data,
+      readOnly,
+      modify,
+    })
   }
 
   getList(param) {
-    Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/comp', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+    Object.assign(param, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      this.condition = param;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: '/api/comp', method: 'GET', data: this.condition })
+      .then(data => this.setState({
+        data: data.data.list,
+        total: data.data.total,
+        currentPage: data.data.currPage,
+      }))
+  }
+
+  deleteRecord(id) {
+    request({ url: `/api/comp/${id}`, method: 'delete' })
+      .then((data) => {
+        notification.success({ message: '操作成功', description: data.data })
+        this.getList({});
+      })
+      .catch(err => console.warn(err, this));
+  }
+  addRecord(data) {
+    request({ url: '/api/comp', method: this.state.modify ? 'PUT' : 'POST', data })
+      .then((res) => {
+        this.getList({});
+        this.setState({ visible: false });
+        notification.success({ message: '操作成功', description: res.data })
+      });
   }
 
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
+        <WrappedAdvancedSearchForm search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
-          rowKey={(record, key) => key}
-          pagination={false}
           bordered
-          columns={columns}
+          columns={this.columns}
           dataSource={this.state.data}
+          rowKey={(record, key) => key}
+          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          visible={this.state.visible}
           title="编辑公司信息"
-          width="700"
+          visible={this.state.visible}
           onCancel={() => this.setState({ visible: false })}
         >
-          <WrappedModalFrom dataDetail={this.state.dataDetail} submit={value => console.log(value)} />
+          <WrappedModalFrom dataDetail={this.state.dataDetail} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
         </Modal>
       </div>
     )

@@ -13,8 +13,8 @@ const Fields = {
     name: 'material',
     userProps: { label: '物料类型', labelCol: { span: 7 }, wrapperCol: { span: 16 } },
   },
-  tranOutMerNo: {
-    name: 'tranOutMerNo',
+  materialName: {
+    name: 'materialName',
     userProps: { label: '物料名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
@@ -72,8 +72,8 @@ class AdvancedSearchForm extends React.Component {
             </FormItem>
           </Col>
           <Col span={6}>
-            <FormItem {...Fields.tranOutMerNo.userProps}>
-              {getFieldDecorator(Fields.tranOutMerNo.name, { ...Fields.tranOutMerNo.userRules })(
+            <FormItem {...Fields.materialName.userProps}>
+              {getFieldDecorator(Fields.materialName.name, { ...Fields.materialName.userRules })(
                 <Input />
               )}
             </FormItem>
@@ -94,8 +94,11 @@ class MaterialPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: false,
       data: [],
+      total: 0,
+      pageSize: 10,
+      currentPage: 1,
+      visible: false,
       readOnly: false,
     };
 
@@ -157,8 +160,18 @@ class MaterialPage extends React.Component {
   }
 
   getList(param) {
-    Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/material', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+    Object.assign(param, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      this.condition = param;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: '/api/material', method: 'GET', data: this.condition })
+      .then(data => this.setState({
+        data: data.data.list,
+        total: data.data.total,
+        currentPage: data.data.currPage,
+      }))
   }
 
   setModal(data, modify, readOnly) {
@@ -184,11 +197,11 @@ class MaterialPage extends React.Component {
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
-          rowKey={(record, key) => key}
-          pagination={false}
           bordered
           columns={this.columns}
           dataSource={this.state.data}
+          rowKey={(record, key) => key}
+          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
           visible={this.state.visible}

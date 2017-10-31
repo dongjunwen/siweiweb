@@ -13,44 +13,6 @@ const Fields = {
     userProps: { label: '公式代码', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
-const deleteRecord = (id) => {
-  request({ url: `/api/formular/${id}`, method: 'delete' }).then(data => notification.success({ message: '操作成功', description: data.data })).catch(err => console.warn(err));
-}
-const columns = [
-  {
-    title: '公式代码',
-    dataIndex: 'formularNo',
-  },
-  {
-    title: '描述',
-    dataIndex: 'formularType',
-  },
-  {
-    title: '公式',
-    dataIndex: 'formularName',
-  },
-  {
-    title: '备注',
-    dataIndex: 'memo',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    render: (data, record) => (<div>
-      <a onClick={() => console.log(data)}>查看</a> |
-      <a> 修改</a> |
-      <Popconfirm
-        okText="删除"
-        cancelText="取消"
-        title="确定删除吗?"
-        overlayStyle={{ width: '200px' }}
-        onConfirm={() => deleteRecord(record.formularNo)}
-      >
-        <a> 删除</a>
-      </Popconfirm>
-    </div>),
-  },
-];
 
 class AdvancedSearchForm extends React.Component {
   constructor(props) {
@@ -58,13 +20,6 @@ class AdvancedSearchForm extends React.Component {
     this.state = {
       marketNo: '',
     };
-  }
-
-  setModal() {
-    this.setState({
-      visible: true,
-      dataDetail: {},
-    })
   }
 
   handleSearch(e) {
@@ -97,7 +52,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6} offset="1">
             <Button type="primary" htmlType="submit">查询</Button>
-            &emsp;<Button type="primary" onClick={this.setModal.bind(this)}>新增</Button>
+            &emsp;<Button type="primary" onClick={this.props.setModal}>新增</Button>
           </Col>
         </Row>
       </Form>
@@ -111,36 +66,111 @@ class FormularPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: false,
-      dataDetail: {},
       data: [],
+      pageSize: 10,
+      dataDetail: {},
+      currentPage: 1,
+      visible: false,
+      readOnly: false,
     };
+
+    this.columns = [
+      {
+        title: '公式代码',
+        dataIndex: 'formularNo',
+      },
+      {
+        title: '描述',
+        dataIndex: 'formularType',
+      },
+      {
+        title: '公式',
+        dataIndex: 'formularName',
+      },
+      {
+        title: '备注',
+        dataIndex: 'memo',
+      },
+      {
+        title: '操作',
+        dataIndex: 'action',
+        render: (data, record) => (<div>
+          <a onClick={() => this.setModal(record, false, true)}>查看</a> |
+          <a onClick={() => this.setModal(record, true, false)}> 修改</a> |
+          <Popconfirm
+            okText="删除"
+            cancelText="取消"
+            title="确定删除吗?"
+            overlayStyle={{ width: '200px' }}
+            onConfirm={() => this.deleteRecord(record.formularNo)}
+          >
+            <a> 删除</a>
+          </Popconfirm>
+        </div>),
+      },
+    ];
+  }
+
+  componentWillMount() {
+    this.getList({});
+  }
+
+  setModal(data, modify, readOnly) {
+    this.setState({
+      visible: true,
+      dataDetail: data,
+      readOnly,
+      modify,
+    })
   }
 
   getList(param) {
-    Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+    Object.assign(param, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      this.condition = param;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: '/api/formular', method: 'GET', data: this.condition })
+      .then(data => this.setState({
+        data: data.data.list,
+        total: data.data.total,
+        currentPage: data.data.currPage,
+      }))
+  }
+
+  deleteRecord(id) {
+    request({ url: `/api/formular/${id}`, method: 'delete' })
+      .then((data) => {
+        this.getList({});
+        notification.success({ message: '操作成功', description: data.data });
+      })
+      .catch(err => console.warn(err, this));
+  }
+
+  addRecord(data) {
+    request({ url: '/api/formular', method: this.state.modify ? 'PUT' : 'POST', data })
+      .then(() => this.setState({ visible: false }, this.getList({})));
   }
 
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
+        <WrappedAdvancedSearchForm search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
-          rowKey={(record, key) => key}
-          pagination={false}
           bordered
-          columns={columns}
+          columns={this.columns}
           dataSource={this.state.data}
+          rowKey={(record, key) => key}
+          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          visible={this.state.visible}
           title="编辑公式"
-          width="700"
+          visible={this.state.visible}
           onCancel={() => this.setState({ visible: false })}
         >
-          <WrappedModalFrom dataDetail={this.state.dataDetail} submit={value => console.log(value)} />
+          <WrappedModalFrom dataDetail={this.state.dataDetail} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
         </Modal>
       </div>
     )

@@ -8,39 +8,39 @@ const RadioGroup = Radio.Group;
 const Fields = {
   compName: {
     name: 'compName',
-    userProps: { label: '公司名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '公司名称', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   compNo: {
     name: 'compNo',
-    userProps: { label: '公司代码', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '公司代码', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   addr: {
     name: 'addr',
-    userProps: { label: '地址', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '地址', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   contactName: {
     name: 'contactName',
-    userProps: { label: '联系人', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '联系人', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   email: {
     name: 'email',
-    userProps: { label: '邮箱', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '邮箱', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   isSelf: {
     name: 'isSelf',
-    userProps: { label: '是否本公司', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '是否本公司', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   mobile: {
     name: 'mobile',
-    userProps: { label: '手机', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '手机', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   tax: {
     name: 'tax',
-    userProps: { label: '传真', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '传真', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   telphone: {
     name: 'telphone',
-    userProps: { label: '电话', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+    userProps: { label: '电话', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
 };
 export default class AdvancedSearchForm extends React.Component {
@@ -62,14 +62,13 @@ export default class AdvancedSearchForm extends React.Component {
         // dddd
       } else {
         // 验证通过
-        // this.props.submit(values);
-        request({ url: '/api/comp', method: 'post', data: values }).then(data => notification.success({ message: '操作成功', description: data.data }))
+        this.props.submit(values);
       }
     });
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { form: { getFieldDecorator }, dataDetail, readOnly } = this.props;
 
     return (
       <Form
@@ -136,7 +135,7 @@ export default class AdvancedSearchForm extends React.Component {
           },
         }}
         >
-          <Button type="primary" htmlType="submit">保存</Button>
+          {!readOnly && <Button type="primary" htmlType="submit">保存</Button>}
         </FormItem>
       </Form>
     );
