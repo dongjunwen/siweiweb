@@ -5,7 +5,7 @@ let database = [
   {
     id: '1',
     icon: 'laptop',
-    name: 'Dashboard',
+    name: '管理中心',
     route: '/dashboard',
   },
   {
@@ -59,7 +59,7 @@ let database = [
     mpid: '9',
     name: '订单查询',
     route: '/orderList',
-  }
+  },
 ]
 
 module.exports = {
