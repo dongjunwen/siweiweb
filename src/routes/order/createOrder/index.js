@@ -113,13 +113,6 @@ class AdvancedSearchForm extends React.Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}>
-            <FormItem label="订单号" {...formItemRow}>
-              {getFieldDecorator('asdfasdfd4')(
-                <Input />
-              )}
-            </FormItem>
-          </Col>
         </Row>
         <Row>
           <Col span={6}>

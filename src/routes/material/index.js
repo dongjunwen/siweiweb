@@ -98,15 +98,11 @@ class MaterialPage extends React.Component {
     this.columns = [
       {
         title: '品种编号',
-        dataIndex: 'id',
+        dataIndex: 'materialNo',
       },
       {
         title: '品名',
         dataIndex: 'materialName',
-      },
-      {
-        title: '品种',
-        dataIndex: 'modiNo',
       },
       {
         title: '规格',
@@ -122,7 +118,7 @@ class MaterialPage extends React.Component {
       },
       {
         title: '物料类型',
-        dataIndex: 'materialType',
+        dataIndex: 'materialTypeName',
       },
       {
         title: '备注',
