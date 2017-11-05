@@ -10,7 +10,7 @@ export default {
   entry: 'src/index.js',
   svgSpriteLoaderDirs: svgSpriteDirs,
   theme: "./theme.config.js",
-  publicPath: `/${version}/`,
+  publicPath: `./${version}/`,
   outputPath: `./dist/${version}`,
   // 接口代理示例
   proxy: {
