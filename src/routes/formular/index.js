@@ -1,16 +1,21 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Modal, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Modal, Popconfirm, notification, Select } from 'antd'
 import PropTypes from 'prop-types'
 import { request } from 'utils'
 import ModalFrom from './form'
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 // 定义form项目
 const Fields = {
   formularNo: {
     name: 'formularNo',
     userProps: { label: '公式代码', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+  },
+  formularType: {
+    name: 'formularType',
+    userProps: { label: '公式类型', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
 
@@ -36,6 +41,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const sysDictOptions = this.props.sysDicts.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>)
 
     return (
       <Form
@@ -43,6 +49,15 @@ class AdvancedSearchForm extends React.Component {
         onSubmit={this.handleSearch.bind(this)}
       >
         <Row>
+          <Col span={6}>
+            <FormItem {...Fields.formularType.userProps}>
+              {getFieldDecorator(Fields.formularType.name, { ...Fields.formularType.userRules, initialValue: this.props.sysDicts[0].dictCode })(
+                <Select allowClear>
+                  {sysDictOptions}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
           <Col span={6}>
             <FormItem {...Fields.formularNo.userProps}>
               {getFieldDecorator(Fields.formularNo.name, { ...Fields.formularNo.userRules })(
@@ -72,6 +87,7 @@ class FormularPage extends React.Component {
       currentPage: 1,
       visible: false,
       readOnly: false,
+      sysDicts: [{ dictCode: 'dd', dictName: 'dd' }],
     };
 
     this.columns = [
@@ -112,6 +128,10 @@ class FormularPage extends React.Component {
   }
 
   componentWillMount() {
+    request({
+      url: '/api/sysDict/FORMULAR_TYPE',
+      method: 'get',
+    }).then(data => this.setState({ sysDicts: data.data }));
     this.getList({});
   }
 
@@ -125,9 +145,11 @@ class FormularPage extends React.Component {
   }
 
   getList(param) {
-    Object.assign(param, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      this.condition = param;
+      query.filter = param;      
+      this.condition = query;
     } else {
       this.condition.currPage = param;
     }
@@ -156,7 +178,7 @@ class FormularPage extends React.Component {
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
+        <WrappedAdvancedSearchForm sysDicts={this.state.sysDicts} search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
           bordered
@@ -166,11 +188,12 @@ class FormularPage extends React.Component {
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
+          footer={null}
           title="编辑公式"
           visible={this.state.visible}
           onCancel={() => this.setState({ visible: false })}
         >
-          <WrappedModalFrom dataDetail={this.state.dataDetail} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
+          <WrappedModalFrom sysDicts={this.state.sysDicts} dataDetail={this.state.dataDetail} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
         </Modal>
       </div>
     )

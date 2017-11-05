@@ -1,8 +1,9 @@
 import React from 'react'
-import { Form, Row, Col, Input, Button, notification } from 'antd'
+import { Form, Row, Col, Input, Button, notification, Select } from 'antd'
 import { request } from 'utils'
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 const Fields = {
   materialName: {
@@ -56,6 +57,7 @@ export default class AdvancedSearchForm extends React.Component {
 
   render() {
     const { form: { getFieldDecorator }, dataDetail, readOnly } = this.props;
+    const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
 
     return (
       <Form
@@ -72,8 +74,10 @@ export default class AdvancedSearchForm extends React.Component {
           )}
         </FormItem>
         <FormItem {...Fields.materialType.userProps}>
-          {getFieldDecorator(Fields.materialType.name, { ...Fields.materialType.userRules, initialValue: dataDetail.materialType })(
-            <Input />
+          {getFieldDecorator(Fields.materialType.name, { ...Fields.materialType.userRules, initialValue: dataDetail.materialType || this.props.materials[0].dictCode })(
+            <Select>
+              {materialOptions}
+            </Select>
           )}
         </FormItem>
         <FormItem {...Fields.pattern.userProps}>

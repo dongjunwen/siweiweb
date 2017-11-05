@@ -9,8 +9,8 @@ const Option = Select.Option;
 
 // 定义form项目
 const Fields = {
-  material: {
-    name: 'material',
+  materialType: {
+    name: 'materialType',
     userProps: { label: '物料类型', labelCol: { span: 7 }, wrapperCol: { span: 16 } },
   },
   materialName: {
@@ -24,15 +24,7 @@ class AdvancedSearchForm extends React.Component {
     super(props);
     this.state = {
       material: '',
-      materials: [{ materialName: '', materialNo: 'dd' }],
     };
-  }
-
-  componentWillMount() {
-    request({
-      url: '/api/material',
-      method: 'get',
-    }).then(data => this.setState({ materials: data.data.list }));
   }
 
   handleSearch(e) {
@@ -49,7 +41,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const materialOptions = this.state.materials.map(material => <Option key={material.materialNo}>{material.materialName}</Option>)
+    const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
 
     return (
       <Form
@@ -58,9 +50,9 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem {...Fields.material.userProps}>
-              {getFieldDecorator(Fields.material.name, { ...Fields.material.userRules, initialValue: this.state.materials[0].materialNo })(
-                <Select>
+            <FormItem {...Fields.materialType.userProps}>
+              {getFieldDecorator(Fields.materialType.name, { ...Fields.materialType.userRules, initialValue: this.props.materials[0].dictCode })(
+                <Select allowClear>
                   {/* <Option key="1">面料</Option>
                   <Option key="2">纱线</Option>
                   <Option key="3">白纱布</Option>
@@ -100,6 +92,7 @@ class MaterialPage extends React.Component {
       currentPage: 1,
       visible: false,
       readOnly: false,
+      materials: [{ dictCode: 'dd', dictName: 'dd' }],
     };
 
     this.columns = [
@@ -156,13 +149,22 @@ class MaterialPage extends React.Component {
   }
 
   componentWillMount() {
+    request({
+      url: '/api/sysDict/MATERIAL_TYPE',
+      method: 'get',
+    }).then(data => this.setState({ materials: data.data }));
+  }
+
+  componentDidMount() {
     this.getList({});
   }
 
   getList(param) {
-    Object.assign(param, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      this.condition = param;
+      query.filter = param;
+      this.condition = query;
     } else {
       this.condition.currPage = param;
     }
@@ -188,13 +190,13 @@ class MaterialPage extends React.Component {
   }
 
   addRecord(data) {
-    request({ url: '/api/material', method: this.state.modify ? 'PUT' : 'POST', data }).then(() => this.setState({ visible: false }, this.getList({})));
+    request({ url: '/api/material', method: this.state.modify ? 'PUT' : 'POST', data }).then(() => this.setState({ visible: false, dataDetail: {materialName:"随意了",materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined} }, this.getList({})));
   }
 
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
+        <WrappedAdvancedSearchForm materials={this.state.materials} search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
           bordered
@@ -206,10 +208,10 @@ class MaterialPage extends React.Component {
         <Modal
           visible={this.state.visible}
           title="修改物料信息"
-          okText={this.state.readOnly ? undefined : '保存'}
+          footer={null}
           onCancel={() => this.setState({ visible: false })}
         >
-          <WrappedModalFrom dataDetail={this.state.dataDetail} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
+          <WrappedModalFrom dataDetail={this.state.dataDetail} materials={this.state.materials} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
         </Modal>
       </div>
     )

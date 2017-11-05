@@ -141,9 +141,11 @@ class CompPage extends React.Component {
   }
 
   getList(param) {
-    Object.assign(param, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      this.condition = param;
+      query.filter = param;      
+      this.condition = query;
     } else {
       this.condition.currPage = param;
     }
@@ -185,6 +187,7 @@ class CompPage extends React.Component {
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
+          footer={null}
           title="编辑公司信息"
           visible={this.state.visible}
           onCancel={() => this.setState({ visible: false })}

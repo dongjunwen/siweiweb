@@ -1,8 +1,9 @@
 import React from 'react'
-import { Form, Row, Col, Input, Button, notification } from 'antd'
+import { Form, Row, Col, Input, Button, notification, Select } from 'antd'
 import { request } from 'utils'
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 const Fields = {
   formularName: {
@@ -48,6 +49,7 @@ export default class AdvancedSearchForm extends React.Component {
 
   render() {
     const { form: { getFieldDecorator }, dataDetail, readOnly } = this.props;
+    const sysDictOptions = this.props.sysDicts.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>)
 
     return (
       <Form
@@ -64,8 +66,10 @@ export default class AdvancedSearchForm extends React.Component {
           )}
         </FormItem>
         <FormItem {...Fields.formularType.userProps}>
-          {getFieldDecorator(Fields.formularType.name, { ...Fields.formularType.userRules, initialValue: dataDetail.formularType })(
-            <Input />
+          {getFieldDecorator(Fields.formularType.name, { ...Fields.formularType.userRules, initialValue: dataDetail.formularType || this.props.sysDicts[0].dictCode })(
+            <Select>
+              {sysDictOptions}
+            </Select>
           )}
         </FormItem>
         <FormItem {...Fields.formularValue.userProps}>

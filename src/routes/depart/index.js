@@ -174,6 +174,7 @@ class DepartPage extends React.Component {
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
+          footer={null}
           title="编辑部门信息"
           visible={this.state.visible}
           onCancel={() => this.setState({ visible: false })}
