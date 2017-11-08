@@ -1,9 +1,10 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Modal, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker } from 'antd'
 import PropTypes from 'prop-types'
 import { request } from 'utils'
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 // 定义form项目
 const formItemRow = { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
@@ -13,16 +14,91 @@ const deleteRecord = (id) => {
 }
 const columns = [
   {
-    title: '公式代码3',
-    dataIndex: 'formularNo',
+    title: '序号',
+    dataIndex: 'index',
   },
   {
-    title: '描述',
+    title: '编码',
+  },
+  {
+    title: '品名',
+  },
+  {
+    title: '品种',
+  },
+  {
+    title: '形状',
+  },
+  {
+    title: '长',
     dataIndex: 'formularType',
   },
   {
-    title: '公式',
+    title: '宽',
     dataIndex: 'formularName',
+  },
+  {
+    title: '单位',
+  },
+  {
+    title: '数量',
+  },
+  {
+    title: '单价公式代码',
+  },
+  {
+    title: '单价公式',
+  },
+  {
+    title: '单价',
+  },
+  {
+    title: '金额',
+  },
+  {
+    title: '面料品号',
+  },
+  {
+    title: '面料品名',
+  },
+  {
+    title: '有效幅宽',
+  },
+  {
+    title: '面料公式代码',
+  },
+  {
+    title: '面料公式名称',
+  },
+  {
+    title: '面料公式',
+  },
+  {
+    title: '面料需求',
+  },
+  {
+    title: '面料基础价',
+  },
+  {
+    title: '工艺代码',
+  },
+  {
+    title: '工艺名称',
+  },
+  {
+    title: '工艺单价',
+  },
+  {
+    title: '工艺公式',
+  },
+  {
+    title: '成品定价',
+  },
+  {
+    title: '是否定价品',
+  },
+  {
+    title: '分类',
   },
   {
     title: '备注',
@@ -76,6 +152,9 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const orderOptions = this.props.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
+    const saleOptions = this.props.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
+    const payWayOptions = this.props.payWays.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
       <Form
@@ -85,29 +164,40 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="单据类型" {...formItemRow}>
-              {getFieldDecorator('asdfasdfd1')(
-                <Input />
+              {getFieldDecorator('asdfasdfd1', {
+                initialValue: this.props.orderTypes[0].dictCode,
+              })(
+                <Select>
+                  {orderOptions}
+                </Select>
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="销售类型" {...formItemRow}>
-              {getFieldDecorator('asdfasdfd2')(
-                <Input />
+              {getFieldDecorator('asdfasdfd2', {
+                initialValue: this.props.saleTypes[0].dictCode,
+              })(
+                <Select>
+                  {saleOptions}
+                </Select>
               )}
             </FormItem>
+          </Col>
+          <Col span={6} offset={2}>
+            <Button type="primary">保存</Button>
           </Col>
         </Row>
         <Row>
           <Col span={12}>
-            <FormItem label="客户" {...formItemRow}>
+            <FormItem label="客户" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('asdfasdfd5')(
                 <Input />
               )}
             </FormItem>
           </Col>
-          <Col span={6}>
-            <FormItem label="生产方" {...formItemRow}>
+          <Col span={12}>
+            <FormItem label="生产方" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('asdfasdfd3')(
                 <Input />
               )}
@@ -176,14 +266,14 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={12}>
-            <FormItem label="地址" {...formItemRow}>
+            <FormItem label="地址" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('asdfasdfd15')(
                 <Input />
               )}
             </FormItem>
           </Col>
           <Col span={12}>
-            <FormItem label="地址" {...formItemRow}>
+            <FormItem label="地址" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('asdfasdfd16')(
                 <Input />
               )}
@@ -193,35 +283,42 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="付款方式" {...formItemRow}>
-              {getFieldDecorator('asdfasdfd17')(
-                <Input />
+              {getFieldDecorator('asdfasdfd17', {
+                initialValue: this.props.payWays[0].dictCode,
+              })(
+                <Select>
+                  {payWayOptions}
+                </Select>
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="订货日期" {...formItemRow}>
               {getFieldDecorator('asdfasdfd18')(
-                <Input />
+                <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="交货日期" {...formItemRow}>
               {getFieldDecorator('asdfasdfd19')(
+                <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <FormItem label="订单备注" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
+              {getFieldDecorator('memo')(
                 <Input />
               )}
             </FormItem>
           </Col>
         </Row>
-        <FormItem label="备注" {...formItemRow}>
-          {getFieldDecorator('memo')(
-            <Input />
-          )}
-        </FormItem>
         <Row>
           <Col span={6} offset="1">
-            <Button type="primary" htmlType="submit">查询</Button>
-            &emsp;<Button type="primary" onClick={this.setModal.bind(this)}>新增</Button>
+            <Button type="primary" onClick={this.setModal.bind(this)}>新增</Button>
           </Col>
         </Row>
       </Form>
@@ -237,7 +334,25 @@ class CreateOrderPage extends React.Component {
       visible: false,
       dataDetail: {},
       data: [],
+      orderTypes: [{dictCode: 'code', dictDesc: ''}],
+      saleTypes: [{dictCode: 'code', dictDesc: ''}],
+      payWays: [{dictCode: 'code', dictDesc: ''}],
     };
+  }
+
+  componentWillMount() {
+    request({
+      url: '/api/sysDict/ORDER_TYPE',
+      method: 'get',
+    }).then(data => this.setState({ orderTypes: data.data }));
+    request({
+      url: '/api/sysDict/SALE_TYPE',
+      method: 'get',
+    }).then(data => this.setState({ saleTypes: data.data }));
+    request({
+      url: '/api/sysDict/PAY_WAY',
+      method: 'get',
+    }).then(data => this.setState({ payWays: data.data }));
   }
 
   getList(param) {
@@ -248,14 +363,15 @@ class CreateOrderPage extends React.Component {
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
-        <h2 style={{ margin: '16px 0' }}>查询结果</h2>
+        <WrappedAdvancedSearchForm payWays={this.state.payWays} orderTypes={this.state.orderTypes} saleTypes={this.state.saleTypes} search={this.getList.bind(this)} />
         <Table
-          rowKey={(record, key) => key}
-          pagination={false}
           bordered
           columns={columns}
+          pagination={false}
+          scroll={{x: 3000}}
           dataSource={this.state.data}
+          style={{ margin: '16px 0' }}
+          rowKey={(record, key) => key}
         />
       </div>
     )
