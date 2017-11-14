@@ -54,7 +54,7 @@ const Login = ({
             登录
           </Button>
           <p>
-            <span>用户名：zhangsan</span>
+            <span>用户名：wangfangfang</span>
             <span>密码：123456</span>
           </p>
         </Row>

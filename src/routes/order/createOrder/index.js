@@ -1,4 +1,5 @@
 import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete } from 'antd'
+import { EditableCell } from 'components'
 import PropTypes from 'prop-types'
 import { request } from 'utils'
 import React from 'react'
@@ -24,6 +25,7 @@ const columns = [
   {
     title: '品名',
     dataIndex: 'materialName',
+    render: (data) => <EditableCell value="3434" />,
   },
   {
     title: '品种',
@@ -150,13 +152,6 @@ class AdvancedSearchForm extends React.Component {
       companys: [{compName: '请输入', compNo: ''}],
       curCompany: {},
     };
-  }
-
-  setModal() {
-    this.setState({
-      visible: true,
-      dataDetail: {},
-    })
   }
 
   handleSearch(e) {
@@ -372,11 +367,6 @@ class AdvancedSearchForm extends React.Component {
             </FormItem>
           </Col>
         </Row>
-        <Row>
-          <Col span={6} offset="1">
-            <Button type="primary" onClick={this.setModal.bind(this)}>新增</Button>
-          </Col>
-        </Row>
       </Form>
     );
   }
@@ -423,6 +413,12 @@ class CreateOrderPage extends React.Component {
     request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
   }
 
+  addNewOrder = () => {
+    const {data} = this.state;
+    data.push({key: 'ddd'});
+    this.setState({data});
+  }
+
   render () {
     return (
       <div className="content-inner">
@@ -433,6 +429,11 @@ class CreateOrderPage extends React.Component {
           search={this.getList.bind(this)}
           orderTypes={this.state.orderTypes}
         />
+        <Row>
+          <Col span={6} offset="1">
+            <Button type="primary" onClick={this.addNewOrder}>新增</Button>
+          </Col>
+        </Row>
         <Table
           bordered
           columns={columns}
