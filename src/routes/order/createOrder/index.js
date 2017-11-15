@@ -2,6 +2,7 @@ import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification,
 import { EditableCell } from 'components'
 import PropTypes from 'prop-types'
 import { request } from 'utils'
+import lodash from 'lodash'
 import React from 'react'
 
 const FormItem = Form.Item;
@@ -9,140 +10,6 @@ const Option = Select.Option;
 
 // 定义form项目
 const formItemRow = { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
-
-const deleteRecord = (id) => {
-  request({ url: `/api/formular/${id}`, method: 'delete' }).then(data => notification.success({ message: '操作成功', description: data.data })).catch(err => console.warn(err));
-}
-const columns = [
-  {
-    title: '序号',
-    dataIndex: 'index',
-  },
-  {
-    title: '编码',
-    dataIndex: 'prodNo',
-  },
-  {
-    title: '品名',
-    dataIndex: 'materialName',
-    render: (data) => <EditableCell value="3434" />,
-  },
-  {
-    title: '品种',
-    dataIndex: 'prodType',
-  },
-  {
-    title: '形状',
-    dataIndex: 'prodForm',
-  },
-  {
-    title: '长',
-    dataIndex: 'prodLong',
-  },
-  {
-    title: '宽',
-    dataIndex: 'prodWidth',
-  },
-  {
-    title: '单位',
-    dataIndex: 'prodUnit',
-  },
-  {
-    title: '数量',
-    dataIndex: 'prodNum',
-  },
-  {
-    title: '单价公式代码',
-    dataIndex: 'formularType',
-  },
-  {
-    title: '单价公式',
-    dataIndex: 'prodFormular',
-  },
-  {
-    title: '单价',
-    dataIndex: 'prodPrice',
-  },
-  {
-    title: '金额',
-    dataIndex: 'prodAmt',
-  },
-  {
-    title: '面料品号',
-    dataIndex: 'materialNo',
-  },
-  {
-    title: '面料品名',
-  },
-  {
-    title: '有效幅宽',
-  },
-  {
-    title: '面料公式代码',
-  },
-  {
-    title: '面料公式名称',
-  },
-  {
-    title: '面料公式',
-    dataIndex: 'materialPriceExpress',
-  },
-  {
-    title: '面料需求',
-  },
-  {
-    title: '面料基础价',
-  },
-  {
-    title: '工艺代码',
-    dataIndex: 'techNo',
-  },
-  {
-    title: '工艺名称',
-    dataIndex: 'techName',
-  },
-  {
-    title: '工艺单价',
-    dataIndex: 'techPrice',
-  },
-  {
-    title: '工艺公式',
-    dataIndex: 'techPriceExpress',
-  },
-  {
-    title: '成品定价',
-    dataIndex: 'prodPrice1',
-  },
-  {
-    title: '是否定价品',
-    dataIndex: 'ifProd',
-  },
-  {
-    title: '分类',
-    dataIndex: 'cateType',
-  },
-  {
-    title: '备注',
-    dataIndex: 'memo',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    render: (data, record) => (<div>
-      <a onClick={() => console.log(data)}>查看</a> |
-      <a> 修改</a> |
-      <Popconfirm
-        okText="删除"
-        cancelText="取消"
-        title="确定删除吗?"
-        overlayStyle={{ width: '200px' }}
-        onConfirm={() => deleteRecord(record.formularNo)}
-      >
-        <a> 删除</a>
-      </Popconfirm>
-    </div>),
-  },
-];
 
 class AdvancedSearchForm extends React.Component {
   constructor(props) {
@@ -386,7 +253,167 @@ class CreateOrderPage extends React.Component {
       orderTypes: [{dictCode: 'code', dictDesc: ''}],
       saleTypes: [{dictCode: 'code', dictDesc: ''}],
       payWays: [{dictCode: 'code', dictDesc: ''}],
+      currIndex: '0',
+      currMaterial: {},
     };
+
+    this.columns = [
+      {
+        title: '序号',
+        dataIndex: 'index',
+        render: (text, record, index) => index + 1,
+      },
+      {
+        title: '编码',
+        dataIndex: 'prodNo',
+        render: (text, record, index) => (
+          <EditableCell
+            value={text}
+            source="Material"
+            type="autoComplete"
+            onChange={(value) => this.handleChangeProdNo(value, index)}
+          />
+        ),
+      },
+      {
+        title: '品名',
+        dataIndex: 'prodName',
+      },
+      {
+        title: '品种',
+        dataIndex: 'prodType',
+      },
+      {
+        title: '形状',
+        dataIndex: 'prodForm',
+      },
+      {
+        title: '长',
+        dataIndex: 'prodLong',
+        render: (text) => (
+          <EditableCell
+            value={text}
+            onChange={(value) => console.warn(value)}
+          />
+        ),
+      },
+      {
+        title: '宽',
+        dataIndex: 'prodWidth',
+        render: (text) => (
+          <EditableCell
+            value={text}
+            onChange={(value) => console.warn(value)}
+          />
+        ),
+      },
+      {
+        title: '单位',
+        dataIndex: 'prodUnit',
+      },
+      {
+        title: '数量',
+        dataIndex: 'prodNum',
+        render: (text) => (
+          <EditableCell
+            value={text}
+            onChange={(value) => console.warn(value)}
+          />
+        ),
+      },
+      {
+        title: '单价公式代码',
+        dataIndex: 'formularType',
+      },
+      {
+        title: '单价公式',
+        dataIndex: 'prodFormular',
+      },
+      {
+        title: '单价',
+        dataIndex: 'prodPrice',
+      },
+      {
+        title: '金额',
+        dataIndex: 'prodAmt',
+      },
+      {
+        title: '面料品号',
+        dataIndex: 'materialNo',
+      },
+      {
+        title: '面料品名',
+      },
+      {
+        title: '有效幅宽',
+      },
+      {
+        title: '面料公式代码',
+      },
+      {
+        title: '面料公式名称',
+      },
+      {
+        title: '面料公式',
+        dataIndex: 'materialPriceExpress',
+      },
+      {
+        title: '面料需求',
+      },
+      {
+        title: '面料基础价',
+      },
+      {
+        title: '工艺代码',
+        dataIndex: 'techNo',
+      },
+      {
+        title: '工艺名称',
+        dataIndex: 'techName',
+      },
+      {
+        title: '工艺单价',
+        dataIndex: 'techPrice',
+      },
+      {
+        title: '工艺公式',
+        dataIndex: 'techPriceExpress',
+      },
+      {
+        title: '成品定价',
+        dataIndex: 'prodPrice1',
+      },
+      {
+        title: '是否定价品',
+        dataIndex: 'ifProd',
+      },
+      {
+        title: '分类',
+        dataIndex: 'cateType',
+      },
+      {
+        title: '备注',
+        dataIndex: 'memo',
+      },
+      {
+        title: '操作',
+        fixed: 'right',
+        dataIndex: 'action',
+        render: (data, record) => (<div>
+          <a onClick={() => console.log(data)}>查看</a> |
+          <a> 修改</a> |
+          <Popconfirm
+            okText="删除"
+            cancelText="取消"
+            title="确定删除吗?"
+            overlayStyle={{ width: '200px' }}
+            onConfirm={() => this.deleteRecord(record.key)}
+          >
+            <a> 删除</a>
+          </Popconfirm>
+        </div>),
+      },
+    ];
   }
 
   componentWillMount() {
@@ -413,9 +440,24 @@ class CreateOrderPage extends React.Component {
     request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
   }
 
+  handleChangeProdNo = (value, index) => {
+    const {data} = this.state;
+    data[index] = Object.assign(data[index], {prodNo: value.materialNo, prodName: value.materialName, prodType: value.spec, prodForm: value.pattern, prodUnit: value.unit})
+    this.setState({
+      currMaterial: value,
+      data,
+    });
+  }
+
+  deleteRecord = (key) => {
+    const {data} = this.state;
+    data.splice(data.findIndex(record => record.key === key), 1);
+    this.setState({data});
+  }
+
   addNewOrder = () => {
     const {data} = this.state;
-    data.push({key: 'ddd'});
+    data.push({key: data.length ? (+data[data.length - 1].key + 1).toString() : '0'});
     this.setState({data});
   }
 
@@ -436,9 +478,9 @@ class CreateOrderPage extends React.Component {
         </Row>
         <Table
           bordered
-          columns={columns}
+          columns={this.columns}
           pagination={false}
-          scroll={{x: 3000}}
+          scroll={{x: 3500}}
           dataSource={this.state.data}
           style={{ margin: '16px 0' }}
           rowKey={(record, key) => key}
