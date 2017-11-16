@@ -45,6 +45,25 @@ class AdvancedSearchForm extends React.Component {
     this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
   }
 
+  handleSubmit = () => {
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        notification.error({
+          message: '提交失败',
+          description: '请检查表单',
+        });
+        return;
+      }
+      // Should format date value before submit.
+      const values = {
+        ...fieldsValue,
+        goodDate: fieldsValue.goodDate && fieldsValue.goodDate.format('YYYY-MM-DD'),
+        finishDate: fieldsValue.finishDate && fieldsValue.finishDate.format('YYYY-MM-DD'),
+      };
+      this.props.handleSubmit(values);
+    });
+  }
+
   render() {
     const {form: {getFieldDecorator}, userInfo} = this.props;
     const {curCompany, companys} = this.state;
@@ -81,7 +100,7 @@ class AdvancedSearchForm extends React.Component {
             </FormItem>
           </Col>
           <Col span={6} offset={2}>
-            <Button type="primary">保存</Button>
+            <Button type="primary" onClick={this.handleSubmit}>保存</Button>
           </Col>
         </Row>
         <Row>
@@ -212,7 +231,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="订货日期" {...formItemRow}>
-              {getFieldDecorator('goodDate')(
+              {getFieldDecorator('goodDate', {valuePropName: 'value'})(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
             </FormItem>
@@ -254,8 +273,8 @@ class CreateOrderPage extends React.Component {
       saleTypes: [{dictCode: 'code', dictDesc: ''}],
       payWays: [{dictCode: 'code', dictDesc: ''}],
       currIndex: '0',
-      currMaterial: {},
     };
+    this.cacheData = this.state.data.map(item => ({ ...item }));
 
     this.columns = [
       {
@@ -266,14 +285,15 @@ class CreateOrderPage extends React.Component {
       {
         title: '编码',
         dataIndex: 'prodNo',
-        render: (text, record, index) => (
-          <EditableCell
-            value={text}
-            source="Material"
-            type="autoComplete"
-            onChange={(value) => this.handleChangeProdNo(value, index)}
-          />
-        ),
+        render: (text, record, index) => <EditableCell
+          type="autoComplete"
+          value={text}
+          column="prodNo"
+          source="Material"
+          editable={record.editable}
+          onSelect={(value) => this.handleChangeProdNo(value, index)}
+          onChange={value => this.handleChange(value, record.key, 'prodNo')}
+        />
       },
       {
         title: '品名',
@@ -290,22 +310,12 @@ class CreateOrderPage extends React.Component {
       {
         title: '长',
         dataIndex: 'prodLong',
-        render: (text) => (
-          <EditableCell
-            value={text}
-            onChange={(value) => console.warn(value)}
-          />
-        ),
+        render: (text, record) => this.renderColumns(text, record, 'prodLong'),
       },
       {
         title: '宽',
         dataIndex: 'prodWidth',
-        render: (text) => (
-          <EditableCell
-            value={text}
-            onChange={(value) => console.warn(value)}
-          />
-        ),
+        render: (text, record) => this.renderColumns(text, record, 'prodWidth'),
       },
       {
         title: '单位',
@@ -314,16 +324,20 @@ class CreateOrderPage extends React.Component {
       {
         title: '数量',
         dataIndex: 'prodNum',
-        render: (text) => (
-          <EditableCell
-            value={text}
-            onChange={(value) => console.warn(value)}
-          />
-        ),
+        render: (text, record) => this.renderColumns(text, record, 'prodNum'),
       },
       {
         title: '单价公式代码',
         dataIndex: 'formularType',
+        render: (text, record, index) => <EditableCell
+          type="autoComplete"
+          value={text}
+          column="formularType"
+          source="Formular"
+          editable={record.editable}
+          onSelect={(value) => this.handleChangeFormularNo(value, index)}
+          onChange={value => this.handleChange(value, record.key, 'formularType')}
+        />
       },
       {
         title: '单价公式',
@@ -338,6 +352,11 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodAmt',
       },
       {
+        title: '区域',
+        dataIndex: 'area',
+        render: (text, record) => this.renderColumns(text, record, 'area'),
+      },
+      {
         title: '面料品号',
         dataIndex: 'materialNo',
       },
@@ -346,6 +365,8 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '有效幅宽',
+        dataIndex: 'validWidth',
+        render: (text, record) => this.renderColumns(text, record, 'validWidth'),
       },
       {
         title: '面料公式代码',
@@ -359,9 +380,13 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '面料需求',
+        dataIndex: 'materialNeed',
+        render: (text, record) => this.renderColumns(text, record, 'materialNeed'),
       },
       {
         title: '面料基础价',
+        dataIndex: 'materialPrice',
+        render: (text, record) => this.renderColumns(text, record, 'materialPrice'),
       },
       {
         title: '工艺代码',
@@ -382,36 +407,43 @@ class CreateOrderPage extends React.Component {
       {
         title: '成品定价',
         dataIndex: 'prodPrice1',
+        render: (text, record) => this.renderColumns(text, record, 'prodPrice1'),
       },
       {
         title: '是否定价品',
         dataIndex: 'ifProd',
+        render: (text, record) => this.renderColumns(text, record, 'ifProd'),
       },
       {
         title: '分类',
         dataIndex: 'cateType',
+        render: (text, record) => this.renderColumns(text, record, 'cateType'),
       },
       {
         title: '备注',
         dataIndex: 'memo',
+        render: (text, record) => this.renderColumns(text, record, 'memo'),
       },
       {
         title: '操作',
         fixed: 'right',
         dataIndex: 'action',
-        render: (data, record) => (<div>
-          <a onClick={() => console.log(data)}>查看</a> |
-          <a> 修改</a> |
-          <Popconfirm
-            okText="删除"
-            cancelText="取消"
-            title="确定删除吗?"
-            overlayStyle={{ width: '200px' }}
-            onConfirm={() => this.deleteRecord(record.key)}
-          >
-            <a> 删除</a>
-          </Popconfirm>
-        </div>),
+        render: (data, record) => {
+          const { editable } = record;
+          return (<div>
+            {editable ? <a onClick={() => this.save(record.key)}>确定</a> : <a onClick={() => this.edit(record.key)}>编辑</a>}
+             |
+            <Popconfirm
+              okText="删除"
+              cancelText="取消"
+              title="确定删除吗?"
+              overlayStyle={{ width: '200px' }}
+              onConfirm={() => this.deleteRecord(record.key)}
+            >
+              <a> 删除</a>
+            </Popconfirm>
+          </div>)
+        },
       },
     ];
   }
@@ -435,6 +467,44 @@ class CreateOrderPage extends React.Component {
     }).then(data => this.setState({ userInfo: data.data }));
   }
 
+  renderColumns(text, record, column, type = 'input') {
+    return (
+      <EditableCell
+        type={type}
+        value={text}
+        column={column}
+        editable={record.editable}
+        onChange={value => this.handleChange(value, record.key, column)}
+      />
+    );
+  }
+
+  handleChange(value, key, column) {
+    const newData = [...this.state.data];
+    const target = newData.filter(item => key === item.key)[0];
+    if (target) {
+      target[column] = value;
+      this.setState({ data: newData });
+    }
+  }
+  edit(key) {
+    const newData = [...this.state.data];
+    const target = newData.filter(item => key === item.key)[0];
+    if (target) {
+      target.editable = true;
+      this.setState({ data: newData });
+    }
+  }
+  save(key) {
+    const newData = [...this.state.data];
+    const target = newData.filter(item => key === item.key)[0];
+    if (target) {
+      delete target.editable;
+      this.setState({ data: newData });
+      this.cacheData = newData.map(item => ({ ...item }));
+    }
+  }
+
   getList(param) {
     Object.assign(param, { pageSize: 10, currPage: 1 });
     request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
@@ -443,10 +513,13 @@ class CreateOrderPage extends React.Component {
   handleChangeProdNo = (value, index) => {
     const {data} = this.state;
     data[index] = Object.assign(data[index], {prodNo: value.materialNo, prodName: value.materialName, prodType: value.spec, prodForm: value.pattern, prodUnit: value.unit})
-    this.setState({
-      currMaterial: value,
-      data,
-    });
+    this.setState({data});
+  }
+
+  handleChangeFormularNo = (value, index) => {
+    const {data} = this.state;
+    data[index] = Object.assign(data[index], {formularType: value.formularNo, prodFormular: value.formularName})
+    this.setState({data});
   }
 
   deleteRecord = (key) => {
@@ -461,6 +534,30 @@ class CreateOrderPage extends React.Component {
     this.setState({data});
   }
 
+  handleSubmit = (formValue) => {
+    request({
+      url: '/api/order',
+      method: 'POST',
+      data: {
+        swOrderBaseVo: formValue,
+        swOrderDetailVos: this.state.data,
+      }
+    })
+      .then(res => {
+        notification.success({
+          message: '操作成功',
+          description: res.data,
+        })
+        this.setState({data: []});
+      })
+      .catch(err => {
+        notification.error({
+          message: '操作失败',
+          description: err.message,
+        })
+      });
+  }
+
   render () {
     return (
       <div className="content-inner">
@@ -470,6 +567,7 @@ class CreateOrderPage extends React.Component {
           saleTypes={this.state.saleTypes}
           search={this.getList.bind(this)}
           orderTypes={this.state.orderTypes}
+          handleSubmit={this.handleSubmit}
         />
         <Row>
           <Col span={6} offset="1">

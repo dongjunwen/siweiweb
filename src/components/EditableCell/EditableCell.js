@@ -57,34 +57,59 @@ class EditableCell extends React.Component {
     const {data} = this.state;
     this.setState({editable: false, value: value.split(/\s/)[0]});
     if (this.props.onChange) {
-      this.props.onChange(data[data.findIndex(item => item[`${source.toLowerCase()}No`] === value.split(/\s/)[0])])
+      this.props.onSelect(data[data.findIndex(item => item[`${source.toLowerCase()}No`] === value.split(/\s/)[0])])
     }
   }
 
-  switchInputElement(value) {
-    const {type, source} = this.props;
+  // switchInputElement(value) {
+  //   const {type, source} = this.props;
+  //   switch (type) {
+  //     case 'autoComplete':
+  //       return (<AutoComplete
+  //         dataSource={this.state.data.map(item => item[`${source.toLowerCase()}No`] + ' ' + item[`${source.toLowerCase()}Name`])}
+  //         onSearch={(value) => this.handleAutoComplete(value, source)}
+  //         onSelect={(value) => this.handleSelectAutoComplete(value, source)}
+  //       />);
+  //       break;
+  //     case 'input':
+  //     default:
+  //       return (<Input
+  //         value={value}
+  //         onChange={this.handleChange.bind(this)}
+  //         onPressEnter={this.check.bind(this)}
+  //         onBlur={this.check.bind(this)}
+  //       />);
+  //       break;
+  //   }
+  // }
+
+  switchInputType(value, type, column, source) {
     switch (type) {
       case 'autoComplete':
-        return (<AutoComplete
+        return <AutoComplete
+          value={value}
+          style={{ margin: '-5px 0' }}
+          onChange={value => this.props.onChange(value.split(/\s/)[0])}
           dataSource={this.state.data.map(item => item[`${source.toLowerCase()}No`] + ' ' + item[`${source.toLowerCase()}Name`])}
-          onSearch={(value) => this.handleAutoComplete(value, source)}
-          onSelect={(value) => this.handleSelectAutoComplete(value, source)}
-        />);
+          onSearch={value => this.handleAutoComplete(value, source)}
+          onSelect={value => this.handleSelectAutoComplete(value, source)}
+        />
         break;
       case 'input':
       default:
-        return (<Input
+        return <Input
           value={value}
-          onChange={this.handleChange.bind(this)}
-          onPressEnter={this.check.bind(this)}
-          onBlur={this.check.bind(this)}
-        />);
+          style={{ margin: '-5px 0' }}
+          onChange={e => this.props.onChange(e.target.value)}
+        />
         break;
     }
+
   }
 
   render() {
-    const {value, editable} = this.state;
+    // const {value, editable} = this.state;
+    const { editable, value, onChange, type, column, source } = this.props;
     // const disabledDate = {
     //   dateStart: (currentValue, record) => {
     //     if ((!record.beginTime && !record.endTime) || currentValue === undefined) {
@@ -101,26 +126,10 @@ class EditableCell extends React.Component {
     // };
     // todo: 检查为何修改外层value时内层未同步更新
 
-    return (<div className="editable-cell">
-      {
-        editable ?
-        <div className="editable-cell-input-wrapper">
-          {this.switchInputElement(value)}
-          <Icon
-            type="check"
-            className="editable-cell-icon-check"
-            onClick={this.check.bind(this)}
-          />
-        </div>
-        :
-        <div className="editable-cell-text-wrapper">
-          {value || ' '}
-          <Icon
-            type="edit"
-            className="editable-cell-icon"
-            onClick={this.edit.bind(this)}
-          />
-        </div>
+    return (<div>
+      {editable
+        ? this.switchInputType(value, type, column, source)
+        : value
       }
     </div>);
   }
