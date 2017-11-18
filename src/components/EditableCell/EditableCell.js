@@ -49,7 +49,7 @@ class EditableCell extends React.Component {
       url: `/api/${source.toLowerCase()}/find${source}Like/${value}`,
       method: 'get',
     }).then(data => this.setState({
-      data: data.data || []
+      data: data.data || [],
     }));
   }
 
@@ -86,25 +86,24 @@ class EditableCell extends React.Component {
   switchInputType(value, type, column, source) {
     switch (type) {
       case 'autoComplete':
-        return <AutoComplete
+        return (<AutoComplete
           value={value}
           style={{ margin: '-5px 0' }}
           onChange={value => this.props.onChange(value.split(/\s/)[0])}
           dataSource={this.state.data.map(item => item[`${source.toLowerCase()}No`] + ' ' + item[`${source.toLowerCase()}Name`])}
           onSearch={value => this.handleAutoComplete(value, source)}
           onSelect={value => this.handleSelectAutoComplete(value, source)}
-        />
+        />)
         break;
       case 'input':
       default:
-        return <Input
+        return (<Input
           value={value}
           style={{ margin: '-5px 0' }}
           onChange={e => this.props.onChange(e.target.value)}
-        />
+        />)
         break;
     }
-
   }
 
   render() {

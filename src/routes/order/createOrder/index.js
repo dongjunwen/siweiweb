@@ -106,7 +106,9 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={12}>
             <FormItem label="客户" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
-              {getFieldDecorator('custCompName')(
+              {getFieldDecorator('custCompName', {
+                rules: [{required: true, message: '请选择或输入客户信息'}],
+              })(
                 <AutoComplete dataSource={companys.map(comp => `${comp.compNo} ${comp.compName}`)} onSearch={this.searchComp} onSelect={this.selectComp} />
               )}
             </FormItem>
@@ -231,14 +233,18 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="订货日期" {...formItemRow}>
-              {getFieldDecorator('goodDate', {valuePropName: 'value'})(
+              {getFieldDecorator('goodDate', {
+                rules: [{required: true, message: '请选择日期'}],
+              })(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="交货日期" {...formItemRow}>
-              {getFieldDecorator('finishDate')(
+              {getFieldDecorator('finishDate', {
+                rules: [{required: true, message: '请选择日期'}],
+              })(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
             </FormItem>
@@ -285,15 +291,15 @@ class CreateOrderPage extends React.Component {
       {
         title: '编码',
         dataIndex: 'prodNo',
-        render: (text, record, index) => <EditableCell
+        render: (text, record, index) => (<EditableCell
           type="autoComplete"
           value={text}
           column="prodNo"
           source="Material"
           editable={record.editable}
-          onSelect={(value) => this.handleChangeProdNo(value, index)}
+          onSelect={value => this.handleChangeProdNo(value, index)}
           onChange={value => this.handleChange(value, record.key, 'prodNo')}
-        />
+        />),
       },
       {
         title: '品名',
@@ -310,42 +316,23 @@ class CreateOrderPage extends React.Component {
       {
         title: '长',
         dataIndex: 'prodLong',
-        render: (text, record) => this.renderColumns(text, record, 'prodLong'),
       },
       {
         title: '宽',
         dataIndex: 'prodWidth',
-        render: (text, record) => this.renderColumns(text, record, 'prodWidth'),
       },
       {
         title: '单位',
         dataIndex: 'prodUnit',
       },
       {
+        title: '单价',
+        dataIndex: 'prodPrice',
+      },
+      {
         title: '数量',
         dataIndex: 'prodNum',
         render: (text, record) => this.renderColumns(text, record, 'prodNum'),
-      },
-      {
-        title: '单价公式代码',
-        dataIndex: 'formularType',
-        render: (text, record, index) => <EditableCell
-          type="autoComplete"
-          value={text}
-          column="formularType"
-          source="Formular"
-          editable={record.editable}
-          onSelect={(value) => this.handleChangeFormularNo(value, index)}
-          onChange={value => this.handleChange(value, record.key, 'formularType')}
-        />
-      },
-      {
-        title: '单价公式',
-        dataIndex: 'prodFormular',
-      },
-      {
-        title: '单价',
-        dataIndex: 'prodPrice',
       },
       {
         title: '金额',
@@ -359,9 +346,19 @@ class CreateOrderPage extends React.Component {
       {
         title: '面料品号',
         dataIndex: 'materialNo',
+        render: (text, record, index) => (<EditableCell
+          type="autoComplete"
+          value={text}
+          column="materialNo"
+          source="Material"
+          editable={record.editable}
+          onSelect={value => this.handleChangeMaterialNo(value, index)}
+          onChange={value => this.handleChange(value, record.key, 'materialNo')}
+        />),
       },
       {
         title: '面料品名',
+        dataIndex: 'materialName',
       },
       {
         title: '有效幅宽',
@@ -370,9 +367,20 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '面料公式代码',
+        dataIndex: 'materialPriceNo',
+        render: (text, record, index) => (<EditableCell
+          type="autoComplete"
+          value={text}
+          column="materialPriceNo"
+          source="Formular"
+          editable={record.editable}
+          onSelect={value => this.handleChangeFormularlNo(value, index)}
+          onChange={value => this.handleChange(value, record.key, 'materialPriceNo')}
+        />),
       },
       {
         title: '面料公式名称',
+        dataIndex: 'materialPriceName',
       },
       {
         title: '面料公式',
@@ -467,26 +475,11 @@ class CreateOrderPage extends React.Component {
     }).then(data => this.setState({ userInfo: data.data }));
   }
 
-  renderColumns(text, record, column, type = 'input') {
-    return (
-      <EditableCell
-        type={type}
-        value={text}
-        column={column}
-        editable={record.editable}
-        onChange={value => this.handleChange(value, record.key, column)}
-      />
-    );
+  getList(param) {
+    Object.assign(param, { pageSize: 10, currPage: 1 });
+    request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
   }
 
-  handleChange(value, key, column) {
-    const newData = [...this.state.data];
-    const target = newData.filter(item => key === item.key)[0];
-    if (target) {
-      target[column] = value;
-      this.setState({ data: newData });
-    }
-  }
   edit(key) {
     const newData = [...this.state.data];
     const target = newData.filter(item => key === item.key)[0];
@@ -495,6 +488,7 @@ class CreateOrderPage extends React.Component {
       this.setState({ data: newData });
     }
   }
+
   save(key) {
     const newData = [...this.state.data];
     const target = newData.filter(item => key === item.key)[0];
@@ -505,14 +499,51 @@ class CreateOrderPage extends React.Component {
     }
   }
 
-  getList(param) {
-    Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+  handleChange(value, key, column) {
+    const newData = [...this.state.data];
+    const target = newData.filter(item => key === item.key)[0];
+    if (target) {
+      target[column] = value;
+      // 计算价格
+      switch (column) {
+        case 'prodNum':
+          target.prodAmt = (target.prodPrice || 0) * Number(value) || 0;
+          break;
+        default:
+          break;
+      }
+      this.setState({ data: newData });
+    }
   }
 
   handleChangeProdNo = (value, index) => {
     const {data} = this.state;
-    data[index] = Object.assign(data[index], {prodNo: value.materialNo, prodName: value.materialName, prodType: value.spec, prodForm: value.pattern, prodUnit: value.unit})
+    data[index] = Object.assign(data[index], {
+      prodWidth: value.materialWidth,
+      prodName: value.materialName,
+      prodLong: value.materialLong,
+      prodNo: value.materialNo,
+      prodForm: value.pattern,
+      prodPrice: value.price,
+      prodType: value.spec,
+      prodUnit: value.unit,
+    });
+    this.setState({data});
+  }
+
+  handleChangeMaterialNo = (value, index) => {
+    const {data} = this.state;
+    data[index] = Object.assign(data[index], {
+      materialName: value.materialName,
+    });
+    this.setState({data});
+  }
+
+  handleChangeFormularlNo = (value, index) => {
+    const {data} = this.state;
+    data[index] = Object.assign(data[index], {
+      materialName: value.materialName,
+    });
     this.setState({data});
   }
 
@@ -541,21 +572,33 @@ class CreateOrderPage extends React.Component {
       data: {
         swOrderBaseVo: formValue,
         swOrderDetailVos: this.state.data,
-      }
+      },
     })
-      .then(res => {
+      .then((res) => {
         notification.success({
           message: '操作成功',
           description: res.data,
         })
         this.setState({data: []});
       })
-      .catch(err => {
+      .catch((err) => {
         notification.error({
           message: '操作失败',
           description: err.message,
         })
       });
+  }
+
+  renderColumns(text, record, column, type = 'input') {
+    return (
+      <EditableCell
+        type={type}
+        value={text}
+        column={column}
+        editable={record.editable}
+        onChange={value => this.handleChange(value, record.key, column)}
+      />
+    );
   }
 
   render () {
