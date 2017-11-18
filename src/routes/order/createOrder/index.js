@@ -399,6 +399,15 @@ class CreateOrderPage extends React.Component {
       {
         title: '工艺代码',
         dataIndex: 'techNo',
+        render: (text, record, index) => (<EditableCell
+          type="autoComplete"
+          value={text}
+          column="techNo"
+          source="Formular"
+          editable={record.editable}
+          onSelect={value => this.handleChangeTechNo(value, index)}
+          onChange={value => this.handleChange(value, record.key, 'techNo')}
+        />),
       },
       {
         title: '工艺名称',
@@ -407,6 +416,7 @@ class CreateOrderPage extends React.Component {
       {
         title: '工艺单价',
         dataIndex: 'techPrice',
+        render: (text, record) => this.renderColumns(text, record, 'techPrice'),
       },
       {
         title: '工艺公式',
@@ -542,7 +552,18 @@ class CreateOrderPage extends React.Component {
   handleChangeFormularlNo = (value, index) => {
     const {data} = this.state;
     data[index] = Object.assign(data[index], {
-      materialName: value.materialName,
+      materialPriceExpress: value.formularValue,
+      materialPriceName: value.formularName,
+    });
+    this.setState({data});
+  }
+
+  handleChangeTechNo = (value, index) => {
+    const {data} = this.state;
+    data[index] = Object.assign(data[index], {
+      techName: value.formularName,
+      techPrice: value.formularValue,
+      techPriceExpress: value.formularValue,
     });
     this.setState({data});
   }
