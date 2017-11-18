@@ -2,6 +2,7 @@ import React from 'react'
 import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request } from 'utils'
+import OrderDetailPage from './orderDetail'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -9,73 +10,35 @@ const Option = Select.Option;
 // 定义form项目
 const formItemRow = { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
 
-const deleteRecord = (id) => {
-  request({ url: `/api/formular/${id}`, method: 'delete' }).then(data => notification.success({ message: '操作成功', description: data.data })).catch(err => console.warn(err));
-}
-const columns = [
-  {
-    title: '序号',
-    dataIndex: 'id',
-  },
-  {
-    title: '客户名称',
-    dataIndex: 'custCompName',
-  },
-  {
-    title: '订单号',
-    dataIndex: 'orderNo',
-  },
-  {
-    title: '订单日期',
-    dataIndex: 'goodDate',
-  },
-  {
-    title: '单据类型',
-    dataIndex: 'orderType',
-  },
-  {
-    title: '销售类型',
-    dataIndex: 'saleType',
-  },
-  {
-    title: '单据状态',
-    dataIndex: 'orderStatus',
-  },
-  {
-    title: '创建人',
-    dataIndex: 'creator',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    render: (data, record) => (<div>
-      <a onClick={() => console.log(data)}>查看详情</a> |
-      <Popconfirm
-        okText="删除"
-        cancelText="取消"
-        title="确定删除吗?"
-        overlayStyle={{ width: '200px' }}
-        onConfirm={() => deleteRecord(record.formularNo)}
-      >
-        <a> 删除</a>
-      </Popconfirm>
-    </div>),
-  },
-];
-
 class AdvancedSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      marketNo: '',
+      orderTypes: [{dictCode: 'code', dictDesc: ''}],
+      saleTypes: [{dictCode: 'code', dictDesc: ''}],
+      statusTypes: [{dictCode: 'code', dictDesc: ''}],
     };
   }
 
-  setModal() {
-    this.setState({
-      visible: true,
-      dataDetail: {},
+  componentWillMount() {
+    Promise.all([
+      request({url: '/api/sysDict/ORDER_TYPE'}),
+      request({url: '/api/sysDict/SALE_TYPE'}),
+      request({url: '/api/sysDict/ORDER_STATUS'}),
+    ]).then((res) => {
+      this.setState({
+        orderTypes: res[0].data,
+        saleTypes: res[1].data,
+        statusTypes: res[2].data,
+      });
+    }).catch((err) => {
+      notification.error({
+        message: '页面加载错误',
+        description: '获取类型选项失败',
+      });
+      console.warn(err);
     })
+    this.props.search({});
   }
 
   handleSearch(e) {
@@ -85,6 +48,8 @@ class AdvancedSearchForm extends React.Component {
         // dddd
       } else {
         // 验证通过
+        values.startTime = values.startTime ? values.startTime.format('YYYY-MM-DD') : undefined;
+        values.endTime = values.endTime ? values.endTime.format('YYYY-MM-DD') : undefined;
         this.props.search(values);
       }
     });
@@ -92,6 +57,9 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
+    const saleOptions = this.state.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
+    const statusOptions = this.state.statusTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
       <Form
@@ -102,14 +70,14 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="订单日期" {...formItemRow}>
               {getFieldDecorator('startTime')(
-                <DatePicker format={'YYYY-MM-DD'} />
+                <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="~" {...formItemRow} colon={false}>
               {getFieldDecorator('endTime')(
-                <DatePicker format={'YYYY-MM-DD'} />
+                <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
               )}
             </FormItem>
           </Col>
@@ -124,7 +92,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="客户名称" {...formItemRow}>
-              {getFieldDecorator('name')(
+              {getFieldDecorator('custContactName')(
                 <Input />
               )}
             </FormItem>
@@ -133,25 +101,22 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="单据类型" {...formItemRow}>
-              {getFieldDecorator('type', { initialValue: '1' })(
+              {getFieldDecorator('orderType', {
+                initialValue: this.state.orderTypes[0].dictCode,
+              })(
                 <Select>
-                  <Option value="1">全部</Option>
-                  <Option value="2">样品单</Option>
-                  <Option value="3">正常单</Option>
-                  <Option value="4">补单</Option>
-                  <Option value="5">赠品</Option>
-                  <Option value="6">工程单</Option>
+                  {orderOptions}
                 </Select>
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="销售类型" {...formItemRow}>
-              {getFieldDecorator('saleType', { initialValue: '1' })(
+              {getFieldDecorator('saleType', {
+                initialValue: this.state.saleTypes[0].dictCode,
+              })(
                 <Select>
-                  <Option value="1">全部</Option>
-                  <Option value="2">内销</Option>
-                  <Option value="3">外销</Option>
+                  {saleOptions}
                 </Select>
               )}
             </FormItem>
@@ -160,15 +125,11 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="单据状态" {...formItemRow}>
-              {getFieldDecorator('status', { initialValue: '1' })(
+              {getFieldDecorator('orderStatus', {
+                initialValue: this.state.statusTypes[0].dictCode,
+              })(
                 <Select>
-                  <Option value="1">全部</Option>
-                  <Option value="2">待初审</Option>
-                  <Option value="3">已作废</Option>
-                  <Option value="4">初审通过</Option>
-                  <Option value="5">终审通过</Option>
-                  <Option value="6">生产中</Option>
-                  <Option value="7">已完成</Option>
+                  {statusOptions}
                 </Select>
               )}
             </FormItem>
@@ -189,27 +150,103 @@ class OrderListPage extends React.Component {
     this.state = {
       visible: false,
       dataDetail: {},
+      currentPage: 1,
+      pageSize: 10,
       data: [],
     };
+    this.columns = [
+      {
+        title: '序号',
+        dataIndex: 'id',
+      },
+      {
+        title: '客户名称',
+        dataIndex: 'custCompName',
+      },
+      {
+        title: '订单号',
+        dataIndex: 'orderNo',
+      },
+      {
+        title: '订单日期',
+        dataIndex: 'goodDate',
+      },
+      {
+        title: '单据类型',
+        dataIndex: 'orderTypeName',
+      },
+      {
+        title: '销售类型',
+        dataIndex: 'saleTypeName',
+      },
+      {
+        title: '单据状态',
+        dataIndex: 'orderStatusName',
+      },
+      {
+        title: '创建人',
+        dataIndex: 'createName',
+      },
+      {
+        title: '操作',
+        dataIndex: 'action',
+        render: (data, record) => (<div>
+          <a onClick={() => this.setState({visible: true})}>查看详情</a> |
+          <Popconfirm
+            okText="删除"
+            cancelText="取消"
+            title="确定删除吗?"
+            overlayStyle={{ width: '200px' }}
+            onConfirm={() => console.warn(record.id)}
+          >
+            <a> 删除</a>
+          </Popconfirm>
+        </div>),
+      },
+    ];
   }
 
-  getList(param) {
-    Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/order', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+  getList(param = {}) {
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      query.startTime = param.startTime;
+      query.endTime = param.endTime;
+      delete param.startTime;
+      delete param.endTime;
+      query.filter = param;
+      this.condition = query;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: '/api/order', method: 'GET', data: this.condition })
+      .then(data => this.setState({
+        data: data.data.list || [],
+        total: data.data.total,
+        currentPage: data.data.currPage,
+      }));
   }
 
   render () {
+    const {visible} = this.state;
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
-          rowKey={(record, key) => key}
-          pagination={false}
           bordered
-          columns={columns}
+          columns={this.columns}
           dataSource={this.state.data}
+          rowKey={(record, key) => key}
+          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
+        <Modal
+          title="订单详情"
+          visible={visible}
+          width="1000"
+        >
+          <OrderDetailPage />
+        </Modal>
       </div>
     )
   }

@@ -12,7 +12,7 @@ module.exports = {
   baseURL: './',
   iconFontJS: './iconfont.js',
   CORS: ['http://localhost:8082', 'http://127.0.0.1:8082', 'http://192.168.0.106:8082', 'http://local.siwei.com', 'http://192.168.0.105:8082'],
-  openPages: ['./login'],
+  openPages: ['/login'],
   apiPrefix: '/api/v1',
   APIV1,
   APIV2,

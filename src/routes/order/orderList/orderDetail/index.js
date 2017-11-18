@@ -44,25 +44,6 @@ class AdvancedSearchForm extends React.Component {
     this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
   }
 
-  handleSubmit = () => {
-    this.props.form.validateFields((err, fieldsValue) => {
-      if (err) {
-        notification.error({
-          message: '提交失败',
-          description: '请检查表单',
-        });
-        return;
-      }
-      // Should format date value before submit.
-      const values = {
-        ...fieldsValue,
-        goodDate: fieldsValue.goodDate && fieldsValue.goodDate.format('YYYY-MM-DD'),
-        finishDate: fieldsValue.finishDate && fieldsValue.finishDate.format('YYYY-MM-DD'),
-      };
-      this.props.handleSubmit(values);
-    });
-  }
-
   render() {
     const {form: {getFieldDecorator}, userInfo} = this.props;
     const {curCompany, companys} = this.state;
@@ -97,9 +78,6 @@ class AdvancedSearchForm extends React.Component {
                 </Select>
               )}
             </FormItem>
-          </Col>
-          <Col span={6} offset={2}>
-            <Button type="primary" onClick={this.handleSubmit}>保存</Button>
           </Col>
         </Row>
         <Row>
@@ -585,30 +563,6 @@ class CreateOrderPage extends React.Component {
     this.setState({data});
   }
 
-  handleSubmit = (formValue) => {
-    request({
-      url: '/api/order',
-      method: 'POST',
-      data: {
-        swOrderBaseVo: formValue,
-        swOrderDetailVos: this.state.data,
-      },
-    })
-      .then((res) => {
-        notification.success({
-          message: '操作成功',
-          description: res.data,
-        })
-        this.setState({data: []});
-      })
-      .catch((err) => {
-        notification.error({
-          message: '操作失败',
-          description: err.message,
-        })
-      });
-  }
-
   renderColumns(text, record, column, type = 'input') {
     return (
       <EditableCell
@@ -630,7 +584,6 @@ class CreateOrderPage extends React.Component {
           saleTypes={this.state.saleTypes}
           search={this.getList.bind(this)}
           orderTypes={this.state.orderTypes}
-          handleSubmit={this.handleSubmit}
         />
         <Row>
           <Col span={6} offset="1">

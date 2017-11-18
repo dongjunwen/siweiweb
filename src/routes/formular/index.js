@@ -148,7 +148,7 @@ class FormularPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      query.filter = param;      
+      query.filter = param;
       this.condition = query;
     } else {
       this.condition.currPage = param;
