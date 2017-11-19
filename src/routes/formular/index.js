@@ -97,11 +97,15 @@ class FormularPage extends React.Component {
       },
       {
         title: '描述',
-        dataIndex: 'formularType',
+        dataIndex: 'formularName',
       },
       {
         title: '公式',
-        dataIndex: 'formularName',
+        dataIndex: 'formularValue',
+      },
+      {
+        title: '单价',
+        dataIndex: 'formularPrice',
       },
       {
         title: '备注',

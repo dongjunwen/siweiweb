@@ -206,6 +206,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
+      param.orderStatus = 'AUDIT01_SUCCESS';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -252,6 +253,7 @@ class OrderListPage extends React.Component {
       this.getList({});
       this.setState({
         selectedRowKeys: [],
+        reasonVisible: false,
       })
     }).catch((err) => {
       notification.error({
@@ -262,15 +264,16 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, reasonVisible} = this.state;
-
+    const {visible, orderDetail, selectedRowKeys, rejectReason, reasonVisible} = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
-        {false && <div>
-          <Button type="primary" onClick={() => this.auditOrders('APPLY', 'WAIT_APPLY')}>初审通过</Button>&emsp;
-          <Button type="primary" onClick={() => this.auditOrders('CANCEL', 'WAIT_APPLY')}>作废</Button>&emsp;
+        {this.state.selectedRowKeys.length > 0 && <div>
           <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'AUDIT01_SUCCESS')}>终审通过</Button>&emsp;
           <Button type="primary" onClick={() => this.setState({reasonVisible: true})}>拒绝</Button>
         </div>}
@@ -278,6 +281,7 @@ class OrderListPage extends React.Component {
           bordered
           columns={this.columns}
           style={{marginTop: '16px'}}
+          rowSelection={rowSelection}
           dataSource={this.state.data}
           rowKey={(record, key) => record.orderNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
@@ -293,11 +297,12 @@ class OrderListPage extends React.Component {
           <OrderDetailPage orderDetail={orderDetail} readOnly />
         </Modal>
         <Modal
+          title="拒绝订单"
           visible={reasonVisible}
           onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
-          onCancel={() => this.setState({reasonVisible, rejectReason: undefined})}
+          onCancel={() => this.setState({reasonVisible: false, rejectReason: undefined})}
         >
-          <Input placeholder="请输入拒绝理由" />
+          <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入拒绝理由" />
         </Modal>
       </div>
     )

@@ -415,7 +415,6 @@ class CreateOrderPage extends React.Component {
       {
         title: '工艺单价',
         dataIndex: 'techPrice',
-        render: (text, record) => this.renderColumns(text, record, 'techPrice'),
       },
       {
         title: '工艺公式',
@@ -561,7 +560,7 @@ class CreateOrderPage extends React.Component {
     const {data} = this.state;
     data[index] = Object.assign(data[index], {
       techName: value.formularName,
-      techPrice: value.formularValue,
+      techPrice: value.formularPrice,
       techPriceExpress: value.formularValue,
     });
     this.setState({data});

@@ -22,6 +22,10 @@ const Fields = {
     name: 'formularValue',
     userProps: { label: '公式值', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
+  formularPrice: {
+    name: 'formularPrice',
+    userProps: { label: '公式单价', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
   memo: {
     name: 'memo',
     userProps: { label: '公式备注', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
@@ -74,6 +78,11 @@ export default class AdvancedSearchForm extends React.Component {
         </FormItem>
         <FormItem {...Fields.formularValue.userProps}>
           {getFieldDecorator(Fields.formularValue.name, { ...Fields.formularValue.userRules, initialValue: dataDetail.formularValue })(
+            <Input />
+          )}
+        </FormItem>
+        <FormItem {...Fields.formularPrice.userProps}>
+          {getFieldDecorator(Fields.formularPrice.name, { ...Fields.formularPrice.userRules, initialValue: dataDetail.formularPrice })(
             <Input />
           )}
         </FormItem>

@@ -206,6 +206,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
+      param.orderStatus = 'WAIT_APPLY';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -262,22 +263,24 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, reasonVisible} = this.state;
-
+    const {visible, orderDetail, selectedRowKeys, rejectReason, reasonVisible} = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
-        {false && <div>
+        {this.state.selectedRowKeys.length > 0 && <div>
           <Button type="primary" onClick={() => this.auditOrders('APPLY', 'WAIT_APPLY')}>初审通过</Button>&emsp;
           <Button type="primary" onClick={() => this.auditOrders('CANCEL', 'WAIT_APPLY')}>作废</Button>&emsp;
-          <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'AUDIT01_SUCCESS')}>终审通过</Button>&emsp;
-          <Button type="primary" onClick={() => this.setState({reasonVisible: true})}>拒绝</Button>
         </div>}
         <Table
           bordered
           columns={this.columns}
           style={{marginTop: '16px'}}
+          rowSelection={rowSelection}
           dataSource={this.state.data}
           rowKey={(record, key) => record.orderNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
@@ -290,7 +293,7 @@ class OrderListPage extends React.Component {
           onCancel={() => this.setState({visible: false})}
           footer={[<Button type="primary" key="cancel" size="large" onClick={() => this.setState({visible: false})}>关闭</Button>]}
         >
-          <OrderDetailPage orderDetail={orderDetail} readOnly />
+          <OrderDetailPage orderDetail={orderDetail} readOnly={false} />
         </Modal>
         <Modal
           visible={reasonVisible}

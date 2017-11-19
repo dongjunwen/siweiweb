@@ -33,6 +33,25 @@ class AdvancedSearchForm extends React.Component {
     });
   }
 
+  handleSubmit = () => {
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        notification.error({
+          message: '提交失败',
+          description: '请检查表单',
+        });
+        return;
+      }
+      // Should format date value before submit.
+      const values = {
+        ...fieldsValue,
+        goodDate: fieldsValue.goodDate && fieldsValue.goodDate.format('YYYY-MM-DD'),
+        finishDate: fieldsValue.finishDate && fieldsValue.finishDate.format('YYYY-MM-DD'),
+      };
+      this.props.handleSubmit(values);
+    });
+  }
+
   searchComp = (value) => {
     request({
       url: `${config.APIV0}/api/comp/findCompLike/${value}`,
@@ -576,11 +595,13 @@ class CreateOrderPage extends React.Component {
   }
 
   handleSubmit = (formValue) => {
+    // 附带订单号
+    formValue.orderNo = this.props.orderDetail.swOrderBaseResultVo.orderNo;
     request({
       url: `${config.APIV0}/api/order`,
-      method: 'POST',
+      method: 'PUT',
       data: {
-        swOrderBaseVo: formValue,
+        swOrderBaseModiVo: formValue,
         swOrderDetailVos: this.state.data,
       },
     })
@@ -589,7 +610,6 @@ class CreateOrderPage extends React.Component {
           message: '操作成功',
           description: res.data,
         })
-        this.setState({data: []});
       })
       .catch((err) => {
         notification.error({
@@ -620,6 +640,7 @@ class CreateOrderPage extends React.Component {
           userInfo={this.state.userInfo}
           saleTypes={this.state.saleTypes}
           search={this.getList.bind(this)}
+          handleSubmit={this.handleSubmit}
           swOrderBaseResultVo={this.props.orderDetail.swOrderBaseResultVo}
           orderTypes={this.state.orderTypes}
           readOnly={readOnly}

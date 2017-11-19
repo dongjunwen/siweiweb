@@ -1,6 +1,6 @@
 import { Table, Form, Row, Col, Input, Button, Select, Icon, notification, DatePicker, AutoComplete } from 'antd';
 import PropTypes from 'prop-types'
-import { request } from 'utils'
+import { request, config } from 'utils'
 import React from 'react'
 import './style.less'
 
@@ -46,7 +46,7 @@ class EditableCell extends React.Component {
 
   handleAutoComplete(value, source) {
     request({
-      url: `/api/${source.toLowerCase()}/find${source}Like/${value}`,
+      url: `${config.APIV0}/api/${source.toLowerCase()}/find${source}Like/${value}`,
       method: 'get',
     }).then(data => this.setState({
       data: data.data || [],
