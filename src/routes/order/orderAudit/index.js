@@ -124,17 +124,6 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={6}>
-            <FormItem label="单据状态" {...formItemRow}>
-              {getFieldDecorator('orderStatus', {
-                initialValue: this.state.statusTypes[0].dictCode,
-              })(
-                <Select>
-                  {statusOptions}
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
             &emsp;<Button type="primary" htmlType="submit">查询</Button>
           </Col>
         </Row>
