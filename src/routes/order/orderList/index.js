@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
 import PropTypes from 'prop-types'
-import { request } from 'utils'
+import { request, config } from 'utils'
 import OrderDetailPage from './orderDetail'
 
 const FormItem = Form.Item;
@@ -22,9 +22,9 @@ class AdvancedSearchForm extends React.Component {
 
   componentWillMount() {
     Promise.all([
-      request({url: '/api/sysDict/ORDER_TYPE'}),
-      request({url: '/api/sysDict/SALE_TYPE'}),
-      request({url: '/api/sysDict/ORDER_STATUS'}),
+      request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
+      request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
+      request({url: `${config.APIV0}/api/sysDict/ORDER_STATUS`}),
     ]).then((res) => {
       this.setState({
         orderTypes: res[0].data,
@@ -148,24 +148,22 @@ class OrderListPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedRowKeys: [],
       visible: false,
       dataDetail: {},
       currentPage: 1,
       pageSize: 10,
       data: [],
+      orderDetail: {},
     };
     this.columns = [
       {
-        title: '序号',
-        dataIndex: 'id',
+        title: '订单号',
+        dataIndex: 'orderNo',
       },
       {
         title: '客户名称',
         dataIndex: 'custCompName',
-      },
-      {
-        title: '订单号',
-        dataIndex: 'orderNo',
       },
       {
         title: '订单日期',
@@ -191,7 +189,7 @@ class OrderListPage extends React.Component {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
-          <a onClick={() => this.setState({visible: true})}>查看详情</a> |
+          <a onClick={() => this.getOrderDetail(record.orderNo)}>查看详情</a> |
           <Popconfirm
             okText="删除"
             cancelText="取消"
@@ -204,6 +202,11 @@ class OrderListPage extends React.Component {
         </div>),
       },
     ];
+  }
+
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.orderNo));
+    this.setState({ selectedRowKeys });
   }
 
   getList(param = {}) {
@@ -219,7 +222,7 @@ class OrderListPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: '/api/order', method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/order`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list || [],
         total: data.data.total,
@@ -227,25 +230,71 @@ class OrderListPage extends React.Component {
       }));
   }
 
+  getOrderDetail(orderNo) {
+    request({
+      url: `${config.APIV0}/api/order/${orderNo}`,
+    }).then((res) => {
+      this.setState({
+        visible: true,
+        orderDetail: res.data,
+      });
+    }).catch(err => console.error(err));
+  }
+
+  auditOrders(action) {
+    request({
+      url: `${config.APIV0}/api/order/audit`,
+      method: 'post',
+      data: {
+        auditAction: action,
+        orderNos: this.state.selectedRowKeys,
+        orderStatus: 'WAIT_AUDIT',
+      },
+    }).then((res) => {
+      notification.success({
+        message: '操作成功',
+        description: JSON.stringify(res.data),
+      });
+      this.getList({});
+    }).catch((err) => {
+      notification.error({
+        message: '操作失败',
+        description: err.message,
+      });
+    });
+  }
+
   render () {
-    const {visible} = this.state;
+    const {visible, orderDetail, selectedRowKeys} = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
+        <div>
+          <Button type="primary" onClick={() => this.auditOrders('APPLY')}>初审通过</Button>&emsp;
+          <Button type="primary">终审通过</Button>&emsp;
+          <Button type="primary">拒绝</Button>
+        </div>
         <Table
           bordered
           columns={this.columns}
+          style={{marginTop: '16px'}}
+          rowSelection={rowSelection}
           dataSource={this.state.data}
-          rowKey={(record, key) => key}
+          rowKey={(record, key) => record.orderNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
           title="订单详情"
           visible={visible}
-          width="1000"
+          width="1000px"
+          onCancel={() => this.setState({visible: false})}
         >
-          <OrderDetailPage />
+          <OrderDetailPage orderDetail={orderDetail} readOnly />
         </Modal>
       </div>
     )

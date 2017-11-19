@@ -1,7 +1,8 @@
-import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, DatePicker, AutoComplete } from 'antd'
 import { EditableCell } from 'components'
 import PropTypes from 'prop-types'
-import { request } from 'utils'
+import moment from 'moment'
+import { request, config } from 'utils'
 import React from 'react'
 
 const FormItem = Form.Item;
@@ -34,7 +35,7 @@ class AdvancedSearchForm extends React.Component {
 
   searchComp = (value) => {
     request({
-      url: `/api/comp/findCompLike/${value}`,
+      url: `${config.APIV0}/api/comp/findCompLike/${value}`,
       method: 'get',
     }).then(data => this.setState({ companys: data.data || [] }));
   }
@@ -45,7 +46,7 @@ class AdvancedSearchForm extends React.Component {
   }
 
   render() {
-    const {form: {getFieldDecorator}, userInfo} = this.props;
+    const {form: {getFieldDecorator}, userInfo, swOrderBaseResultVo} = this.props;
     const {curCompany, companys} = this.state;
     const orderOptions = this.props.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const saleOptions = this.props.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
@@ -60,7 +61,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="单据类型" {...formItemRow}>
               {getFieldDecorator('orderType', {
-                initialValue: this.props.orderTypes[0].dictCode,
+                initialValue: swOrderBaseResultVo.orderType || this.props.orderTypes[0].dictCode,
               })(
                 <Select>
                   {orderOptions}
@@ -71,7 +72,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="销售类型" {...formItemRow}>
               {getFieldDecorator('saleType', {
-                initialValue: this.props.saleTypes[0].dictCode,
+                initialValue: swOrderBaseResultVo.saleType || this.props.saleTypes[0].dictCode,
               })(
                 <Select>
                   {saleOptions}
@@ -85,6 +86,7 @@ class AdvancedSearchForm extends React.Component {
             <FormItem label="客户" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('custCompName', {
                 rules: [{required: true, message: '请选择或输入客户信息'}],
+                initialValue: swOrderBaseResultVo.custCompName,
               })(
                 <AutoComplete dataSource={companys.map(comp => `${comp.compNo} ${comp.compName}`)} onSearch={this.searchComp} onSelect={this.selectComp} />
               )}
@@ -93,7 +95,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={12}>
             <FormItem label="生产方" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('supplyCompName', {
-                initialValue: userInfo.swCompInfoResultVo.compName,
+                initialValue: swOrderBaseResultVo.supplyCompName || userInfo.swCompInfoResultVo.compName,
               })(
                 <Input />
               )}
@@ -104,7 +106,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="联系人" {...formItemRow}>
               {getFieldDecorator('custContactName', {
-                initialValue: curCompany.contactName,
+                initialValue: swOrderBaseResultVo.custContactName || curCompany.contactName,
               })(
                 <Input />
               )}
@@ -113,7 +115,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="手机" {...formItemRow}>
               {getFieldDecorator('custMobile', {
-                initialValue: curCompany.mobile,
+                initialValue: swOrderBaseResultVo.custMobile || curCompany.mobile,
               })(
                 <Input />
               )}
@@ -122,7 +124,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="联系人" {...formItemRow}>
               {getFieldDecorator('supplyContactName', {
-                initialValue: userInfo.nickName,
+                initialValue: swOrderBaseResultVo.supplyContactName || userInfo.nickName,
               })(
                 <Input />
               )}
@@ -131,7 +133,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="手机" {...formItemRow}>
               {getFieldDecorator('supplyMobile', {
-                initialValue: userInfo.phoneNum,
+                initialValue: swOrderBaseResultVo.supplyMobile || userInfo.phoneNum,
               })(
                 <Input />
               )}
@@ -142,7 +144,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="电话" {...formItemRow}>
               {getFieldDecorator('custPhone', {
-                initialValue: curCompany.telphone,
+                initialValue: swOrderBaseResultVo.custPhone || curCompany.telphone,
               })(
                 <Input />
               )}
@@ -151,7 +153,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="传真" {...formItemRow}>
               {getFieldDecorator('custTax', {
-                initialValue: curCompany.tax,
+                initialValue: swOrderBaseResultVo.custTax || curCompany.tax,
               })(
                 <Input />
               )}
@@ -160,7 +162,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="电话" {...formItemRow}>
               {getFieldDecorator('supplyPhone', {
-                initialValue: userInfo.swCompInfoResultVo.telphone,
+                initialValue: swOrderBaseResultVo.supplyPhone || userInfo.swCompInfoResultVo.telphone,
               })(
                 <Input />
               )}
@@ -169,7 +171,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="传真" {...formItemRow}>
               {getFieldDecorator('supplyTax', {
-                initialValue: userInfo.swCompInfoResultVo.tax,
+                initialValue: swOrderBaseResultVo.supplyTax || userInfo.swCompInfoResultVo.tax,
               })(
                 <Input />
               )}
@@ -180,7 +182,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={12}>
             <FormItem label="地址" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('custAddr', {
-                initialValue: curCompany.addr,
+                initialValue: swOrderBaseResultVo.custAddr || curCompany.addr,
               })(
                 <Input />
               )}
@@ -189,7 +191,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={12}>
             <FormItem label="地址" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('supplyAddr', {
-                initialValue: userInfo.swCompInfoResultVo.addr,
+                initialValue: swOrderBaseResultVo.supplyAddr || userInfo.swCompInfoResultVo.addr,
               })(
                 <Input />
               )}
@@ -200,7 +202,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="付款方式" {...formItemRow}>
               {getFieldDecorator('payWay', {
-                initialValue: this.props.payWays[0].dictCode,
+                initialValue: swOrderBaseResultVo.payWay || this.props.payWays[0].dictCode,
               })(
                 <Select>
                   {payWayOptions}
@@ -212,6 +214,7 @@ class AdvancedSearchForm extends React.Component {
             <FormItem label="订货日期" {...formItemRow}>
               {getFieldDecorator('goodDate', {
                 rules: [{required: true, message: '请选择日期'}],
+                initialValue: moment(swOrderBaseResultVo.goodDate),
               })(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
@@ -221,6 +224,7 @@ class AdvancedSearchForm extends React.Component {
             <FormItem label="交货日期" {...formItemRow}>
               {getFieldDecorator('finishDate', {
                 rules: [{required: true, message: '请选择日期'}],
+                initialValue: moment(swOrderBaseResultVo.finishDate),
               })(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
@@ -230,7 +234,9 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={12}>
             <FormItem label="订单备注" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
-              {getFieldDecorator('memo')(
+              {getFieldDecorator('memo', {
+                initialValue: swOrderBaseResultVo.memo,
+              })(
                 <Input />
               )}
             </FormItem>
@@ -248,7 +254,7 @@ class CreateOrderPage extends React.Component {
     this.state = {
       visible: false,
       dataDetail: {},
-      data: [],
+      data: this.props.orderDetail.swORderDetailResultVos || [],
       userInfo: {
         swCompInfoResultVo: {},
       },
@@ -445,26 +451,26 @@ class CreateOrderPage extends React.Component {
 
   componentWillMount() {
     request({
-      url: '/api/sysDict/ORDER_TYPE',
+      url: `${config.APIV0}/api/sysDict/ORDER_TYPE`,
       method: 'get',
     }).then(data => this.setState({ orderTypes: data.data }));
     request({
-      url: '/api/sysDict/SALE_TYPE',
+      url: `${config.APIV0}/api/sysDict/SALE_TYPE`,
       method: 'get',
     }).then(data => this.setState({ saleTypes: data.data }));
     request({
-      url: '/api/sysDict/PAY_WAY',
+      url: `${config.APIV0}/api/sysDict/PAY_WAY`,
       method: 'get',
     }).then(data => this.setState({ payWays: data.data }));
     request({
-      url: '/api/getCurrentUser',
+      url: `${config.APIV0}/api/getCurrentUser`,
       method: 'get',
     }).then(data => this.setState({ userInfo: data.data }));
   }
 
   getList(param) {
     Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+    request({ url: `${config.APIV0}/api/formular`, method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
   }
 
   edit(key) {
@@ -583,11 +589,12 @@ class CreateOrderPage extends React.Component {
           userInfo={this.state.userInfo}
           saleTypes={this.state.saleTypes}
           search={this.getList.bind(this)}
+          swOrderBaseResultVo={this.props.orderDetail.swOrderBaseResultVo}
           orderTypes={this.state.orderTypes}
         />
         <Row>
           <Col span={6} offset="1">
-            <Button type="primary" onClick={this.addNewOrder}>新增</Button>
+            {false && <Button type="primary" onClick={this.addNewOrder}>新增</Button>}
           </Col>
         </Row>
         <Table

@@ -65,7 +65,7 @@ const fetch = (options) => {
         data: cloneData,
       }, {withCredentials: true})
     case 'post':
-      return axios.post(url, {data: formUrlencoded ? qs.stringify(cloneData) : cloneData}, {withCredentials: true})
+      return axios.post(url, formUrlencoded ? qs.stringify(cloneData) : {...cloneData}, {withCredentials: true})
     case 'put':
       return axios.put(url, {data: cloneData}, {withCredentials: true})
     case 'patch':
