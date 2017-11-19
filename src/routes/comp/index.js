@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, Form, Row, Col, Input, Button, Modal, Popconfirm, notification } from 'antd'
 import PropTypes from 'prop-types'
-import { request } from 'utils'
+import { request, config } from 'utils'
 import ModalFrom from './form'
 
 const FormItem = Form.Item;
@@ -144,12 +144,12 @@ class CompPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      query.filter = param;      
+      query.filter = param;
       this.condition = query;
     } else {
       this.condition.currPage = param;
     }
-    request({ url: '/api/comp', method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/comp`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list,
         total: data.data.total,
@@ -158,7 +158,7 @@ class CompPage extends React.Component {
   }
 
   deleteRecord(id) {
-    request({ url: `/api/comp/${id}`, method: 'delete' })
+    request({ url: `${config.APIV0}/api/comp/${id}`, method: 'delete' })
       .then((data) => {
         notification.success({ message: '操作成功', description: data.data })
         this.getList({});
@@ -166,7 +166,7 @@ class CompPage extends React.Component {
       .catch(err => console.warn(err, this));
   }
   addRecord(data) {
-    request({ url: '/api/comp', method: this.state.modify ? 'PUT' : 'POST', data })
+    request({ url: `${config.APIV0}/api/comp`, method: this.state.modify ? 'PUT' : 'POST', data })
       .then((res) => {
         this.getList({});
         this.setState({ visible: false });

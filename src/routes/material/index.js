@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, Form, Row, Col, Input, Button, Select, Modal, Popconfirm } from 'antd'
 import PropTypes from 'prop-types'
-import { request } from 'utils'
+import { request, config } from 'utils'
 import ModalFrom from './form'
 
 const FormItem = Form.Item;
@@ -146,7 +146,7 @@ class MaterialPage extends React.Component {
 
   componentWillMount() {
     request({
-      url: '/api/sysDict/MATERIAL_TYPE',
+      url: `${config.APIV0}/api/sysDict/MATERIAL_TYPE`,
       method: 'get',
     }).then(data => this.setState({ materials: data.data }));
   }
@@ -164,7 +164,7 @@ class MaterialPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: '/api/material', method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/material`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list,
         total: data.data.total,
@@ -182,11 +182,11 @@ class MaterialPage extends React.Component {
   }
 
   deleteRecord(id) {
-    request({ url: `/api/material/${id}`, method: 'DELETE' }).then(() => this.getList({}));
+    request({ url: `${config.APIV0}/api/material/${id}`, method: 'DELETE' }).then(() => this.getList({}));
   }
 
   addRecord(data) {
-    request({ url: '/api/material', method: this.state.modify ? 'PUT' : 'POST', data }).then(() => this.setState({ visible: false, dataDetail: {materialName:"随意了",materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined} }, this.getList({})));
+    request({ url: `${config.APIV0}/api/material`, method: this.state.modify ? 'PUT' : 'POST', data }).then(() => this.setState({ visible: false, dataDetail: {materialName:"随意了",materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined} }, this.getList({})));
   }
 
   render () {

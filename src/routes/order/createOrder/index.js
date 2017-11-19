@@ -1,7 +1,7 @@
 import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete } from 'antd'
 import { EditableCell } from 'components'
 import PropTypes from 'prop-types'
-import { request } from 'utils'
+import { request, config } from 'utils'
 import React from 'react'
 
 const FormItem = Form.Item;
@@ -34,7 +34,7 @@ class AdvancedSearchForm extends React.Component {
 
   searchComp = (value) => {
     request({
-      url: `/api/comp/findCompLike/${value}`,
+      url: `${config.APIV0}/api/comp/findCompLike/${value}`,
       method: 'get',
     }).then(data => this.setState({ companys: data.data || [] }));
   }
@@ -467,26 +467,26 @@ class CreateOrderPage extends React.Component {
 
   componentWillMount() {
     request({
-      url: '/api/sysDict/ORDER_TYPE',
+      url: `${config.APIV0}/api/sysDict/ORDER_TYPE`,
       method: 'get',
     }).then(data => this.setState({ orderTypes: data.data }));
     request({
-      url: '/api/sysDict/SALE_TYPE',
+      url: `${config.APIV0}/api/sysDict/SALE_TYPE`,
       method: 'get',
     }).then(data => this.setState({ saleTypes: data.data }));
     request({
-      url: '/api/sysDict/PAY_WAY',
+      url: `${config.APIV0}/api/sysDict/PAY_WAY`,
       method: 'get',
     }).then(data => this.setState({ payWays: data.data }));
     request({
-      url: '/api/getCurrentUser',
+      url: `${config.APIV0}/api/getCurrentUser`,
       method: 'get',
     }).then(data => this.setState({ userInfo: data.data }));
   }
 
   getList(param) {
     Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: '/api/formular', method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+    request({ url: `${config.APIV0}/api/formular`, method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
   }
 
   edit(key) {
@@ -587,7 +587,7 @@ class CreateOrderPage extends React.Component {
 
   handleSubmit = (formValue) => {
     request({
-      url: '/api/order',
+      url: `${config.APIV0}/api/order`,
       method: 'POST',
       data: {
         swOrderBaseVo: formValue,

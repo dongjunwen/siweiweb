@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, Form, Row, Col, Input, Button, Modal, Popconfirm, notification, Select } from 'antd'
 import PropTypes from 'prop-types'
-import { request } from 'utils'
+import { request, config } from 'utils'
 import ModalFrom from './form'
 
 const FormItem = Form.Item;
@@ -129,7 +129,7 @@ class FormularPage extends React.Component {
 
   componentWillMount() {
     request({
-      url: '/api/sysDict/FORMULAR_TYPE',
+      url: `${config.APIV0}/api/sysDict/FORMULAR_TYPE`,
       method: 'get',
     }).then(data => this.setState({ sysDicts: data.data }));
     this.getList({});
@@ -153,7 +153,7 @@ class FormularPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: '/api/formular', method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/formular`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list,
         total: data.data.total,
@@ -162,7 +162,7 @@ class FormularPage extends React.Component {
   }
 
   deleteRecord(id) {
-    request({ url: `/api/formular/${id}`, method: 'delete' })
+    request({ url: `${config.APIV0}/api/formular/${id}`, method: 'delete' })
       .then((data) => {
         this.getList({});
         notification.success({ message: '操作成功', description: data.data });
@@ -171,7 +171,7 @@ class FormularPage extends React.Component {
   }
 
   addRecord(data) {
-    request({ url: '/api/formular', method: this.state.modify ? 'PUT' : 'POST', data })
+    request({ url: `${config.APIV0}/api/formular`, method: this.state.modify ? 'PUT' : 'POST', data })
       .then(() => this.setState({ visible: false }, this.getList({})));
   }
 

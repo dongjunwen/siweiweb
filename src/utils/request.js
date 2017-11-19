@@ -61,15 +61,13 @@ const fetch = (options) => {
         withCredentials: true,
       })
     case 'delete':
-      return axios.delete(url, {
-        data: cloneData,
-      }, {withCredentials: true})
+      return axios.delete(url, {params: cloneData, withCredentials: true})
     case 'post':
       return axios.post(url, formUrlencoded ? qs.stringify(cloneData) : {...cloneData}, {withCredentials: true})
     case 'put':
-      return axios.put(url, {data: cloneData}, {withCredentials: true})
+      return axios.put(url, {...cloneData}, {withCredentials: true})
     case 'patch':
-      return axios.patch(url, {data: cloneData}, {withCredentials: true})
+      return axios.patch(url, {...cloneData}, {withCredentials: true})
     default:
       return axios(options)
   }
