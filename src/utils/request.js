@@ -101,6 +101,12 @@ export default function request (options) {
       statusCode: status,
       ...data,
     })
+  }).then(res => {
+    if (res.code !== '200') {
+      throw new Error(res.message);
+    } else {
+      return res;
+    }
   }).catch((error) => {
     const { response } = error
     let msg

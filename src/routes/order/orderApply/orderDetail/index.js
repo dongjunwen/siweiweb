@@ -475,22 +475,19 @@ class CreateOrderPage extends React.Component {
   }
 
   componentWillMount() {
-    request({
-      url: `${config.APIV0}/api/sysDict/ORDER_TYPE`,
-      method: 'get',
-    }).then(data => this.setState({ orderTypes: data.data }));
-    request({
-      url: `${config.APIV0}/api/sysDict/SALE_TYPE`,
-      method: 'get',
-    }).then(data => this.setState({ saleTypes: data.data }));
-    request({
-      url: `${config.APIV0}/api/sysDict/PAY_WAY`,
-      method: 'get',
-    }).then(data => this.setState({ payWays: data.data }));
-    request({
-      url: `${config.APIV0}/api/getCurrentUser`,
-      method: 'get',
-    }).then(data => this.setState({ userInfo: data.data }));
+    Promise.all([
+      request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
+      request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
+      request({url: `${config.APIV0}/api/sysDict/PAY_WAY`}),
+      request({url: `${config.APIV0}/api/getCurrentUser`}),
+    ]).then((res) => {
+      this.setState({
+        orderTypes: res[0].data,
+        saleTypes: res[1].data,
+        payWays: res[2].data,
+        userInfo: res[3].data,
+      });
+    });
   }
 
   getList(param) {
@@ -604,19 +601,17 @@ class CreateOrderPage extends React.Component {
         swOrderBaseModiVo: formValue,
         swOrderDetailVos: this.state.data,
       },
-    })
-      .then((res) => {
-        notification.success({
-          message: '操作成功',
-          description: res.data,
-        })
+    }).then((res) => {
+      notification.success({
+        message: '操作成功',
+        description: res.data,
       })
-      .catch((err) => {
-        notification.error({
-          message: '操作失败',
-          description: err.message,
-        })
-      });
+    }).catch((err) => {
+      notification.error({
+        message: '操作失败',
+        description: err.message,
+      })
+    });
   }
 
   renderColumns(text, record, column, type = 'input') {
