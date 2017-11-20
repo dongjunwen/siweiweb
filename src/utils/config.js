@@ -1,4 +1,4 @@
-const APIV0 = 'http://192.168.0.105:8082'
+const APIV0 = 'http://127.0.0.1:8082'
 // const APIV0 = ''
 const APIV1 = '/api/v1'
 const APIV2 = '/api/v2'
