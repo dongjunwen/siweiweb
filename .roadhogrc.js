@@ -7,7 +7,7 @@ const svgSpriteDirs = [
 ]
 
 export default {
-  entry: 'src/index.js',
+  entry: './src/index.js',
   svgSpriteLoaderDirs: svgSpriteDirs,
   theme: "./theme.config.js",
   publicPath: `./${version}/`,
@@ -19,11 +19,11 @@ export default {
       "changeOrigin": true,
       "pathRewrite": { "^/api/v1/weather": "/v3/weather" }
     },
-    "/login": {
-      "target": "//127.0.0.1:8082/login",
-      "changeOrigin": true,
-      "pathRewrite": { "^/api/v2" : "/api/v2" }
-    }
+    // "/login": {
+    //   "target": "//127.0.0.1:8082/login",
+    //   "changeOrigin": true,
+    //   "pathRewrite": { "^/api/v2" : "/api/v2" }
+    // }
   },
   env: {
     development: {

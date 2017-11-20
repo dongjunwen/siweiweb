@@ -69,13 +69,13 @@ export default {
       const { locationPathname } = yield select(_ => _.app)
       if (success && code !== '510') {
         const user = { permissions: { role: 'admin' }, username: 'admin', id: 0 }
-        const { list } = yield call(menusService.query)
+        const { data } = yield call(menusService.query)
         const { permissions } = user
-        let menu = list
+        let menu = data
         if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
-          permissions.visit = list.map(item => item.id)
+          permissions.visit = data.map(item => item.id)
         } else {
-          menu = list.filter((item) => {
+          menu = data.filter((item) => {
             const cases = [
               permissions.visit.includes(item.id),
               item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true,
