@@ -171,12 +171,15 @@ class FormularPage extends React.Component {
         this.getList({});
         notification.success({ message: '操作成功', description: data.data });
       })
-      .catch(err => console.warn(err, this));
+      .catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   addRecord(data) {
     request({ url: `${config.APIV0}/api/formular`, method: this.state.modify ? 'PUT' : 'POST', data })
-      .then(() => this.setState({ visible: false }, this.getList({})));
+      .then(() => {
+        this.setState({ visible: false });
+        this.getList({})
+      }).catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   render () {

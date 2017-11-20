@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, Popconfirm } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Modal, Popconfirm, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 import ModalFrom from './form'
@@ -182,11 +182,28 @@ class MaterialPage extends React.Component {
   }
 
   deleteRecord(id) {
-    request({ url: `${config.APIV0}/api/material/${id}`, method: 'DELETE' }).then(() => this.getList({}));
+    request({ url: `${config.APIV0}/api/material/${id}`, method: 'DELETE' })
+      .then(() => this.getList({}))
+      .catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   addRecord(data) {
-    request({ url: `${config.APIV0}/api/material`, method: this.state.modify ? 'PUT' : 'POST', data }).then(() => this.setState({ visible: false, dataDetail: {materialName:"随意了",materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined} }, this.getList({})));
+    request({
+      url: `${config.APIV0}/api/material`,
+      method: this.state.modify ? 'PUT' : 'POST',
+      data
+    }).then(() => {
+      this.setState({
+        visible: false,
+        dataDetail: {materialName:undefined,materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined}
+      });
+      this.getList({});
+    }).catch(err => {
+      notification.error({
+        message: '操作失败',
+        description: err.message,
+      })
+    })
   }
 
   render () {
