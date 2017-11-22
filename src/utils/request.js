@@ -102,7 +102,7 @@ export default function request (options) {
       ...data,
     })
   }).then(res => {
-    if (res.code !== '200') {
+    if (res.code !== '200' && res.code !== '510') {
       throw new Error(res.message);
     } else {
       return res;
