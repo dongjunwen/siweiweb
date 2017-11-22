@@ -103,7 +103,8 @@ export default function request (options) {
     })
   }).then(res => {
     if (res.code !== '200' && res.code !== '510') {
-      throw new Error(res.message);
+      // throw new Error(res.message);
+      return Promise.reject({ success: false, statusCode: Number(res.code), code: res.code, message: res.message })
     } else {
       return res;
     }

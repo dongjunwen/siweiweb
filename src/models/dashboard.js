@@ -31,8 +31,9 @@ export default modelExtend(model, {
     setup ({ dispatch, history }) {
       history.listen(({ pathname }) => {
         if (pathname === '/dashboard' || pathname === '/') {
-          dispatch({ type: 'query' })
-          dispatch({ type: 'queryWeather' })
+          // 关闭管理面板初始网络请求
+          // dispatch({ type: 'query' })
+          // dispatch({ type: 'queryWeather' })
         }
       })
     },
