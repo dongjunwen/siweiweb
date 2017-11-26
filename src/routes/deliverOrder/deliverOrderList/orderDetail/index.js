@@ -1,7 +1,8 @@
 import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Checkbox, Radio } from 'antd'
 import { EditableCell } from 'components'
-import PropTypes from 'prop-types'
 import { request, config } from 'utils'
+import PropTypes from 'prop-types'
+import moment from 'moment'
 import React from 'react'
 
 const FormItem = Form.Item;
@@ -63,7 +64,7 @@ class AdvancedSearchForm extends React.Component {
   }
 
   render() {
-    const {form: {getFieldDecorator}, userInfo} = this.props;
+    const {form: {getFieldDecorator}, swDeliverBaseResutVo, userInfo, readonly} = this.props;
     const {curCompany, companys} = this.state;
     const orderOptions = this.props.deliverWays.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const saleOptions = this.props.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
@@ -75,31 +76,34 @@ class AdvancedSearchForm extends React.Component {
         onSubmit={this.handleSearch.bind(this)}
       >
         <Row>
-          {false && <Col span={6}>
+          <Col span={6}>
             <FormItem label="发货单号" {...formItemRow}>
-              {getFieldDecorator('deilverNo')(
+              {getFieldDecorator('deilverNo', {
+                initialValue: swDeliverBaseResutVo.deilverNo,
+              })(
                 <Input />
               )}
             </FormItem>
-          </Col>}
+          </Col>
           <Col span={6}>
             <FormItem label="预发货日期" {...formItemRow}>
               {getFieldDecorator('deilverDate', {
                 rules: [{required: true, message: '请选择日期'}],
+                initialValue: moment(swDeliverBaseResutVo.deilverDate),
               })(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
             </FormItem>
           </Col>
           <Col span={6} offset={2}>
-            <Button type="primary" onClick={this.handleSubmit}>保存</Button>
+            {!readonly && <Button type="primary" onClick={this.handleSubmit}>保存</Button>}
           </Col>
         </Row>
         <Row>
           <Col span={6}>
             <FormItem label="货运方式" {...formItemRow}>
               {getFieldDecorator('deilverWay', {
-                initialValue: this.props.deliverWays[0].dictCode,
+                initialValue: swDeliverBaseResutVo.deilverWay && this.props.deliverWays[0].dictCode,
               })(
                 <Select>
                   {orderOptions}
@@ -110,6 +114,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="发货人" {...formItemRow}>
               {getFieldDecorator('sendName', {
+                initialValue: swDeliverBaseResutVo.sendName,
               })(
                 <Input />
               )}
@@ -119,9 +124,9 @@ class AdvancedSearchForm extends React.Component {
             <FormItem label="是否保价" {...formItemRow}>
               {getFieldDecorator('ifGurant', {
                 valuePropName: 'checked',
-                initialValue: 'N',
+                initialValue: swDeliverBaseResutVo.ifGurant || 'N',
               })(
-                <RadioGroup defaultValue="N">
+                <RadioGroup defaultValue={swDeliverBaseResutVo.ifGurant || 'N'}>
                   <Radio value="Y">是</Radio>
                   <Radio value="N">否</Radio>
                 </RadioGroup>
@@ -134,6 +139,7 @@ class AdvancedSearchForm extends React.Component {
             <FormItem label="客户" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('custCompName', {
                 rules: [{required: true, message: '请选择或输入客户信息'}],
+                initialValue: swDeliverBaseResutVo.custCompName,
               })(
                 <AutoComplete dataSource={companys.map(comp => `${comp.compNo} ${comp.compName}`)} onSearch={this.searchComp} onSelect={this.selectComp} />
               )}
@@ -144,7 +150,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="联系人" {...formItemRow}>
               {getFieldDecorator('custContactName', {
-                initialValue: curCompany.contactName,
+                initialValue: swDeliverBaseResutVo.custContactName || curCompany.contactName,
               })(
                 <Input />
               )}
@@ -153,7 +159,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="手机" {...formItemRow}>
               {getFieldDecorator('custMobile', {
-                initialValue: curCompany.mobile,
+                initialValue: swDeliverBaseResutVo.custMobile || curCompany.mobile,
               })(
                 <Input />
               )}
@@ -164,7 +170,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="电话" {...formItemRow}>
               {getFieldDecorator('custPhone', {
-                initialValue: curCompany.telphone,
+                initialValue: swDeliverBaseResutVo.custPhone || curCompany.telphone,
               })(
                 <Input />
               )}
@@ -173,7 +179,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={6}>
             <FormItem label="传真" {...formItemRow}>
               {getFieldDecorator('custTax', {
-                initialValue: curCompany.tax,
+                initialValue: swDeliverBaseResutVo.custTax || curCompany.tax,
               })(
                 <Input />
               )}
@@ -184,7 +190,7 @@ class AdvancedSearchForm extends React.Component {
           <Col span={12}>
             <FormItem label="地址" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
               {getFieldDecorator('custAddr', {
-                initialValue: curCompany.addr,
+                initialValue: swDeliverBaseResutVo.custAddr || curCompany.addr,
               })(
                 <Input />
               )}
@@ -194,22 +200,12 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={12}>
             <FormItem label="备注" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
-              {getFieldDecorator('memo')(
+              {getFieldDecorator('memo', {
+                initialValue: swDeliverBaseResutVo.memo,
+              })(
                 <Input />
               )}
             </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={6}>
-            <FormItem label="订单号" {...formItemRow}>
-              {getFieldDecorator('orderNo')(
-                <Input />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6} offset={1}>
-            <Button type="primary" onClick={() => this.props.form.getFieldValue('orderNo') && this.props.searchOrder(this.props.form.getFieldValue('orderNo'))}>通过订单号自动生成</Button>
           </Col>
         </Row>
       </Form>
@@ -224,7 +220,7 @@ class CreateOrderPage extends React.Component {
     this.state = {
       visible: false,
       dataDetail: {},
-      data: [],
+      data: this.props.orderDetail.swDeliverDetailResutVos || [],
       userInfo: {
         swCompInfoResultVo: {},
       },
@@ -293,7 +289,9 @@ class CreateOrderPage extends React.Component {
         title: '备注',
         dataIndex: 'memo',
       },
-      {
+    ];
+    if (!this.props.readonly) {
+      this.columns.push({
         title: '操作',
         fixed: 'right',
         dataIndex: 'action',
@@ -306,8 +304,8 @@ class CreateOrderPage extends React.Component {
         >
           <a>删除</a>
         </Popconfirm>,
-      },
-    ];
+      });
+    }
   }
 
   componentWillMount() {
@@ -424,7 +422,7 @@ class CreateOrderPage extends React.Component {
   handleSubmit = (formValue) => {
     request({
       url: `${config.APIV0}/api/deliver`,
-      method: 'POST',
+      method: formValue.deilverNo ? 'PUT' : 'POST',
       data: {
         swDeliverBaseVo: formValue,
         swDeliverDetailVoList: this.state.data,
@@ -455,27 +453,19 @@ class CreateOrderPage extends React.Component {
     );
   }
 
-  searchOrder = (orderNo = '') => {
-    request({
-      url: `${config.APIV0}/api/order/${orderNo.trim()}`,
-      method: 'get',
-    }).then(res => {
-      const {data} = this.state;
-      this.setState({ data: data.concat(res.data.swORderDetailResultVos || []) });
-    }).catch(err => notification.error({message: '查询失败', description: err.message}));
-  }
-
   render () {
+    const {readOnly} = this.props;
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm
+          readOnly={readOnly}
           payWays={this.state.payWays}
           userInfo={this.state.userInfo}
           saleTypes={this.state.saleTypes}
           search={this.getList.bind(this)}
           deliverWays={this.state.deliverWays}
           handleSubmit={this.handleSubmit}
-          searchOrder={this.searchOrder}
+          swDeliverBaseResutVo={this.props.orderDetail.swDeliverBaseResutVo}
         />
         <Table
           bordered

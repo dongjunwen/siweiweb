@@ -47,6 +47,15 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/deliverCreate',
       component: () => import('./routes/deliverOrder/createOrder/'),
+    }, {
+      path: '/deliverApply',
+      component: () => import('./routes/deliverOrder/deliverApply/'),
+    }, {
+      path: '/deliverAudit',
+      component: () => import('./routes/deliverOrder/deliverAudit/'),
+    }, {
+      path: '/deliverList',
+      component: () => import('./routes/deliverOrder/deliverOrderList/'),
     },
   ]
 
