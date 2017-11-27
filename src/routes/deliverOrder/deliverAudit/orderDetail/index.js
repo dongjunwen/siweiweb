@@ -96,7 +96,7 @@ class AdvancedSearchForm extends React.Component {
             </FormItem>
           </Col>
           <Col span={6} offset={2}>
-            {!readonly && <Button type="primary" onClick={this.handleSubmit}>保存</Button>}
+            {!true && <Button type="primary" onClick={this.handleSubmit}>保存</Button>}
           </Col>
         </Row>
         <Row>
@@ -247,7 +247,7 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '箱号',
-        dataIndex: 'id',
+        dataIndex: 'boxNo',
       },
       {
         title: '品名',
@@ -290,7 +290,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'memo',
       },
     ];
-    if (!this.props.readonly) {
+    if (!true) {
       this.columns.push({
         title: '操作',
         fixed: 'right',

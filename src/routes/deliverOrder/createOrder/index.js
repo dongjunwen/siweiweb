@@ -251,7 +251,7 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '箱号',
-        dataIndex: 'id',
+        dataIndex: 'boxNo',
       },
       {
         title: '品名',

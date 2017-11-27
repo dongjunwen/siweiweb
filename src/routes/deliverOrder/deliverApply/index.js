@@ -182,7 +182,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      // param.deliverStatus = 'WAIT_APPLY';
+      param.deliverStatus = 'WAIT_APPLY';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;

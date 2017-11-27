@@ -157,7 +157,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '最后审批人',
-        dataIndex: 'modiNo',
+        dataIndex: 'modiName',
       },
       {
         title: '审批意见',
@@ -213,12 +213,12 @@ class OrderListPage extends React.Component {
 
   auditOrders(action, status) {
     request({
-      url: `${config.APIV0}/api/order/audit`,
+      url: `${config.APIV0}/api/deliver/audit`,
       method: 'POST',
       data: {
         auditAction: action,
         auditDesc: this.state.rejectReason,
-        orderNos: this.state.selectedRowKeys,
+        deliverNos: this.state.selectedRowKeys,
         deliverStatus: status,
       },
     }).then((res) => {
@@ -239,7 +239,11 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, reasonVisible} = this.state;
+    const {visible, orderDetail, reasonVisible, selectedRowKeys} = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
 
     return (
       <div className="content-inner">
@@ -252,6 +256,7 @@ class OrderListPage extends React.Component {
         <Table
           bordered
           columns={this.columns}
+          rowSelection={rowSelection}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
           rowKey={(record, key) => record.deilverNo}
@@ -268,11 +273,12 @@ class OrderListPage extends React.Component {
           <OrderDetailPage orderDetail={orderDetail} readOnly />
         </Modal>
         <Modal
+          title="拒绝发货单"
           visible={reasonVisible}
           onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
-          onCancel={() => this.setState({reasonVisible, rejectReason: undefined})}
+          onCancel={() => this.setState({reasonVisible: false, rejectReason: undefined})}
         >
-          <Input placeholder="请输入拒绝理由" />
+          <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入拒绝理由" />
         </Modal>
       </div>
     )

@@ -157,7 +157,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '最后审批人',
-        dataIndex: 'modiNo',
+        dataIndex: 'modiName',
       },
       {
         title: '审批意见',
