@@ -149,7 +149,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '单据状态',
-        dataIndex: 'deliverStatus',
+        dataIndex: 'deliverStatusName',
       },
       {
         title: '操作人',

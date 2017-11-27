@@ -182,7 +182,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      param.deliverStatus = 'WAIT_APPLY';
+      param.deliverStatus = 'WAIT_AUDIT';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -239,7 +239,7 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, selectedRowKeys, reasonVisible} = this.state;
+    const {visible, orderDetail, reasonVisible, selectedRowKeys} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -250,8 +250,8 @@ class OrderListPage extends React.Component {
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         {this.state.selectedRowKeys.length > 0 && <div>
-          <Button type="primary" onClick={() => this.auditOrders('APPLY', 'WAIT_APPLY')}>申请发货</Button>&emsp;
-          <Button type="primary" onClick={() => this.auditOrders('CANCEL', 'WAIT_APPLY')}>作废</Button>&emsp;
+          <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'WAIT_AUDIT')}>初审通过</Button>&emsp;
+          <Button type="primary" onClick={() => this.setState({reasonVisible: true})}>拒绝</Button>
         </div>}
         <Table
           bordered
@@ -270,12 +270,12 @@ class OrderListPage extends React.Component {
           onCancel={() => this.setState({visible: false})}
           footer={[<Button type="primary" key="cancel" size="large" onClick={() => this.setState({visible: false})}>关闭</Button>]}
         >
-          <OrderDetailPage orderDetail={orderDetail} readOnly={false} />
+          <OrderDetailPage orderDetail={orderDetail} readOnly />
         </Modal>
         <Modal
           title="拒绝发货单"
           visible={reasonVisible}
-          onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
+          onOk={() => this.auditOrders('AUDIT_REFUSE', 'WAIT_AUDIT')}
           onCancel={() => this.setState({reasonVisible: false, rejectReason: undefined})}
         >
           <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入拒绝理由" />
