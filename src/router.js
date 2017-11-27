@@ -51,6 +51,9 @@ const Routers = function ({ history, app }) {
       path: '/deliverApply',
       component: () => import('./routes/deliverOrder/deliverApply/'),
     }, {
+      path: '/deliverAudit01',
+      component: () => import('./routes/deliverOrder/deliverAudit01/'),
+    }, {
       path: '/deliverAudit',
       component: () => import('./routes/deliverOrder/deliverAudit/'),
     }, {
