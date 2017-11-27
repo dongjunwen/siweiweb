@@ -57,7 +57,7 @@ class AdvancedSearchForm extends React.Component {
       // Should format date value before submit.
       const values = {
         ...fieldsValue,
-        deilverDate: fieldsValue.deilverDate && fieldsValue.deilverDate.format('YYYY-MM-DD'),
+        deliverDate: fieldsValue.deliverDate && fieldsValue.deliverDate.format('YYYY-MM-DD'),
       };
       this.props.handleSubmit(values);
     });
@@ -78,8 +78,8 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="发货单号" {...formItemRow}>
-              {getFieldDecorator('deilverNo', {
-                initialValue: swDeliverBaseResutVo.deilverNo,
+              {getFieldDecorator('deliverNo', {
+                initialValue: swDeliverBaseResutVo.deliverNo,
               })(
                 <Input />
               )}
@@ -87,9 +87,9 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="预发货日期" {...formItemRow}>
-              {getFieldDecorator('deilverDate', {
+              {getFieldDecorator('deliverDate', {
                 rules: [{required: true, message: '请选择日期'}],
-                initialValue: moment(swDeliverBaseResutVo.deilverDate),
+                initialValue: moment(swDeliverBaseResutVo.deliverDate),
               })(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
@@ -102,8 +102,8 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="货运方式" {...formItemRow}>
-              {getFieldDecorator('deilverWay', {
-                initialValue: swDeliverBaseResutVo.deilverWay && this.props.deliverWays[0].dictCode,
+              {getFieldDecorator('deliverWay', {
+                initialValue: swDeliverBaseResutVo.deliverWay && this.props.deliverWays[0].dictCode,
               })(
                 <Select>
                   {orderOptions}
@@ -422,7 +422,7 @@ class CreateOrderPage extends React.Component {
   handleSubmit = (formValue) => {
     request({
       url: `${config.APIV0}/api/deliver`,
-      method: formValue.deilverNo ? 'PUT' : 'POST',
+      method: formValue.deliverNo ? 'PUT' : 'POST',
       data: {
         swDeliverBaseVo: formValue,
         swDeliverDetailVoList: this.state.data,
