@@ -24,7 +24,7 @@ class AdvancedSearchForm extends React.Component {
     Promise.all([
       request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
       request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/DEILVER_STATUS`}),
+      request({url: `${config.APIV0}/api/sysDict/DELIVER_STATUS`}),
     ]).then((res) => {
       this.setState({
         orderTypes: res[0].data,
@@ -85,7 +85,7 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="发货单号" {...formItemRow}>
-              {getFieldDecorator('deilverNo')(
+              {getFieldDecorator('deliverNo')(
                 <Input />
               )}
             </FormItem>
@@ -101,7 +101,7 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="单据状态" {...formItemRow}>
-              {getFieldDecorator('deilverStatus', {
+              {getFieldDecorator('deliverStatus', {
                 initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
               })(
                 <Select>
@@ -141,15 +141,15 @@ class OrderListPage extends React.Component {
       },
       {
         title: '发货单号',
-        dataIndex: 'deilverNo',
+        dataIndex: 'deliverNo',
       },
       {
         title: '预发货日期',
-        dataIndex: 'deilverDate',
+        dataIndex: 'deliverDate',
       },
       {
         title: '单据状态',
-        dataIndex: 'deilverStatus',
+        dataIndex: 'deliverStatus',
       },
       {
         title: '操作人',
@@ -167,7 +167,7 @@ class OrderListPage extends React.Component {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
-          <a onClick={() => this.getOrderDetail(record.deilverNo)}>查看详情</a>
+          <a onClick={() => this.getOrderDetail(record.deliverNo)}>查看详情</a>
         </div>),
       },
     ];
@@ -199,9 +199,9 @@ class OrderListPage extends React.Component {
       }));
   }
 
-  getOrderDetail(deilverNo) {
+  getOrderDetail(deliverNo) {
     request({
-      url: `${config.APIV0}/api/deliver/${deilverNo}`,
+      url: `${config.APIV0}/api/deliver/${deliverNo}`,
     }).then((res) => {
       this.setState({
         visible: true,
@@ -255,7 +255,7 @@ class OrderListPage extends React.Component {
           columns={this.columns}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={(record, key) => record.deilverNo}
+          rowKey={(record, key) => record.deliverNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal

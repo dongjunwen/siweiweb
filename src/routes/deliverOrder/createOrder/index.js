@@ -56,7 +56,7 @@ class AdvancedSearchForm extends React.Component {
       // Should format date value before submit.
       const values = {
         ...fieldsValue,
-        deilverDate: fieldsValue.deilverDate && fieldsValue.deilverDate.format('YYYY-MM-DD'),
+        deliverDate: fieldsValue.deliverDate && fieldsValue.deliverDate.format('YYYY-MM-DD'),
       };
       this.props.handleSubmit(values);
     });
@@ -77,14 +77,14 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           {false && <Col span={6}>
             <FormItem label="发货单号" {...formItemRow}>
-              {getFieldDecorator('deilverNo')(
+              {getFieldDecorator('deliverNo')(
                 <Input />
               )}
             </FormItem>
           </Col>}
           <Col span={6}>
             <FormItem label="预发货日期" {...formItemRow}>
-              {getFieldDecorator('deilverDate', {
+              {getFieldDecorator('deliverDate', {
                 rules: [{required: true, message: '请选择日期'}],
               })(
                 <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
@@ -98,7 +98,7 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="货运方式" {...formItemRow}>
-              {getFieldDecorator('deilverWay', {
+              {getFieldDecorator('deliverWay', {
                 initialValue: this.props.deliverWays[0].dictCode,
               })(
                 <Select>
