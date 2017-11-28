@@ -14,22 +14,16 @@ class AdvancedSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      orderTypes: [{dictCode: 'code', dictDesc: ''}],
-      saleTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
     };
   }
 
   componentWillMount() {
     Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
       request({url: `${config.APIV0}/api/sysDict/DELIVER_STATUS`}),
     ]).then((res) => {
       this.setState({
-        orderTypes: res[0].data,
-        saleTypes: res[1].data,
-        statusTypes: res[2].data,
+        statusTypes: res[0].data,
       });
     }).catch((err) => {
       notification.error({
@@ -57,8 +51,6 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const saleOptions = this.state.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const statusOptions = this.state.statusTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
@@ -229,6 +221,7 @@ class OrderListPage extends React.Component {
       this.getList({});
       this.setState({
         selectedRowKeys: [],
+        reasonVisible: false,
       })
     }).catch((err) => {
       notification.error({
@@ -239,7 +232,7 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, reasonVisible, selectedRowKeys} = this.state;
+    const {visible, orderDetail, reasonVisible, selectedRowKeys, rejectReason} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -276,9 +269,9 @@ class OrderListPage extends React.Component {
           title="拒绝发货单"
           visible={reasonVisible}
           onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
-          onCancel={() => this.setState({reasonVisible: false, rejectReason: undefined})}
+          onCancel={() => this.setState({reasonVisible: false, rejectReason: ''})}
         >
-          <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入拒绝理由" />
+          <Input.TextArea autosize={{ minRows: 3 }} value={rejectReason} onChange={e => this.setState({rejectReason: e.target.value})} placeholder="请输入拒绝理由" />
         </Modal>
       </div>
     )

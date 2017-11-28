@@ -291,7 +291,7 @@ class OrderListPage extends React.Component {
           onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
           onCancel={() => this.setState({reasonVisible: false, rejectReason: undefined})}
         >
-          <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入拒绝理由" />
+          <Input.TextArea autosize={{ minRows: 3 }} value={rejectReason} onChange={e => this.setState({rejectReason: e.target.value})} placeholder="请输入拒绝理由" />
         </Modal>
       </div>
     )

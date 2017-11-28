@@ -67,8 +67,6 @@ class AdvancedSearchForm extends React.Component {
     const {form: {getFieldDecorator}, swDeliverBaseResutVo, userInfo, readOnly} = this.props;
     const {curCompany, companys} = this.state;
     const orderOptions = this.props.deliverWays.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const saleOptions = this.props.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const payWayOptions = this.props.payWays.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
       <Form
@@ -225,8 +223,6 @@ class CreateOrderPage extends React.Component {
         swCompInfoResultVo: {},
       },
       deliverWays: [{dictCode: 'code', dictDesc: ''}],
-      saleTypes: [{dictCode: 'code', dictDesc: ''}],
-      payWays: [{dictCode: 'code', dictDesc: ''}],
       currIndex: '0',
     };
     this.cacheData = this.state.data.map(item => ({ ...item }));
@@ -311,15 +307,11 @@ class CreateOrderPage extends React.Component {
   componentWillMount() {
     Promise.all([
       request({url: `${config.APIV0}/api/sysDict/DELIVER_WAY`}),
-      request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/PAY_WAY`}),
       request({url: `${config.APIV0}/api/getCurrentUser`}),
     ]).then((res) => {
       this.setState({
         deliverWays: res[0].data,
-        saleTypes: res[1].data,
-        payWays: res[2].data,
-        userInfo: res[3].data,
+        userInfo: res[1].data,
       });
     });
   }
@@ -460,9 +452,7 @@ class CreateOrderPage extends React.Component {
       <div className="content-inner">
         <WrappedAdvancedSearchForm
           readOnly={readOnly}
-          payWays={this.state.payWays}
           userInfo={this.state.userInfo}
-          saleTypes={this.state.saleTypes}
           search={this.getList.bind(this)}
           deliverWays={this.state.deliverWays}
           handleSubmit={this.handleSubmit}
