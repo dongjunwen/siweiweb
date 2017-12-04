@@ -453,6 +453,7 @@ class CreateOrderPage extends React.Component {
       this.columns.push({
         title: '操作',
         fixed: 'right',
+        width: 100,
         dataIndex: 'action',
         render: (data, record) => {
           const { editable } = record;
