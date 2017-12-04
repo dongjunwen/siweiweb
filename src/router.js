@@ -62,6 +62,15 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/purchaseCreate',
       component: () => import('./routes/purchase/purchaseCreate/'),
+    }, {
+      path: '/purchaseApply',
+      component: () => import('./routes/purchase/purchaseApply/'),
+    }, {
+      path: '/purchaseAudit',
+      component: () => import('./routes/purchase/purchaseAudit/'),
+    }, {
+      path: '/purchaseQuery',
+      component: () => import('./routes/purchase/purchaseList/'),
     },
   ]
 
