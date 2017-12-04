@@ -1,8 +1,9 @@
-import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Checkbox, Radio } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Checkbox, Radio, message, Modal } from 'antd'
 import { EditableCell } from 'components'
-import PropTypes from 'prop-types'
 import { request, config } from 'utils'
+import PropTypes from 'prop-types'
 import React from 'react'
+import OrderListPage from './form'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -201,6 +202,17 @@ class AdvancedSearchForm extends React.Component {
           </Col>
         </Row>
         <Row>
+          <Col span={3}>
+            <Button type="primary" onClick={() => {
+              this.props.form.validateFields(['custCompName'], (err, value) => {
+                if(err) {
+                  message.error(err.custCompName.errors[0].message);
+                } else {
+                  this.props.openSearch(this.props.form.getFieldValue('custCompName').trim().split(/\s+/)[0]);
+                }
+              })
+            }}>搜索订单</Button>
+          </Col>
           <Col span={6}>
             <FormItem label="订单号" {...formItemRow}>
               {getFieldDecorator('orderNo')(
@@ -232,6 +244,7 @@ class CreateOrderPage extends React.Component {
       saleTypes: [{dictCode: 'code', dictDesc: ''}],
       payWays: [{dictCode: 'code', dictDesc: ''}],
       currIndex: '0',
+      custCompNo: '',
     };
     this.cacheData = this.state.data.map(item => ({ ...item }));
 
@@ -465,7 +478,17 @@ class CreateOrderPage extends React.Component {
     }).catch(err => notification.error({message: '查询失败', description: err.message}));
   }
 
+  selectOrders = (selectedRows) => {
+    const {data} = this.state;
+    this.setState({
+      visible: false,
+      data: data.concat(selectedRows),
+    });
+  }
+
   render () {
+    const {custCompNo} = this.state;
+
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm
@@ -476,6 +499,7 @@ class CreateOrderPage extends React.Component {
           deliverWays={this.state.deliverWays}
           handleSubmit={this.handleSubmit}
           searchOrder={this.searchOrder}
+          openSearch={(custCompNo) => this.setState({visible: true, custCompNo})}
         />
         <Table
           bordered
@@ -486,6 +510,15 @@ class CreateOrderPage extends React.Component {
           style={{ margin: '16px 0' }}
           rowKey={(record, key) => key}
         />
+        <Modal
+          width="1000px"
+          title="选择订单号"
+          visible={this.state.visible}
+          onCancel={() => this.setState({visible: false})}
+          footer={null}
+        >
+          <OrderListPage custCompNo={custCompNo} selectOrders={this.selectOrders} />
+        </Modal>
       </div>
     )
   }

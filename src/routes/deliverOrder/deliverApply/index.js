@@ -14,22 +14,16 @@ class AdvancedSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      orderTypes: [{dictCode: 'code', dictDesc: ''}],
-      saleTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
     };
   }
 
   componentWillMount() {
     Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
       request({url: `${config.APIV0}/api/sysDict/DELIVER_STATUS`}),
     ]).then((res) => {
       this.setState({
-        orderTypes: res[0].data,
-        saleTypes: res[1].data,
-        statusTypes: res[2].data,
+        statusTypes: res[0].data,
       });
     }).catch((err) => {
       notification.error({
@@ -57,8 +51,6 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const saleOptions = this.state.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const statusOptions = this.state.statusTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
