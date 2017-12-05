@@ -92,7 +92,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="客户名称" {...formItemRow}>
-              {getFieldDecorator('custContactName')(
+              {getFieldDecorator('supplyCompName')(
                 <Input />
               )}
             </FormItem>
@@ -165,7 +165,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      // param.purStatus = 'WAIT_APPLY';
+      param.purStatus = 'WAIT_APPLY';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -199,10 +199,12 @@ class OrderListPage extends React.Component {
       url: `${config.APIV0}/api/purchase/audit`,
       method: 'POST',
       data: {
+        auditUserNo: '',
+        auditUserName: '',
         auditAction: action,
         auditDesc: this.state.rejectReason,
         orderNos: this.state.selectedRowKeys,
-        orderStatus: status,
+        purStatus: status,
       },
     }).then((res) => {
       notification.success({
@@ -232,7 +234,7 @@ class OrderListPage extends React.Component {
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         {this.state.selectedRowKeys.length > 0 && <div>
-          <Button type="primary" onClick={() => this.auditOrders('APPLY', 'WAIT_APPLY')}>初审通过</Button>&emsp;
+          <Button type="primary" onClick={() => this.auditOrders('APPLY', 'WAIT_APPLY')}>申请采购</Button>&emsp;
           <Button type="primary" onClick={() => this.auditOrders('CANCEL', 'WAIT_APPLY')}>作废</Button>&emsp;
         </div>}
         <Table
@@ -245,7 +247,7 @@ class OrderListPage extends React.Component {
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          title="订单详情"
+          title="采购单详情"
           visible={visible}
           width="1000px"
           okText={false}

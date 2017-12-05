@@ -69,6 +69,9 @@ const Routers = function ({ history, app }) {
       path: '/purchaseAudit',
       component: () => import('./routes/purchase/purchaseAudit/'),
     }, {
+      path: '/purchaseAudit01',
+      component: () => import('./routes/purchase/purchaseAudit01/'),
+    }, {
       path: '/purchaseQuery',
       component: () => import('./routes/purchase/purchaseList/'),
     },

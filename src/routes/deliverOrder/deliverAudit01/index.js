@@ -222,6 +222,7 @@ class OrderListPage extends React.Component {
       this.setState({
         selectedRowKeys: [],
         reasonVisible: false,
+        rejectReason: '',
       })
     }).catch((err) => {
       notification.error({

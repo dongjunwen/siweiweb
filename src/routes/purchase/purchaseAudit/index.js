@@ -68,7 +68,7 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem label="订单日期" {...formItemRow}>
+            <FormItem label="申购日期" {...formItemRow}>
               {getFieldDecorator('startTime')(
                 <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
               )}
@@ -84,45 +84,19 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={6}>
-            <FormItem label="订单号" {...formItemRow}>
-              {getFieldDecorator('orderNo')(
+            <FormItem label="采购单号" {...formItemRow}>
+              {getFieldDecorator('purNo')(
                 <Input />
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="客户名称" {...formItemRow}>
-              {getFieldDecorator('custContactName')(
+              {getFieldDecorator('supplyCompName')(
                 <Input />
               )}
             </FormItem>
           </Col>
-        </Row>
-        <Row>
-          <Col span={6}>
-            <FormItem label="单据类型" {...formItemRow}>
-              {getFieldDecorator('orderType', {
-                initialValue: this.state.orderTypes[0].dictCode,
-              })(
-                <Select>
-                  {orderOptions}
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
-            <FormItem label="销售类型" {...formItemRow}>
-              {getFieldDecorator('saleType', {
-                initialValue: this.state.saleTypes[0].dictCode,
-              })(
-                <Select>
-                  {saleOptions}
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row>
           <Col span={6}>
             &emsp;<Button type="primary" htmlType="submit">查询</Button>
           </Col>
@@ -149,38 +123,34 @@ class OrderListPage extends React.Component {
     };
     this.columns = [
       {
-        title: '订单号',
-        dataIndex: 'orderNo',
+        title: '采购单号',
+        dataIndex: 'purNo',
+      },
+      {
+        title: '申购日期',
+        dataIndex: 'purDate',
       },
       {
         title: '客户名称',
-        dataIndex: 'custCompName',
+        dataIndex: 'supplyCompName',
       },
       {
-        title: '订单日期',
-        dataIndex: 'goodDate',
+        title: '金额',
+        dataIndex: 'purAmt',
       },
       {
-        title: '单据类型',
-        dataIndex: 'orderTypeName',
+        title: '数量',
+        dataIndex: 'purNum',
       },
       {
-        title: '销售类型',
-        dataIndex: 'saleTypeName',
-      },
-      {
-        title: '单据状态',
-        dataIndex: 'orderStatusName',
-      },
-      {
-        title: '创建人',
-        dataIndex: 'createName',
+        title: '业务负责人',
+        dataIndex: 'respName',
       },
       {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
-          <a onClick={() => this.getOrderDetail(record.orderNo)}>查看详情</a>
+          <a onClick={() => this.getOrderDetail(record.purNo)}>查看详情</a>
         </div>),
       },
     ];
@@ -195,7 +165,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      param.orderStatus = 'AUDIT01_SUCCESS';
+      param.purStatus = 'AUDIT01_SUCCESS';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -205,7 +175,7 @@ class OrderListPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: `${config.APIV0}/api/order`, method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/purchase`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list || [],
         total: data.data.total,
@@ -215,7 +185,7 @@ class OrderListPage extends React.Component {
 
   getOrderDetail(orderNo) {
     request({
-      url: `${config.APIV0}/api/order/${orderNo}`,
+      url: `${config.APIV0}/api/purchase/${orderNo}`,
     }).then((res) => {
       this.setState({
         visible: true,
@@ -226,13 +196,15 @@ class OrderListPage extends React.Component {
 
   auditOrders(action, status) {
     request({
-      url: `${config.APIV0}/api/order/audit`,
+      url: `${config.APIV0}/api/purchase/audit`,
       method: 'POST',
       data: {
+        auditUserNo: '',
+        auditUserName: '',
         auditAction: action,
         auditDesc: this.state.rejectReason,
         orderNos: this.state.selectedRowKeys,
-        orderStatus: status,
+        purStatus: status,
       },
     }).then((res) => {
       notification.success({
@@ -243,6 +215,7 @@ class OrderListPage extends React.Component {
       this.setState({
         selectedRowKeys: [],
         reasonVisible: false,
+        rejectReason: '',
       })
     }).catch((err) => {
       notification.error({
@@ -272,11 +245,11 @@ class OrderListPage extends React.Component {
           style={{marginTop: '16px'}}
           rowSelection={rowSelection}
           dataSource={this.state.data}
-          rowKey={(record, key) => record.orderNo}
+          rowKey={(record, key) => record.purNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          title="订单详情"
+          title="采购单详情"
           visible={visible}
           width="1000px"
           okText={false}
@@ -286,10 +259,10 @@ class OrderListPage extends React.Component {
           <OrderDetailPage orderDetail={orderDetail} readOnly />
         </Modal>
         <Modal
-          title="拒绝订单"
+          title="拒绝采购单"
           visible={reasonVisible}
           onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
-          onCancel={() => this.setState({reasonVisible: false, rejectReason: undefined})}
+          onCancel={() => this.setState({reasonVisible: false, rejectReason: ''})}
         >
           <Input.TextArea autosize={{ minRows: 3 }} value={rejectReason} onChange={e => this.setState({rejectReason: e.target.value})} placeholder="请输入拒绝理由" />
         </Modal>

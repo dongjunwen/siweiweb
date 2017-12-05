@@ -24,7 +24,7 @@ class AdvancedSearchForm extends React.Component {
     Promise.all([
       request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
       request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/PUR_STATUS`}),
+      request({url: `${config.APIV0}/api/sysDict/ORDER_STATUS`}),
     ]).then((res) => {
       this.setState({
         orderTypes: res[0].data,
@@ -78,17 +78,6 @@ class AdvancedSearchForm extends React.Component {
             <FormItem label="~" {...formItemRow} colon={false}>
               {getFieldDecorator('endTime')(
                 <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
-            <FormItem label="状态" {...formItemRow}>
-              {getFieldDecorator('purStatus', {
-                initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
-              })(
-                <Select>
-                  {statusOptions}
-                </Select>
               )}
             </FormItem>
           </Col>
@@ -176,6 +165,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
+      param.purStatus = 'WAIT_AUDIT';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -246,13 +236,14 @@ class OrderListPage extends React.Component {
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         {this.state.selectedRowKeys.length > 0 && <div>
-          <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'AUDIT01_SUCCESS')}>终审通过</Button>&emsp;
+          <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'WAIT_AUDIT')}>初审通过</Button>&emsp;
           <Button type="primary" onClick={() => this.setState({reasonVisible: true})}>拒绝</Button>
         </div>}
         <Table
           bordered
           columns={this.columns}
           style={{marginTop: '16px'}}
+          rowSelection={rowSelection}
           dataSource={this.state.data}
           rowKey={(record, key) => record.purNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
@@ -270,7 +261,7 @@ class OrderListPage extends React.Component {
         <Modal
           title="拒绝采购单"
           visible={reasonVisible}
-          onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
+          onOk={() => this.auditOrders('AUDIT_REFUSE', 'WAIT_AUDIT')}
           onCancel={() => this.setState({reasonVisible: false, rejectReason: ''})}
         >
           <Input.TextArea autosize={{ minRows: 3 }} value={rejectReason} onChange={e => this.setState({rejectReason: e.target.value})} placeholder="请输入拒绝理由" />
