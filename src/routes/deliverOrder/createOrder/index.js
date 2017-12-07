@@ -309,6 +309,7 @@ class CreateOrderPage extends React.Component {
       {
         title: '操作',
         fixed: 'right',
+        width: 60,
         dataIndex: 'action',
         render: (data, record, index) => <Popconfirm
           okText="删除"
