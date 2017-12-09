@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, DatePicker, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 
@@ -14,13 +14,10 @@ class OrderListPage extends React.Component {
     this.state = {
       selectedRowKeys: [],
       selectedRows: [],
-      visible: false,
       dataDetail: {},
       currentPage: 1,
       pageSize: 10,
       data: [],
-      orderDetail: {},
-      reasonVisible: false,
       rejectReason: undefined,
       orderTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
@@ -136,7 +133,7 @@ class OrderListPage extends React.Component {
       this.setState({
         orderTypes: res[0].data,
       });
-    }).catch((err) => {
+    }).catch(() => {
       notification.error({
         message: '页面加载错误',
         description: '获取类型选项失败',
@@ -199,7 +196,7 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, selectedRowKeys, selectedRows, reasonVisible} = this.state;
+    const {selectedRowKeys, selectedRows} = this.state;
     const { getFieldDecorator } = this.props.form;
     const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const rowSelection = {
@@ -261,7 +258,7 @@ class OrderListPage extends React.Component {
           rowSelection={rowSelection}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={(record, key) => `${record.orderNo} ${record.orderSeqNo}`}
+          rowKey={record => `${record.orderNo} ${record.orderSeqNo}`}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
       </div>

@@ -44,13 +44,29 @@ class EditableCell extends React.Component {
     }, 0);
   }
 
-  handleAutoComplete(value, source) {
-    request({
-      url: `${config.APIV0}/api/${source.toLowerCase()}/find${source}Like/${value}`,
-      method: 'get',
-    }).then(data => this.setState({
-      data: data.data || [],
-    }));
+  handleAutoComplete(value, source, record) {
+    if (source === 'Formular') {
+      console.warn(record);
+      request({
+        url: `${config.APIV0}/api/formular/findFormularLike/`,
+        method: 'post',
+        data: {
+          condStr: value,
+          longNum: record.prodLong,
+          widhtNum: record.prodWidth,
+          reqNum: record.prodNum,
+        },
+      }).then(data => this.setState({
+        data: data.data || [],
+      }));
+    } else {
+      request({
+        url: `${config.APIV0}/api/${source.toLowerCase()}/find${source}Like/${value}`,
+        method: 'get',
+      }).then(data => this.setState({
+        data: data.data || [],
+      }));
+    }
   }
 
   handleSelectAutoComplete(value, source) {
@@ -83,7 +99,7 @@ class EditableCell extends React.Component {
   //   }
   // }
 
-  switchInputType(value, type, column, source) {
+  switchInputType(value, type, column, source, record) {
     switch (type) {
       case 'autoComplete':
         return (<AutoComplete
@@ -91,7 +107,7 @@ class EditableCell extends React.Component {
           style={{ margin: '-5px 0' }}
           onChange={value => this.props.onChange(value.split(/\s/)[0])}
           dataSource={this.state.data.map(item => item[`${source.toLowerCase()}No`] + ' ' + item[`${source.toLowerCase()}Name`])}
-          onSearch={value => this.handleAutoComplete(value, source)}
+          onSearch={value => this.handleAutoComplete(value, source, record)}
           onSelect={value => this.handleSelectAutoComplete(value, source)}
         />)
         break;
@@ -108,7 +124,7 @@ class EditableCell extends React.Component {
 
   render() {
     // const {value, editable} = this.state;
-    const { editable, value, onChange, type, column, source } = this.props;
+    const { editable, value, onChange, type, column, source, record } = this.props;
     // const disabledDate = {
     //   dateStart: (currentValue, record) => {
     //     if ((!record.beginTime && !record.endTime) || currentValue === undefined) {
@@ -127,7 +143,7 @@ class EditableCell extends React.Component {
 
     return (<div>
       {editable
-        ? this.switchInputType(value, type, column, source)
+        ? this.switchInputType(value, type, column, source, record)
         : value
       }
     </div>);

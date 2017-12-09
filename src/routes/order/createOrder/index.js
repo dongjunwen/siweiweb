@@ -370,6 +370,7 @@ class CreateOrderPage extends React.Component {
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
           value={text}
+          record={record}
           column="materialPriceNo"
           source="Formular"
           editable={record.editable}
@@ -387,8 +388,7 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '面料需求',
-        dataIndex: 'materialNeed',
-        render: (text, record) => this.renderColumns(text, record, 'materialNeed'),
+        dataIndex: 'calValue',
       },
       {
         title: '面料基础价',
@@ -550,6 +550,8 @@ class CreateOrderPage extends React.Component {
     data[index] = Object.assign(data[index], {
       materialPriceExpress: value.formularValue,
       materialPriceName: value.formularName,
+      materialPrice: value.formularPrice,
+      calValue: value.calValue,
     });
     this.setState({data});
   }

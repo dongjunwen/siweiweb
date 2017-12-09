@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 import OrderDetailPage from './orderDetail'
@@ -11,33 +11,7 @@ const Option = Select.Option;
 const formItemRow = { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
 
 class AdvancedSearchForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      orderTypes: [{dictCode: 'code', dictDesc: ''}],
-      saleTypes: [{dictCode: 'code', dictDesc: ''}],
-      statusTypes: [{dictCode: 'code', dictDesc: ''}],
-    };
-  }
-
   componentWillMount() {
-    Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/ORDER_STATUS`}),
-    ]).then((res) => {
-      this.setState({
-        orderTypes: res[0].data,
-        saleTypes: res[1].data,
-        statusTypes: res[2].data,
-      });
-    }).catch((err) => {
-      notification.error({
-        message: '页面加载错误',
-        description: '获取类型选项失败',
-      });
-      console.warn(err);
-    })
     this.props.search({});
   }
 
@@ -57,9 +31,6 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const saleOptions = this.state.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const statusOptions = this.state.statusTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
       <Form
@@ -224,7 +195,7 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, selectedRowKeys, rejectReason, reasonVisible} = this.state;
+    const {visible, orderDetail, selectedRowKeys, reasonVisible} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
