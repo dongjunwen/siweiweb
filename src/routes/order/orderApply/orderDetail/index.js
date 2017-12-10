@@ -408,6 +408,7 @@ class CreateOrderPage extends React.Component {
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
           value={text}
+          record={record}
           column="techNo"
           source="Formular"
           editable={record.editable}
@@ -645,7 +646,7 @@ class CreateOrderPage extends React.Component {
         />
         <Row>
           <Col span={6} offset="1">
-            {false && <Button type="primary" onClick={this.addNewOrder}>新增</Button>}
+            <Button type="primary" onClick={this.addNewOrder}>新增</Button>
           </Col>
         </Row>
         <Table

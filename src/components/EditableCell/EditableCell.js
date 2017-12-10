@@ -46,7 +46,6 @@ class EditableCell extends React.Component {
 
   handleAutoComplete(value, source, record) {
     if (source === 'Formular') {
-      console.warn(record);
       request({
         url: `${config.APIV0}/api/formular/findFormularLike/`,
         method: 'post',
