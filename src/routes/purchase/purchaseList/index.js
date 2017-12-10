@@ -152,6 +152,11 @@ class OrderListPage extends React.Component {
         dataIndex: 'respName',
       },
       {
+        width: 120,
+        title: '审批意见',
+        dataIndex: 'auditDesc',
+      },
+      {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>

@@ -150,6 +150,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
+      query.orderStatus = 'AUDIT_SUCCESS';
       query.purNo = param.purNo;
       query.orderType = param.orderType;
       query.supplyCompNo = this.props.supplyCompNo;

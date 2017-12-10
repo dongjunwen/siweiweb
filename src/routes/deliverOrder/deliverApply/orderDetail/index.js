@@ -1,9 +1,10 @@
-import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Checkbox, Radio } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Radio, message, Modal } from 'antd'
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import React from 'react'
+import OrderListPage from './form'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -23,7 +24,7 @@ class AdvancedSearchForm extends React.Component {
 
   handleSearch(e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFieldsAndScroll((err, values) => {
       if (err) {
         // dddd
       } else {
@@ -46,7 +47,7 @@ class AdvancedSearchForm extends React.Component {
   }
 
   handleSubmit = () => {
-    this.props.form.validateFields((err, fieldsValue) => {
+    this.props.form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) {
         notification.error({
           message: '提交失败',
@@ -206,6 +207,22 @@ class AdvancedSearchForm extends React.Component {
             </FormItem>
           </Col>
         </Row>
+        <Row>
+          <Col span={3}>
+            <Button
+              type="primary"
+              onClick={() => {
+                this.props.form.validateFieldsAndScroll(['custCompName'], (err, value) => {
+                  if (err) {
+                    message.error(err.custCompName.errors[0].message);
+                  } else {
+                    this.props.openSearch(value.custCompName.trim().split(/\s+/)[0]);
+                  }
+                })
+              }}
+            >搜索订单</Button>
+          </Col>
+        </Row>
       </Form>
     );
   }
@@ -276,6 +293,7 @@ class CreateOrderPage extends React.Component {
       {
         title: '数量',
         dataIndex: 'prodNum',
+        render: (text, record) => this.renderColumns(text, record, 'prodNum'),
       },
       {
         title: '单价',
@@ -292,7 +310,7 @@ class CreateOrderPage extends React.Component {
         fixed: 'right',
         width: 60,
         dataIndex: 'action',
-        render: (data, record, index) => <Popconfirm
+        render: (data, record, index) => (<Popconfirm
           okText="删除"
           cancelText="取消"
           title="确定删除吗?"
@@ -300,7 +318,7 @@ class CreateOrderPage extends React.Component {
           onConfirm={() => this.deleteRecord(index)}
         >
           <a>删除</a>
-        </Popconfirm>,
+        </Popconfirm>),
       });
     }
   }
@@ -346,14 +364,6 @@ class CreateOrderPage extends React.Component {
     const target = newData.filter(item => key === item.key)[0];
     if (target) {
       target[column] = value;
-      // 计算价格
-      switch (column) {
-        case 'prodNum':
-          target.prodAmt = (target.prodPrice || 0) * Number(value) || 0;
-          break;
-        default:
-          break;
-      }
       this.setState({ data: newData });
     }
   }
@@ -417,7 +427,7 @@ class CreateOrderPage extends React.Component {
       url: `${config.APIV0}/api/deliver`,
       method: formValue.deliverNo ? 'PUT' : 'POST',
       data: {
-        swDeliverBaseVo: formValue,
+        swDeliverBaseModiVo: formValue,
         swDeliverDetailVoList: this.state.data,
       },
     }).then((res) => {
@@ -434,13 +444,24 @@ class CreateOrderPage extends React.Component {
     });
   }
 
+  selectOrders = (selectedRows) => {
+    const {data} = this.state;
+    selectedRows.forEach((row, index) => {
+      row.key = data.length ? (+data[data.length - 1].key + index + 1).toString() : `${index + 1}`;
+    });
+    this.setState({
+      visible: false,
+      data: data.concat(selectedRows),
+    });
+  }
+
   renderColumns(text, record, column, type = 'input') {
     return (
       <EditableCell
+        editable
         type={type}
         value={text}
         column={column}
-        editable={record.editable}
         onChange={value => this.handleChange(value, record.key, column)}
       />
     );
@@ -448,6 +469,7 @@ class CreateOrderPage extends React.Component {
 
   render () {
     const {readOnly} = this.props;
+    const {custCompNo} = this.state;
 
     return (
       <div className="content-inner">
@@ -458,16 +480,26 @@ class CreateOrderPage extends React.Component {
           deliverWays={this.state.deliverWays}
           handleSubmit={this.handleSubmit}
           swDeliverBaseResutVo={this.props.orderDetail.swDeliverBaseResutVo}
+          openSearch={custCompNo => this.setState({visible: true, custCompNo})}
         />
         <Table
           bordered
           columns={this.columns}
           pagination={false}
-          scroll={{x: 1500}}
+          scroll={{x: 1100}}
           dataSource={this.state.data}
           style={{ margin: '16px 0' }}
           rowKey={(record, key) => key}
         />
+        <Modal
+          width="1000px"
+          title="选择订单号"
+          visible={this.state.visible}
+          onCancel={() => this.setState({visible: false})}
+          footer={null}
+        >
+          <OrderListPage custCompNo={custCompNo} selectOrders={this.selectOrders} />
+        </Modal>
       </div>
     )
   }

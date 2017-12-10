@@ -96,7 +96,7 @@ class AdvancedSearchForm extends React.Component {
               {getFieldDecorator('deliverStatus', {
                 initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
               })(
-                <Select>
+                <Select allowClear>
                   {statusOptions}
                 </Select>
               )}
@@ -152,6 +152,7 @@ class OrderListPage extends React.Component {
         dataIndex: 'modiName',
       },
       {
+        width: 120,
         title: '审批意见',
         dataIndex: 'auditDesc',
       },
