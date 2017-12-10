@@ -167,15 +167,7 @@ class AdvancedSearchForm extends React.Component {
             <Button type="primary" onClick={this.props.addNewOrder}>新增</Button>&emsp;或&emsp;
             <Button
               type="primary"
-              onClick={() => {
-                this.props.form.validateFields(['supplyCompName'], (err, value) => {
-                  if (err) {
-                    message.error(err.supplyCompName.errors[0].message);
-                  } else {
-                    this.props.openSearch(value.supplyCompName.trim().split(/\s+/)[0]);
-                  }
-                })
-              }}
+              onClick={() => this.props.openSearch()}
             >搜索订单号</Button>
           </Col>
         </Row>
@@ -457,7 +449,7 @@ class CreateOrderPage extends React.Component {
           handleSubmit={this.handleSubmit}
           searchOrder={this.searchOrder}
           addNewOrder={this.addNewOrder}
-          openSearch={supplyCompNo => this.setState({visible: true, supplyCompNo})}
+          openSearch={() => this.setState({visible: true})}
         />
         <Table
           bordered

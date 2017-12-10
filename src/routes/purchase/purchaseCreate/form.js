@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, AutoComplete, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 
@@ -20,7 +20,7 @@ class OrderListPage extends React.Component {
       pageSize: 10,
       data: [],
       orderDetail: {},
-      reasonVisible: false,
+      companys: [],
       rejectReason: undefined,
       orderTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
@@ -156,7 +156,7 @@ class OrderListPage extends React.Component {
       query.orderStatus = 'AUDIT_SUCCESS';
       query.purNo = param.purNo;
       query.orderType = param.orderType;
-      query.supplyCompNo = this.props.supplyCompNo;
+      query.supplyCompNo = param.supplyCompName.trim().split(/\s+/)[0];
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -172,6 +172,18 @@ class OrderListPage extends React.Component {
         total: data.data.total,
         currentPage: data.data.currPage,
       }));
+  }
+
+  searchComp = (value) => {
+    request({
+      url: `${config.APIV0}/api/comp/findCompLike/${value}`,
+      method: 'get',
+    }).then(data => this.setState({ companys: data.data || [] }));
+  }
+
+  selectComp = (value) => {
+    const {companys} = this.state;
+    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
   }
 
   handleSearch(e) {
@@ -200,7 +212,7 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, selectedRowKeys, selectedRows, reasonVisible} = this.state;
+    const {visible, orderDetail, selectedRowKeys, selectedRows, companys} = this.state;
     const { getFieldDecorator } = this.props.form;
     const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const rowSelection = {
@@ -226,6 +238,15 @@ class OrderListPage extends React.Component {
               <FormItem label="~" {...formItemRow} colon={false}>
                 {getFieldDecorator('endTime')(
                   <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
+                )}
+              </FormItem>
+            </Col>
+            <Col span={6}>
+              <FormItem label="客户" {...formItemRow}>
+                {getFieldDecorator('supplyCompName', {
+                  rules: [{required: true, message: '请选择或输入客户信息'}],
+                })(
+                  <AutoComplete dataSource={companys.map(comp => `${comp.compNo} ${comp.compName}`)} onSearch={this.searchComp} onSelect={this.selectComp} />
                 )}
               </FormItem>
             </Col>
