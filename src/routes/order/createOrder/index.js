@@ -401,6 +401,7 @@ class CreateOrderPage extends React.Component {
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
           value={text}
+          record={record}
           column="techNo"
           source="Formular"
           editable={record.editable}
