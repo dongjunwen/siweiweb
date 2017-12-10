@@ -74,6 +74,21 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/purchaseQuery',
       component: () => import('./routes/purchase/purchaseList/'),
+    }, {
+      path: '/returnCreate',
+      component: () => import('./routes/returnOrder/returnCreate/'),
+    }, {
+      path: '/returnApply',
+      component: () => import('./routes/returnOrder/returnApply/'),
+    }, {
+      path: '/returnAudit01',
+      component: () => import('./routes/returnOrder/returnAudit01/'),
+    }, {
+      path: '/returnAudit',
+      component: () => import('./routes/returnOrder/returnAudit/'),
+    }, {
+      path: '/returnList',
+      component: () => import('./routes/returnOrder/returnList/'),
     },
   ]
 
