@@ -42,7 +42,10 @@ class AdvancedSearchForm extends React.Component {
 
   selectComp = (value) => {
     const {companys} = this.state;
-    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
+    const compNo = value.split(/\s/)[0];
+    // onSelect事件触发在formItem reset之前，需要在提交时重新指定compName
+    this.props.form.setFieldsValue({supplyCompNo: compNo});
+    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === compNo)] || {}});
   }
 
   handleSubmit = () => {
@@ -57,6 +60,7 @@ class AdvancedSearchForm extends React.Component {
       // Should format date value before submit.
       const values = {
         ...fieldsValue,
+        supplyCompName: fieldsValue.supplyCompName.split(/\s/)[1],
       };
       this.props.handleSubmit(values);
     });
@@ -64,6 +68,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const {form: {getFieldDecorator}, swReturnBaseResultVo} = this.props;
+    getFieldDecorator('supplyCompNo');
     const {curCompany, companys} = this.state;
     const orderOptions = this.props.deliverWays.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
@@ -104,9 +109,9 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="供货商" {...formItemRow}>
-              {getFieldDecorator('supplyCompNo', {
-                rules: [{required: true, message: '请选择或输入客户信息'}],
-                initialValue: swReturnBaseResultVo.supplyCompNo,
+              {getFieldDecorator('supplyCompName', {
+                rules: [{required: true, message: '请选择或输入供货商信息'}],
+                initialValue: swReturnBaseResultVo.supplyCompName,
               })(
                 <AutoComplete dataSource={companys.map(comp => `${comp.compNo} ${comp.compName}`)} onSearch={this.searchComp} onSelect={this.selectComp} />
               )}
@@ -119,8 +124,8 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="供货商联系人" {...formItemRow}>
-              {getFieldDecorator('supplyCompName', {
-                initialValue: swReturnBaseResultVo.supplyCompName || curCompany.contactName,
+              {getFieldDecorator('supplyContactName', {
+                initialValue: swReturnBaseResultVo.supplyContactName || curCompany.contactName,
               })(
                 <Input />
               )}
@@ -194,11 +199,11 @@ class AdvancedSearchForm extends React.Component {
             <Button
               type="primary"
               onClick={() => {
-                this.props.form.validateFieldsAndScroll(['supplyCompNo'], (err, value) => {
+                this.props.form.validateFieldsAndScroll(['supplyCompName', 'supplyCompNo'], (err, value) => {
                   if (err) {
-                    message.error(err.supplyCompNo.errors[0].message);
+                    message.error(err.supplyCompName.errors[0].message);
                   } else {
-                    this.props.openSearch(value.supplyCompNo.trim().split(/\s+/)[0]);
+                    this.props.openSearch(value.supplyCompNo);
                   }
                 })
               }}

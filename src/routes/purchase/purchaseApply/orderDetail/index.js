@@ -41,7 +41,10 @@ class AdvancedSearchForm extends React.Component {
 
   selectComp = (value) => {
     const {companys} = this.state;
-    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
+    const compNo = value.split(/\s/)[0];
+    // onSelect事件触发在formItem reset之前，需要在提交时重新指定compName
+    this.props.form.setFieldsValue({supplyCompNo: compNo});
+    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === compNo)] || {}});
   }
 
   handleSubmit = () => {
@@ -56,6 +59,7 @@ class AdvancedSearchForm extends React.Component {
       // Should format date value before submit.
       const values = {
         ...fieldsValue,
+        supplyCompName: fieldsValue.supplyCompName.split(/\s/)[1],
         expectDate: fieldsValue.expectDate && fieldsValue.expectDate.format('YYYY-MM-DD'),
       };
       this.props.handleSubmit(values);
@@ -64,6 +68,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const {form: {getFieldDecorator}, swPurOrderBaseResultVo, readOnly} = this.props;
+    getFieldDecorator('supplyCompNo');
     const {curCompany, companys} = this.state;
 
     return (

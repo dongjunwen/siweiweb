@@ -83,7 +83,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="供货商" {...formItemRow}>
-              {getFieldDecorator('supplyCompNo')(
+              {getFieldDecorator('supplyCompName')(
                 <Input />
               )}
             </FormItem>

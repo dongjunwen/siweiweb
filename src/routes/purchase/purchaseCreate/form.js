@@ -156,7 +156,7 @@ class OrderListPage extends React.Component {
       query.orderStatus = 'AUDIT_SUCCESS';
       query.purNo = param.purNo;
       query.orderType = param.orderType;
-      query.supplyCompNo = param.supplyCompName.trim().split(/\s+/)[0];
+      query.supplyCompNo = param.supplyCompNo;
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -183,7 +183,10 @@ class OrderListPage extends React.Component {
 
   selectComp = (value) => {
     const {companys} = this.state;
-    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
+    const compNo = value.split(/\s/)[0];
+    // onSelect事件触发在formItem reset之前，需要在提交时重新指定compName
+    this.props.form.setFieldsValue({supplyCompNo: compNo});
+    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === compNo)] || {}});
   }
 
   handleSearch(e) {
@@ -214,6 +217,7 @@ class OrderListPage extends React.Component {
   render () {
     const {visible, orderDetail, selectedRowKeys, selectedRows, companys} = this.state;
     const { getFieldDecorator } = this.props.form;
+    getFieldDecorator('supplyCompNo');
     const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const rowSelection = {
       selectedRowKeys,
