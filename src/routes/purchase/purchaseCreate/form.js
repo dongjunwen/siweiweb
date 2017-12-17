@@ -247,9 +247,7 @@ class OrderListPage extends React.Component {
             </Col>
             <Col span={6}>
               <FormItem label="客户" {...formItemRow}>
-                {getFieldDecorator('supplyCompName', {
-                  rules: [{required: true, message: '请选择或输入客户信息'}],
-                })(
+                {getFieldDecorator('supplyCompName')(
                   <AutoComplete dataSource={companys.map(comp => `${comp.compNo} ${comp.compName}`)} onSearch={this.searchComp} onSelect={this.selectComp} />
                 )}
               </FormItem>

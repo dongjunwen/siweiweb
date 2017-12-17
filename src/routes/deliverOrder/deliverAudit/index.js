@@ -224,7 +224,7 @@ class OrderListPage extends React.Component {
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          title="订单详情"
+          title="发货单详情"
           visible={visible}
           width="1000px"
           okText={false}

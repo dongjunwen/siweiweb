@@ -73,20 +73,31 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={8}>
-            <FormItem label="申购日期" {...formItemRow}>
-              {getFieldDecorator('purDate', {
-                initialValue: moment(swPurOrderBaseResultVo.purDate),
-              })(
-                <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={8}>
             <FormItem label="采购单号" {...formItemRow}>
               {getFieldDecorator('purNo', {
                 initialValue: swPurOrderBaseResultVo.purNo,
               })(
                 <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <FormItem label="申购日期" {...formItemRow}>
+              {getFieldDecorator('createTime', {
+                initialValue: swPurOrderBaseResultVo.createTime,
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem label="预计到货日期" {...formItemRow}>
+              {getFieldDecorator('expectDate', {
+                initialValue: moment(swPurOrderBaseResultVo.expectDate),
+              })(
+                <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
               )}
             </FormItem>
           </Col>
@@ -96,18 +107,18 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={8}>
-            <FormItem label="客户名称" {...formItemRow}>
-              {getFieldDecorator('supplyCompName', {
-                initialValue: swPurOrderBaseResultVo.supplyCompName,
+            <FormItem label="业务负责人" {...formItemRow}>
+              {getFieldDecorator('respName', {
+                initialValue: swPurOrderBaseResultVo.respName,
               })(
                 <Input />
               )}
             </FormItem>
           </Col>
           <Col span={8}>
-            <FormItem label="下单日期" {...formItemRow}>
-              {getFieldDecorator('createTime', {
-                initialValue: swPurOrderBaseResultVo.createTime,
+            <FormItem label="供货商" {...formItemRow}>
+              {getFieldDecorator('supplyCompName', {
+                initialValue: swPurOrderBaseResultVo.supplyCompName,
               })(
                 <Input />
               )}
@@ -116,11 +127,62 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={8}>
-            <FormItem label="采购人" {...formItemRow}>
+            <FormItem label="供货商联系人" {...formItemRow}>
               {getFieldDecorator('supplyContactName', {
-                initialValue: swPurOrderBaseResultVo.supplyContactName,
+                initialValue: curCompany.contactName || swPurOrderBaseResultVo.supplyContactName,
               })(
                 <Input />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem label="供货商手机" {...formItemRow}>
+              {getFieldDecorator('supplyMobile', {
+                initialValue: curCompany.mobile || swPurOrderBaseResultVo.supplyMobile,
+              })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <FormItem label="供货商电话" {...formItemRow}>
+              {getFieldDecorator('supplyPhone', {
+                initialValue: curCompany.telphone || swPurOrderBaseResultVo.supplyPhone,
+              })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem label="供货商传真" {...formItemRow}>
+              {getFieldDecorator('supplyTax', {
+                initialValue: curCompany.tax || swPurOrderBaseResultVo.supplyTax,
+              })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <FormItem label="供货商地址" {...{ labelCol: { span: 5 }, wrapperCol: { span: 19 } }}>
+              {getFieldDecorator('supplyAddr', {
+                initialValue: curCompany.addr || swPurOrderBaseResultVo.supplyAddr,
+              })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <FormItem label="备注" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
+              {getFieldDecorator('memo', {
+                initialValue: swPurOrderBaseResultVo.memo,
+              })(
+                <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入备注" />
               )}
             </FormItem>
           </Col>
