@@ -38,7 +38,7 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem label="预发货日期" {...formItemRow}>
+            <FormItem label="退货日期" {...formItemRow}>
               {getFieldDecorator('startTime')(
                 <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
               )}
@@ -54,15 +54,15 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={6}>
-            <FormItem label="发货单号" {...formItemRow}>
-              {getFieldDecorator('deliverNo')(
+            <FormItem label="退货单号" {...formItemRow}>
+              {getFieldDecorator('returnNo')(
                 <Input />
               )}
             </FormItem>
           </Col>
           <Col span={6}>
-            <FormItem label="发货人" {...formItemRow}>
-              {getFieldDecorator('sendName')(
+            <FormItem label="供货商" {...formItemRow}>
+              {getFieldDecorator('supplyCompName')(
                 <Input />
               )}
             </FormItem>
@@ -95,28 +95,28 @@ class OrderListPage extends React.Component {
     };
     this.columns = [
       {
-        title: '客户名称',
-        dataIndex: 'custCompName',
+        title: '退货单号',
+        dataIndex: 'returnNo',
       },
       {
-        title: '发货单号',
-        dataIndex: 'deliverNo',
+        title: '退货日期',
+        dataIndex: 'returnDate',
       },
       {
-        title: '预发货日期',
-        dataIndex: 'deliverDate',
+        title: '供货商',
+        dataIndex: 'supplyCompName',
       },
       {
-        title: '单据状态',
-        dataIndex: 'deliverStatusName',
+        title: '数量',
+        dataIndex: 'returnNum',
       },
       {
-        title: '操作人',
-        dataIndex: 'sendName',
+        title: '原因',
+        dataIndex: 'returnReason',
       },
       {
-        title: '最后审批人',
-        dataIndex: 'modiName',
+        title: '审批人',
+        dataIndex: 'auditName',
       },
       {
         width: 120,
@@ -127,7 +127,7 @@ class OrderListPage extends React.Component {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
-          <a onClick={() => this.getOrderDetail(record.deliverNo)}>查看详情</a>
+          <a onClick={() => this.getOrderDetail(record.returnNo)}>查看详情</a>
         </div>),
       },
     ];
@@ -142,7 +142,7 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      param.deliverStatus = 'AUDIT01_SUCCESS';
+      param.returnStatus = 'AUDIT01_SUCCESS';
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -152,7 +152,7 @@ class OrderListPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: `${config.APIV0}/api/deliver`, method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/return`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list || [],
         total: data.data.total,
@@ -160,10 +160,13 @@ class OrderListPage extends React.Component {
       }));
   }
 
-  getOrderDetail(deliverNo) {
+  getOrderDetail(returnNo) {
     request({
-      url: `${config.APIV0}/api/deliver/${deliverNo}`,
+      url: `${config.APIV0}/api/return/${returnNo}`,
     }).then((res) => {
+      res.data.swReturnDetailResultVoList.forEach((row, index) => {
+        row.key = `${index + 1}`;
+      });
       this.setState({
         visible: true,
         orderDetail: res.data,
@@ -173,13 +176,13 @@ class OrderListPage extends React.Component {
 
   auditOrders(action, status) {
     request({
-      url: `${config.APIV0}/api/deliver/audit`,
+      url: `${config.APIV0}/api/return/audit`,
       method: 'POST',
       data: {
         auditAction: action,
         auditDesc: this.state.rejectReason,
-        deliverNos: this.state.selectedRowKeys,
-        deliverStatus: status,
+        orderNos: this.state.selectedRowKeys,
+        returnStatus: status,
       },
     }).then((res) => {
       notification.success({
@@ -200,7 +203,7 @@ class OrderListPage extends React.Component {
   }
 
   render () {
-    const {visible, orderDetail, reasonVisible, selectedRowKeys, rejectReason} = this.state;
+    const {visible, orderDetail, selectedRowKeys, reasonVisible, rejectReason} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -220,11 +223,11 @@ class OrderListPage extends React.Component {
           rowSelection={rowSelection}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={record => record.deliverNo}
+          rowKey={record => record.returnNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          title="发货单详情"
+          title="退货单详情"
           visible={visible}
           width="1000px"
           okText={false}
@@ -234,10 +237,10 @@ class OrderListPage extends React.Component {
           <OrderDetailPage orderDetail={orderDetail} readOnly />
         </Modal>
         <Modal
-          title="拒绝发货单"
+          title="拒绝退货单"
           visible={reasonVisible}
           onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
-          onCancel={() => this.setState({reasonVisible: false, rejectReason: ''})}
+          onCancel={() => this.setState({reasonVisible: false, rejectReason: undefined})}
         >
           <Input.TextArea autosize={{ minRows: 3 }} value={rejectReason} onChange={e => this.setState({rejectReason: e.target.value})} placeholder="请输入拒绝理由" />
         </Modal>

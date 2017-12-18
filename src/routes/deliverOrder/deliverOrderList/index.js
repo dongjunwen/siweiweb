@@ -96,7 +96,7 @@ class AdvancedSearchForm extends React.Component {
               {getFieldDecorator('deliverStatus', {
                 initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
               })(
-                <Select>
+                <Select allowClear>
                   {statusOptions}
                 </Select>
               )}
@@ -152,6 +152,7 @@ class OrderListPage extends React.Component {
         dataIndex: 'modiName',
       },
       {
+        width: 120,
         title: '审批意见',
         dataIndex: 'auditDesc',
       },
@@ -251,7 +252,7 @@ class OrderListPage extends React.Component {
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          title="订单详情"
+          title="发货单详情"
           visible={visible}
           width="1000px"
           okText={false}

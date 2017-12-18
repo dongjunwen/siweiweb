@@ -1,37 +1,16 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Modal, DatePicker, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 import OrderDetailPage from './orderDetail'
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 
 // 定义form项目
 const formItemRow = { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
 
 class AdvancedSearchForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      statusTypes: [{dictCode: 'code', dictDesc: ''}],
-    };
-  }
-
   componentWillMount() {
-    Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/DELIVER_STATUS`}),
-    ]).then((res) => {
-      this.setState({
-        statusTypes: res[0].data,
-      });
-    }).catch((err) => {
-      notification.error({
-        message: '页面加载错误',
-        description: '获取类型选项失败',
-      });
-      console.warn(err);
-    })
     this.props.search({});
   }
 
@@ -51,7 +30,6 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const statusOptions = this.state.statusTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
       <Form
@@ -91,17 +69,6 @@ class AdvancedSearchForm extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col span={6}>
-            <FormItem label="单据状态" {...formItemRow}>
-              {getFieldDecorator('deliverStatus', {
-                initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
-              })(
-                <Select>
-                  {statusOptions}
-                </Select>
-              )}
-            </FormItem>
-          </Col>
           <Col span={6}>
             &emsp;<Button type="primary" htmlType="submit">查询</Button>
           </Col>
@@ -152,6 +119,7 @@ class OrderListPage extends React.Component {
         dataIndex: 'modiName',
       },
       {
+        width: 120,
         title: '审批意见',
         dataIndex: 'auditDesc',
       },
@@ -196,6 +164,9 @@ class OrderListPage extends React.Component {
     request({
       url: `${config.APIV0}/api/deliver/${deliverNo}`,
     }).then((res) => {
+      res.data.swDeliverDetailResutVos.forEach((row, index) => {
+        row.key = `${index + 1}`;
+      });
       this.setState({
         visible: true,
         orderDetail: res.data,
@@ -251,11 +222,11 @@ class OrderListPage extends React.Component {
           rowSelection={rowSelection}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={(record, key) => record.deliverNo}
+          rowKey={record => record.deliverNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          title="订单详情"
+          title="发货单详情"
           visible={visible}
           width="1000px"
           okText={false}

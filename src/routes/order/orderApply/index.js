@@ -217,6 +217,9 @@ class OrderListPage extends React.Component {
     request({
       url: `${config.APIV0}/api/order/${orderNo}`,
     }).then((res) => {
+      res.data.swORderDetailResultVos.forEach((row, index) => {
+        row.key = `${index + 1}`;
+      });
       this.setState({
         visible: true,
         orderDetail: res.data,

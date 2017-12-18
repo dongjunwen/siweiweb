@@ -104,7 +104,7 @@ class AdvancedSearchForm extends React.Component {
               {getFieldDecorator('orderType', {
                 initialValue: this.state.orderTypes[0].dictCode,
               })(
-                <Select>
+                <Select allowClear>
                   {orderOptions}
                 </Select>
               )}
@@ -186,6 +186,11 @@ class OrderListPage extends React.Component {
       {
         title: '创建人',
         dataIndex: 'createName',
+      },
+      {
+        width: 120,
+        title: '审批意见',
+        dataIndex: 'auditDesc',
       },
       {
         title: '操作',

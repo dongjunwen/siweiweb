@@ -1,4 +1,4 @@
-import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Checkbox, Radio, message, Modal } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker } from 'antd'
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
@@ -6,8 +6,6 @@ import React from 'react'
 import moment from 'moment';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
-const RadioGroup = Radio.Group;
 
 // 定义form项目
 const formItemRow = { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
@@ -31,18 +29,6 @@ class AdvancedSearchForm extends React.Component {
         this.props.search(values);
       }
     });
-  }
-
-  searchComp = (value) => {
-    request({
-      url: `${config.APIV0}/api/comp/findCompLike/${value}`,
-      method: 'get',
-    }).then(data => this.setState({ companys: data.data || [] }));
-  }
-
-  selectComp = (value) => {
-    const {companys} = this.state;
-    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
   }
 
   handleSubmit = () => {
@@ -74,16 +60,7 @@ class AdvancedSearchForm extends React.Component {
         onSubmit={this.handleSearch.bind(this)}
       >
         <Row>
-          <Col span={6}>
-            <FormItem label="申购日期" {...formItemRow}>
-              {getFieldDecorator('purDate', {
-                initialValue: moment(swPurOrderBaseResultVo.purDate),
-              })(
-                <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
+          <Col span={8}>
             <FormItem label="采购单号" {...formItemRow}>
               {getFieldDecorator('purNo', {
                 initialValue: swPurOrderBaseResultVo.purNo,
@@ -92,13 +69,42 @@ class AdvancedSearchForm extends React.Component {
               )}
             </FormItem>
           </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <FormItem label="申购日期" {...formItemRow}>
+              {getFieldDecorator('createTime', {
+                initialValue: swPurOrderBaseResultVo.createTime,
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem label="预计到货日期" {...formItemRow}>
+              {getFieldDecorator('expectDate', {
+                initialValue: moment(swPurOrderBaseResultVo.expectDate),
+              })(
+                <DatePicker style={{ width: '100%'}} format="YYYY-MM-DD" />
+              )}
+            </FormItem>
+          </Col>
           <Col span={6} offset={2}>
             {false && <Button type="primary" onClick={this.handleSubmit}>保存</Button>}
           </Col>
         </Row>
         <Row>
-          <Col span={6}>
-            <FormItem label="客户名称" {...formItemRow}>
+          <Col span={8}>
+            <FormItem label="业务负责人" {...formItemRow}>
+              {getFieldDecorator('respName', {
+                initialValue: swPurOrderBaseResultVo.respName,
+              })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem label="供货商" {...formItemRow}>
               {getFieldDecorator('supplyCompName', {
                 initialValue: swPurOrderBaseResultVo.supplyCompName,
               })(
@@ -106,10 +112,21 @@ class AdvancedSearchForm extends React.Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}>
-            <FormItem label="下单日期" {...formItemRow}>
-              {getFieldDecorator('createTime', {
-                initialValue: swPurOrderBaseResultVo.createTime,
+        </Row>
+        <Row>
+          <Col span={8}>
+            <FormItem label="供货商联系人" {...formItemRow}>
+              {getFieldDecorator('supplyContactName', {
+                initialValue: curCompany.contactName || swPurOrderBaseResultVo.supplyContactName,
+              })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem label="供货商手机" {...formItemRow}>
+              {getFieldDecorator('supplyMobile', {
+                initialValue: curCompany.mobile || swPurOrderBaseResultVo.supplyMobile,
               })(
                 <Input />
               )}
@@ -117,21 +134,43 @@ class AdvancedSearchForm extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col span={6}>
-            <FormItem label="操作人" {...formItemRow}>
-              {getFieldDecorator('supplyContactName', {
-                initialValue: swPurOrderBaseResultVo.contactName,
+          <Col span={8}>
+            <FormItem label="供货商电话" {...formItemRow}>
+              {getFieldDecorator('supplyPhone', {
+                initialValue: curCompany.telphone || swPurOrderBaseResultVo.supplyPhone,
               })(
                 <Input />
               )}
             </FormItem>
           </Col>
-          <Col span={6}>
-            <FormItem label="采购人" {...formItemRow}>
-              {getFieldDecorator('supplyContactName', {
-                initialValue: swPurOrderBaseResultVo.supplyContactName,
+          <Col span={8}>
+            <FormItem label="供货商传真" {...formItemRow}>
+              {getFieldDecorator('supplyTax', {
+                initialValue: curCompany.tax || swPurOrderBaseResultVo.supplyTax,
               })(
                 <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <FormItem label="供货商地址" {...{ labelCol: { span: 5 }, wrapperCol: { span: 19 } }}>
+              {getFieldDecorator('supplyAddr', {
+                initialValue: curCompany.addr || swPurOrderBaseResultVo.supplyAddr,
+              })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <FormItem label="备注" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
+              {getFieldDecorator('memo', {
+                initialValue: swPurOrderBaseResultVo.memo,
+              })(
+                <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入备注" />
               )}
             </FormItem>
           </Col>
@@ -150,7 +189,6 @@ class CreateOrderPage extends React.Component {
       dataDetail: {},
       data: this.props.orderDetail.swPurOrderDetailResultVoList || [],
       currIndex: '0',
-      supplyCompNo: '',
     };
     this.cacheData = this.state.data.map(item => ({ ...item }));
 
@@ -161,16 +199,8 @@ class CreateOrderPage extends React.Component {
         render: (text, record, index) => index + 1,
       },
       {
-        title: '订单号',
-        dataIndex: 'purNo',
-      },
-      {
-        title: '订单序号',
-        dataIndex: 'purSeqNo',
-      },
-      {
-        title: '采购类别',
-        dataIndex: 'materialType',
+        title: '物料编码',
+        dataIndex: 'materialNo',
       },
       {
         title: '品名',
@@ -178,39 +208,44 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '品种',
-        dataIndex: 'prodType',
-      },
-      {
-        title: '型号',
-        dataIndex: 'spec',
+        dataIndex: 'materialType',
       },
       {
         title: '形状',
-        dataIndex: 'pattern',
+        dataIndex: 'prodForm',
       },
       {
         title: '长',
-        dataIndex: 'prodLong',
+        dataIndex: 'materialLong',
       },
       {
         title: '宽',
-        dataIndex: 'prodWidth',
-      },
-      {
-        title: '工艺要求',
-        dataIndex: 'techName',
+        dataIndex: 'materialWidth',
       },
       {
         title: '单位',
         dataIndex: 'unit',
       },
       {
+        title: '单价',
+        dataIndex: 'price',
+      },
+      {
+        width: 60,
         title: '数量',
         dataIndex: 'num',
       },
       {
-        title: '单价',
-        dataIndex: 'price',
+        title: '金额',
+        dataIndex: 'amt',
+      },
+      {
+        title: '订单号',
+        dataIndex: 'orderNo',
+      },
+      {
+        title: '订单序号',
+        dataIndex: 'orderSeqNo',
       },
       {
         title: '备注',
@@ -223,7 +258,7 @@ class CreateOrderPage extends React.Component {
         fixed: 'right',
         width: 60,
         dataIndex: 'action',
-        render: (data, record, index) => <Popconfirm
+        render: (data, record, index) => (<Popconfirm
           okText="删除"
           cancelText="取消"
           title="确定删除吗?"
@@ -231,7 +266,7 @@ class CreateOrderPage extends React.Component {
           onConfirm={() => this.deleteRecord(index)}
         >
           <a>删除</a>
-        </Popconfirm>,
+        </Popconfirm>),
       });
     }
   }
@@ -353,23 +388,11 @@ class CreateOrderPage extends React.Component {
     });
   }
 
-  renderColumns(text, record, column, type = 'input') {
-    return (
-      <EditableCell
-        type={type}
-        value={text}
-        column={column}
-        editable={record.editable}
-        onChange={value => this.handleChange(value, record.key, column)}
-      />
-    );
-  }
-
   searchOrder = (orderNo = '') => {
     request({
       url: `${config.APIV0}/api/order/${orderNo.trim()}`,
       method: 'get',
-    }).then(res => {
+    }).then((res) => {
       const {data} = this.state;
       this.setState({ data: data.concat(res.data.swORderDetailResultVos || []) });
     }).catch(err => notification.error({message: '查询失败', description: err.message}));
@@ -383,8 +406,19 @@ class CreateOrderPage extends React.Component {
     });
   }
 
+  renderColumns(text, record, column, type = 'input') {
+    return (
+      <EditableCell
+        type={type}
+        value={text}
+        column={column}
+        editable={record.editable}
+        onChange={value => this.handleChange(value, record.key, column)}
+      />
+    );
+  }
+
   render () {
-    const {supplyCompNo} = this.state;
     const {readOnly} = this.props;
 
     return (
@@ -394,7 +428,6 @@ class CreateOrderPage extends React.Component {
           search={this.getList.bind(this)}
           handleSubmit={this.handleSubmit}
           searchOrder={this.searchOrder}
-          openSearch={(supplyCompNo) => this.setState({visible: true, supplyCompNo})}
           swPurOrderBaseResultVo={this.props.orderDetail.swPurOrderBaseResultVo}
         />
         <Table

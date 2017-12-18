@@ -1,4 +1,4 @@
-import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Checkbox, Radio, message, Modal } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Popconfirm, notification, DatePicker, AutoComplete, Radio, message, Modal } from 'antd'
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
@@ -23,7 +23,7 @@ class AdvancedSearchForm extends React.Component {
 
   handleSearch(e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFieldsAndScroll((err, values) => {
       if (err) {
         // dddd
       } else {
@@ -42,11 +42,14 @@ class AdvancedSearchForm extends React.Component {
 
   selectComp = (value) => {
     const {companys} = this.state;
-    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === value.split(/\s/)[0])] || {}});
+    const compNo = value.split(/\s/)[0];
+    // onSelect事件触发在formItem reset之前，需要在提交时重新指定compName
+    this.props.form.setFieldsValue({custCompNo: compNo});
+    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === compNo)] || {}});
   }
 
   handleSubmit = () => {
-    this.props.form.validateFields((err, fieldsValue) => {
+    this.props.form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) {
         notification.error({
           message: '提交失败',
@@ -57,6 +60,7 @@ class AdvancedSearchForm extends React.Component {
       // Should format date value before submit.
       const values = {
         ...fieldsValue,
+        custCompName: fieldsValue.custCompName.split(/\s/)[1],
         deliverDate: fieldsValue.deliverDate && fieldsValue.deliverDate.format('YYYY-MM-DD'),
       };
       this.props.handleSubmit(values);
@@ -64,11 +68,10 @@ class AdvancedSearchForm extends React.Component {
   }
 
   render() {
-    const {form: {getFieldDecorator}, userInfo} = this.props;
+    const {form: {getFieldDecorator}} = this.props;
+    getFieldDecorator('custCompNo');
     const {curCompany, companys} = this.state;
     const orderOptions = this.props.deliverWays.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const saleOptions = this.props.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const payWayOptions = this.props.payWays.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
       <Form
@@ -203,25 +206,18 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={3}>
-            <Button type="primary" onClick={() => {
-              this.props.form.validateFields(['custCompName'], (err, value) => {
-                if(err) {
-                  message.error(err.custCompName.errors[0].message);
-                } else {
-                  this.props.openSearch(this.props.form.getFieldValue('custCompName').trim().split(/\s+/)[0]);
-                }
-              })
-            }}>搜索订单</Button>
-          </Col>
-          <Col span={6}>
-            <FormItem label="订单号" {...formItemRow}>
-              {getFieldDecorator('orderNo')(
-                <Input />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6} offset={1}>
-            <Button type="primary" onClick={() => this.props.form.getFieldValue('orderNo') && this.props.searchOrder(this.props.form.getFieldValue('orderNo'))}>通过订单号自动生成</Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                this.props.form.validateFieldsAndScroll(['custCompName', 'custCompNo'], (err, value) => {
+                  if (err) {
+                    message.error(err.custCompName.errors[0].message);
+                  } else {
+                    this.props.openSearch(value.custCompNo);
+                  }
+                })
+              }}
+            >搜索订单</Button>
           </Col>
         </Row>
       </Form>
@@ -297,6 +293,7 @@ class CreateOrderPage extends React.Component {
       {
         title: '数量',
         dataIndex: 'prodNum',
+        render: (text, record) => this.renderColumns(text, record, 'prodNum'),
       },
       {
         title: '单价',
@@ -311,7 +308,7 @@ class CreateOrderPage extends React.Component {
         fixed: 'right',
         width: 60,
         dataIndex: 'action',
-        render: (data, record, index) => <Popconfirm
+        render: (data, record, index) => (<Popconfirm
           okText="删除"
           cancelText="取消"
           title="确定删除吗?"
@@ -319,7 +316,7 @@ class CreateOrderPage extends React.Component {
           onConfirm={() => this.deleteRecord(index)}
         >
           <a>删除</a>
-        </Popconfirm>,
+        </Popconfirm>),
       },
     ];
   }
@@ -369,14 +366,6 @@ class CreateOrderPage extends React.Component {
     const target = newData.filter(item => key === item.key)[0];
     if (target) {
       target[column] = value;
-      // 计算价格
-      switch (column) {
-        case 'prodNum':
-          target.prodAmt = (target.prodPrice || 0) * Number(value) || 0;
-          break;
-        default:
-          break;
-      }
       this.setState({ data: newData });
     }
   }
@@ -457,23 +446,11 @@ class CreateOrderPage extends React.Component {
     });
   }
 
-  renderColumns(text, record, column, type = 'input') {
-    return (
-      <EditableCell
-        type={type}
-        value={text}
-        column={column}
-        editable={record.editable}
-        onChange={value => this.handleChange(value, record.key, column)}
-      />
-    );
-  }
-
   searchOrder = (orderNo = '') => {
     request({
       url: `${config.APIV0}/api/order/${orderNo.trim()}`,
       method: 'get',
-    }).then(res => {
+    }).then((res) => {
       const {data} = this.state;
       this.setState({ data: data.concat(res.data.swORderDetailResultVos || []) });
     }).catch(err => notification.error({message: '查询失败', description: err.message}));
@@ -481,10 +458,25 @@ class CreateOrderPage extends React.Component {
 
   selectOrders = (selectedRows) => {
     const {data} = this.state;
+    selectedRows.forEach((row, index) => {
+      row.key = data.length ? (+data[data.length - 1].key + index + 1).toString() : `${index + 1}`;
+    });
     this.setState({
       visible: false,
       data: data.concat(selectedRows),
     });
+  }
+
+  renderColumns(text, record, column, type = 'input') {
+    return (
+      <EditableCell
+        editable
+        type={type}
+        value={text}
+        column={column}
+        onChange={value => this.handleChange(value, record.key, column)}
+      />
+    );
   }
 
   render () {
@@ -499,14 +491,13 @@ class CreateOrderPage extends React.Component {
           search={this.getList.bind(this)}
           deliverWays={this.state.deliverWays}
           handleSubmit={this.handleSubmit}
-          searchOrder={this.searchOrder}
-          openSearch={(custCompNo) => this.setState({visible: true, custCompNo})}
+          openSearch={custCompNo => this.setState({visible: true, custCompNo})}
         />
         <Table
           bordered
           columns={this.columns}
           pagination={false}
-          scroll={{x: 1500}}
+          scroll={{x: 1100}}
           dataSource={this.state.data}
           style={{ margin: '16px 0' }}
           rowKey={(record, key) => key}

@@ -22,41 +22,36 @@ class OrderListPage extends React.Component {
       orderDetail: {},
       reasonVisible: false,
       rejectReason: undefined,
-      orderTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
     };
     this.columns = [
+      {
+        title: '采购单号',
+        dataIndex: 'purNo',
+      },
+      {
+        title: '序号',
+        dataIndex: 'purSeqNo',
+      },
       {
         title: '订单号',
         dataIndex: 'orderNo',
       },
       {
-        title: '序号',
+        title: '订单序号',
         dataIndex: 'orderSeqNo',
       },
       {
         title: '品名',
-        dataIndex: 'prodName',
+        dataIndex: 'materialName',
       },
       {
-        title: '品种',
-        dataIndex: 'prodType',
+        title: '规格',
+        dataIndex: 'spec',
       },
       {
-        title: '形状',
-        dataIndex: 'prodForm',
-      },
-      {
-        title: '长',
-        dataIndex: 'prodLong',
-      },
-      {
-        title: '宽',
-        dataIndex: 'prodWidth',
-      },
-      {
-        title: '工艺名称',
-        dataIndex: 'techName',
+        title: '型号',
+        dataIndex: 'pattern',
       },
       {
         title: '单位',
@@ -64,84 +59,17 @@ class OrderListPage extends React.Component {
       },
       {
         title: '数量',
-        dataIndex: 'prodNum',
+        dataIndex: 'num',
       },
       {
         title: '单价',
-        dataIndex: 'danjia',
-      },
-      {
-        title: '金额',
-        dataIndex: 'prodAmt',
-      },
-      {
-        title: '区域',
-        dataIndex: 'area',
-      },
-      {
-        title: '面料品号',
-        dataIndex: 'materialNo',
-      },
-      {
-        title: '面料品名',
-        dataIndex: 'materialName',
-      },
-      {
-        title: '有效幅宽',
-        dataIndex: 'validWidth',
-      },
-      {
-        title: '面料公式代码',
-        dataIndex: 'materialPriceNo',
-      },
-      {
-        title: '面料公式名称',
-        dataIndex: 'materialPriceName',
-      },
-      {
-        title: '面料公式',
-        dataIndex: 'materialPriceExpress',
-      },
-      {
-        title: '面料需求',
-        dataIndex: 'materialNeed',
-      },
-      {
-        title: '面料基础价',
-        dataIndex: 'materialPrice',
-      },
-      {
-        title: '工艺代码',
-        dataIndex: 'techNo',
-      },
-      {
-        title: '是否定价品',
-        dataIndex: 'ifProd',
-      },
-      {
-        title: '分类',
-        dataIndex: 'cateType',
+        dataIndex: 'price',
       },
       {
         title: '备注',
         dataIndex: 'memo',
       },
     ];
-  }
-
-  componentWillMount() {
-    Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
-    ]).then((res) => {
-      this.setState({
-        orderTypes: res[0].data,
-      });
-    }).catch((err) => {
-      notification.error({
-        message: '页面加载错误',
-        description: '获取类型选项失败',
-      });
-    })
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
@@ -153,10 +81,8 @@ class OrderListPage extends React.Component {
     const query = {};
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
-      query.orderStatus = 'AUDIT_SUCCESS';
-      query.orderNo = param.orderNo;
-      query.orderType = param.orderType;
-      query.custCompNo = this.props.custCompNo;
+      query.purNo = param.purNo;
+      query.supplyCompNo = this.props.custCompNo;
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -166,7 +92,7 @@ class OrderListPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: `${config.APIV0}/api/order/findDetailList`, data: this.condition })
+    request({ url: `${config.APIV0}/api/purchase/findDetailList`, data: this.condition })
       .then(data => this.setState({
         data: data.data.list || [],
         total: data.data.total,
@@ -197,7 +123,6 @@ class OrderListPage extends React.Component {
   render () {
     const {visible, orderDetail, selectedRowKeys, selectedRows, reasonVisible} = this.state;
     const { getFieldDecorator } = this.props.form;
-    const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -211,7 +136,7 @@ class OrderListPage extends React.Component {
         >
           <Row>
             <Col span={8}>
-              <FormItem label="订单日期" {...formItemRow}>
+              <FormItem label="申购日期" {...formItemRow}>
                 {getFieldDecorator('startTime')(
                   <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
                 )}
@@ -227,20 +152,9 @@ class OrderListPage extends React.Component {
           </Row>
           <Row>
             <Col span={8}>
-              <FormItem label="订单号" {...formItemRow}>
-                {getFieldDecorator('orderNo')(
+              <FormItem label="采购单号" {...formItemRow}>
+                {getFieldDecorator('purNo')(
                   <Input />
-                )}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem label="单据类型" {...formItemRow}>
-                {getFieldDecorator('orderType', {
-                  initialValue: this.state.orderTypes[0].dictCode,
-                })(
-                  <Select allowClear>
-                    {orderOptions}
-                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -252,12 +166,12 @@ class OrderListPage extends React.Component {
         {selectedRows.length > 0 && <Button style={{margin: '10px 0'}} onClick={this.selectOrders} type="primary">确定</Button>}
         <Table
           bordered
-          scroll={{x: 2500}}
+          scroll={{x: 1100}}
           columns={this.columns}
           rowSelection={rowSelection}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={(record, key) => `${record.orderNo} ${record.orderSeqNo}` }
+          rowKey={record => `${record.purNo} ${record.purSeqNo}`}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
       </div>

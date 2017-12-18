@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, DatePicker, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 
@@ -14,13 +14,10 @@ class OrderListPage extends React.Component {
     this.state = {
       selectedRowKeys: [],
       selectedRows: [],
-      visible: false,
       dataDetail: {},
       currentPage: 1,
       pageSize: 10,
       data: [],
-      orderDetail: {},
-      reasonVisible: false,
       rejectReason: undefined,
       orderTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
@@ -60,7 +57,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '单位',
-        dataIndex: 'unit',
+        dataIndex: 'prodUnit',
       },
       {
         title: '数量',
@@ -68,7 +65,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '单价',
-        dataIndex: 'danjia',
+        dataIndex: 'prodPrice',
       },
       {
         title: '金额',
@@ -88,7 +85,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '有效幅宽',
-        dataIndex: 'validWidth',
+        dataIndex: 'materialWidth',
       },
       {
         title: '面料公式代码',
@@ -104,7 +101,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '面料需求',
-        dataIndex: 'materialNeed',
+        dataIndex: 'materialNum',
       },
       {
         title: '面料基础价',
@@ -136,7 +133,7 @@ class OrderListPage extends React.Component {
       this.setState({
         orderTypes: res[0].data,
       });
-    }).catch((err) => {
+    }).catch(() => {
       notification.error({
         message: '页面加载错误',
         description: '获取类型选项失败',
@@ -145,7 +142,7 @@ class OrderListPage extends React.Component {
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.orderNo));
+    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.purNo));
     this.setState({ selectedRowKeys, selectedRows });
   }
 
@@ -154,9 +151,9 @@ class OrderListPage extends React.Component {
     Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
     if (typeof param !== 'number') {
       query.orderStatus = 'AUDIT_SUCCESS';
-      query.orderNo = param.orderNo;
+      query.purNo = param.purNo;
       query.orderType = param.orderType;
-      query.custCompNo = this.props.custCompNo;
+      query.supplyCompNo = this.props.supplyCompNo;
       query.startTime = param.startTime;
       query.endTime = param.endTime;
       delete param.startTime;
@@ -189,13 +186,18 @@ class OrderListPage extends React.Component {
   }
 
   selectOrders = () => {
+    const {selectedRows} = this.state;
+    // 字段映射替换
     this.props.form.resetFields();
-    this.props.selectOrders(this.state.selectedRows);
+    selectedRows.forEach((row) => {
+      [row.materialType, row.materialLong, row.materialWidth, row.spec, row.pattern, row.unit, row.num, row.price, row.amt] = [row.prodType, row.prodLong, row.prodWidth, row.materialSpec, row.materialPattern, row.prodUnit, row.prodNum, row.prodPrice, row.prodAmt];
+    })
+    this.props.selectOrders(selectedRows);
     this.setState({selectedRows: [], selectedRowKeys: []});
   }
 
   render () {
-    const {visible, orderDetail, selectedRowKeys, selectedRows, reasonVisible} = this.state;
+    const {selectedRowKeys, selectedRows} = this.state;
     const { getFieldDecorator } = this.props.form;
     const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const rowSelection = {
@@ -257,7 +259,7 @@ class OrderListPage extends React.Component {
           rowSelection={rowSelection}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={(record, key) => `${record.orderNo} ${record.orderSeqNo}` }
+          rowKey={record => `${record.orderNo} ${record.orderSeqNo}`}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
       </div>

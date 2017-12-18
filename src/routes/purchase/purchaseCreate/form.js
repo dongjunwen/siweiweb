@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, AutoComplete, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 
@@ -20,7 +20,7 @@ class OrderListPage extends React.Component {
       pageSize: 10,
       data: [],
       orderDetail: {},
-      reasonVisible: false,
+      companys: [],
       rejectReason: undefined,
       orderTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
@@ -60,7 +60,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '单位',
-        dataIndex: 'unit',
+        dataIndex: 'prodUnit',
       },
       {
         title: '数量',
@@ -88,7 +88,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '有效幅宽',
-        dataIndex: 'validWidth',
+        dataIndex: 'materialWidth',
       },
       {
         title: '面料公式代码',
@@ -104,7 +104,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '面料需求',
-        dataIndex: 'materialNeed',
+        dataIndex: 'materialNum',
       },
       {
         title: '面料基础价',
@@ -144,6 +144,51 @@ class OrderListPage extends React.Component {
     })
   }
 
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.purNo));
+    this.setState({ selectedRowKeys, selectedRows });
+  }
+
+  getList(param = {}) {
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      query.orderStatus = 'AUDIT_SUCCESS';
+      query.purNo = param.purNo;
+      query.orderType = param.orderType;
+      query.supplyCompNo = param.supplyCompNo;
+      query.startTime = param.startTime;
+      query.endTime = param.endTime;
+      delete param.startTime;
+      delete param.endTime;
+      query.filter = param;
+      this.condition = query;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: `${config.APIV0}/api/order/findDetailList`, data: this.condition })
+      .then(data => this.setState({
+        data: data.data.list || [],
+        total: data.data.total,
+        currentPage: data.data.currPage,
+      }));
+  }
+
+  searchComp = (value) => {
+    request({
+      url: `${config.APIV0}/api/comp/findCompLike/${value}`,
+      method: 'get',
+    }).then(data => this.setState({ companys: data.data || [] }));
+  }
+
+  selectComp = (value) => {
+    const {companys} = this.state;
+    const compNo = value.split(/\s/)[0];
+    // onSelect事件触发在formItem reset之前，需要在提交时重新指定compName
+    this.props.form.setFieldsValue({supplyCompNo: compNo});
+    this.setState({curCompany: companys[companys.findIndex(comp => comp.compNo === compNo)] || {}});
+  }
+
   handleSearch(e) {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -158,44 +203,21 @@ class OrderListPage extends React.Component {
     });
   }
 
-  getList(param = {}) {
-    const query = {};
-    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
-    if (typeof param !== 'number') {
-      query.purNo = param.purNo;
-      query.orderType = param.orderType;
-      query.supplyCompNo = this.props.supplyCompNo;
-      query.startTime = param.startTime;
-      query.endTime = param.endTime;
-      delete param.startTime;
-      delete param.endTime;
-      query.filter = param;
-      this.condition = query;
-    } else {
-      this.condition.currPage = param;
-    }
-    request({ url: `${config.APIV0}/api/purchase/findDetailList`, data: this.condition })
-      .then(data => this.setState({
-        data: data.data.list || [],
-        total: data.data.total,
-        currentPage: data.data.currPage,
-      }));
-  }
-
-  onSelectChange = (selectedRowKeys, selectedRows) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.purNo));
-    this.setState({ selectedRowKeys, selectedRows });
-  }
-
   selectOrders = () => {
+    const {selectedRows} = this.state;
+    // 字段映射替换
     this.props.form.resetFields();
-    this.props.selectOrders(this.state.selectedRows);
+    selectedRows.forEach((row) => {
+      [row.materialType, row.materialLong, row.materialWidth, row.spec, row.pattern, row.unit, row.num, row.price, row.amt] = [row.prodType, row.prodLong, row.prodWidth, row.materialSpec, row.materialPattern, row.prodUnit, row.prodNum, row.prodPrice, row.prodAmt];
+    })
+    this.props.selectOrders(selectedRows);
     this.setState({selectedRows: [], selectedRowKeys: []});
   }
 
   render () {
-    const {visible, orderDetail, selectedRowKeys, selectedRows, reasonVisible} = this.state;
+    const {visible, orderDetail, selectedRowKeys, selectedRows, companys} = this.state;
     const { getFieldDecorator } = this.props.form;
+    getFieldDecorator('supplyCompNo');
     const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const rowSelection = {
       selectedRowKeys,
@@ -223,11 +245,18 @@ class OrderListPage extends React.Component {
                 )}
               </FormItem>
             </Col>
+            <Col span={6}>
+              <FormItem label="客户" {...formItemRow}>
+                {getFieldDecorator('supplyCompName')(
+                  <AutoComplete dataSource={companys.map(comp => `${comp.compNo} ${comp.compName}`)} onSearch={this.searchComp} onSelect={this.selectComp} />
+                )}
+              </FormItem>
+            </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="订单号" {...formItemRow}>
-                {getFieldDecorator('purNo')(
+                {getFieldDecorator('orderNo')(
                   <Input />
                 )}
               </FormItem>
@@ -256,7 +285,7 @@ class OrderListPage extends React.Component {
           rowSelection={rowSelection}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={(record, key) => `${record.purNo} ${record.orderSeqNo}` }
+          rowKey={(record, key) => `${record.orderNo} ${record.orderSeqNo}`}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
       </div>

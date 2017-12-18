@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Select, Modal, DatePicker, notification } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 import OrderDetailPage from './orderDetail'
@@ -14,22 +14,16 @@ class AdvancedSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      orderTypes: [{dictCode: 'code', dictDesc: ''}],
-      saleTypes: [{dictCode: 'code', dictDesc: ''}],
       statusTypes: [{dictCode: 'code', dictDesc: ''}],
     };
   }
 
   componentWillMount() {
     Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/ORDER_TYPE`}),
-      request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
       request({url: `${config.APIV0}/api/sysDict/PUR_STATUS`}),
     ]).then((res) => {
       this.setState({
-        orderTypes: res[0].data,
-        saleTypes: res[1].data,
-        statusTypes: res[2].data,
+        statusTypes: res[0].data,
       });
     }).catch((err) => {
       notification.error({
@@ -57,8 +51,6 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const orderOptions = this.state.orderTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
-    const saleOptions = this.state.saleTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
     const statusOptions = this.state.statusTypes.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>);
 
     return (
@@ -86,7 +78,7 @@ class AdvancedSearchForm extends React.Component {
               {getFieldDecorator('purStatus', {
                 initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
               })(
-                <Select>
+                <Select allowClear>
                   {statusOptions}
                 </Select>
               )}
@@ -129,8 +121,6 @@ class OrderListPage extends React.Component {
       pageSize: 10,
       data: [],
       orderDetail: {},
-      reasonVisible: false,
-      rejectReason: undefined,
     };
     this.columns = [
       {
@@ -146,6 +136,10 @@ class OrderListPage extends React.Component {
         dataIndex: 'supplyCompName',
       },
       {
+        title: '采购单状态',
+        dataIndex: 'purStatusName',
+      },
+      {
         title: '金额',
         dataIndex: 'purAmt',
       },
@@ -156,6 +150,11 @@ class OrderListPage extends React.Component {
       {
         title: '业务负责人',
         dataIndex: 'respName',
+      },
+      {
+        width: 120,
+        title: '审批意见',
+        dataIndex: 'auditDesc',
       },
       {
         title: '操作',
@@ -204,57 +203,18 @@ class OrderListPage extends React.Component {
     }).catch(err => console.error(err));
   }
 
-  auditOrders(action, status) {
-    request({
-      url: `${config.APIV0}/api/purchase/audit`,
-      method: 'POST',
-      data: {
-        auditUserNo: '',
-        auditUserName: '',
-        auditAction: action,
-        auditDesc: this.state.rejectReason,
-        orderNos: this.state.selectedRowKeys,
-        purStatus: status,
-      },
-    }).then((res) => {
-      notification.success({
-        message: '操作成功',
-        description: res.message,
-      });
-      this.getList({});
-      this.setState({
-        selectedRowKeys: [],
-        reasonVisible: false,
-        rejectReason: '',
-      })
-    }).catch((err) => {
-      notification.error({
-        message: '操作失败',
-        description: err.message,
-      });
-    });
-  }
-
   render () {
-    const {visible, orderDetail, selectedRowKeys, rejectReason, reasonVisible} = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
+    const {visible, orderDetail} = this.state;
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm search={this.getList.bind(this)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
-        {this.state.selectedRowKeys.length > 0 && <div>
-          <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'AUDIT01_SUCCESS')}>终审通过</Button>&emsp;
-          <Button type="primary" onClick={() => this.setState({reasonVisible: true})}>拒绝</Button>
-        </div>}
         <Table
           bordered
           columns={this.columns}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={(record, key) => record.purNo}
+          rowKey={record => record.purNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
@@ -266,14 +226,6 @@ class OrderListPage extends React.Component {
           footer={[<Button type="primary" key="cancel" size="large" onClick={() => this.setState({visible: false})}>关闭</Button>]}
         >
           <OrderDetailPage orderDetail={orderDetail} readOnly />
-        </Modal>
-        <Modal
-          title="拒绝采购单"
-          visible={reasonVisible}
-          onOk={() => this.auditOrders('AUDIT_REFUSE', 'AUDIT01_SUCCESS')}
-          onCancel={() => this.setState({reasonVisible: false, rejectReason: ''})}
-        >
-          <Input.TextArea autosize={{ minRows: 3 }} value={rejectReason} onChange={e => this.setState({rejectReason: e.target.value})} placeholder="请输入拒绝理由" />
         </Modal>
       </div>
     )
