@@ -349,8 +349,8 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '有效幅宽',
-        dataIndex: 'validWidth',
-        render: (text, record) => this.renderColumns(text, record, 'validWidth'),
+        dataIndex: 'materialWidth',
+        render: (text, record) => this.renderColumns(text, record, 'materialWidth'),
       },
       {
         title: '面料公式代码',
@@ -375,8 +375,8 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '面料需求',
-        dataIndex: 'materialNeed',
-        render: (text, record) => this.renderColumns(text, record, 'materialNeed'),
+        dataIndex: 'materialNum',
+        render: (text, record) => this.renderColumns(text, record, 'materialNum'),
       },
       {
         title: '面料基础价',

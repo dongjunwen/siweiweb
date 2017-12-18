@@ -128,7 +128,7 @@ class AdvancedSearchForm extends React.Component {
               {getFieldDecorator('orderStatus', {
                 initialValue: this.state.statusTypes[0].dictCode,
               })(
-                <Select>
+                <Select allowClear>
                   {statusOptions}
                 </Select>
               )}

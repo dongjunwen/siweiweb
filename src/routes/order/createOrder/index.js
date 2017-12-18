@@ -366,8 +366,8 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '有效幅宽',
-        dataIndex: 'validWidth',
-        render: (text, record) => this.renderColumns(text, record, 'validWidth'),
+        dataIndex: 'materialWidth',
+        render: (text, record) => this.renderColumns(text, record, 'materialWidth'),
       },
       {
         title: '面料公式代码',
@@ -393,7 +393,7 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '面料需求',
-        dataIndex: 'calValue',
+        dataIndex: 'materialNum',
       },
       {
         title: '面料基础价',
@@ -547,6 +547,9 @@ class CreateOrderPage extends React.Component {
     const {data} = this.state;
     data[index] = Object.assign(data[index], {
       materialName: value.materialName,
+      materialSpec: value.spec,
+      materialPattern: value.pattern,
+      materialUnit: value.unit,
     });
     this.setState({data});
   }
@@ -557,7 +560,7 @@ class CreateOrderPage extends React.Component {
       materialPriceExpress: value.formularValue,
       materialPriceName: value.formularName,
       materialPrice: value.formularPrice,
-      calValue: value.calValue,
+      materialNum: value.calValue,
     });
     this.setState({data});
   }
