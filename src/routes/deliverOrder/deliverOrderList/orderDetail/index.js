@@ -266,7 +266,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodWidth',
       },
       {
-        title: '工艺要求',
+        title: '工艺名称',
         dataIndex: 'techName',
       },
       {

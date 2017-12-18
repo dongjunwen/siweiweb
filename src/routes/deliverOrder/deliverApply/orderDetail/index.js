@@ -288,7 +288,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodWidth',
       },
       {
-        title: '工艺要求',
+        title: '工艺名称',
         dataIndex: 'techName',
       },
       {
@@ -380,10 +380,10 @@ class CreateOrderPage extends React.Component {
       prodName: value.materialName,
       prodLong: value.materialLong,
       prodNo: value.materialNo,
-      prodForm: value.pattern,
-      prodPrice: value.price,
-      prodType: value.spec,
-      prodUnit: value.unit,
+      prodForm: value.prodForm,
+      prodPrice: value.prodPrice,
+      prodType: value.prodType,
+      prodUnit: value.prodUnit,
     });
     this.setState({data});
   }

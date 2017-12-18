@@ -60,7 +60,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '单位',
-        dataIndex: 'unit',
+        dataIndex: 'prodUnit',
       },
       {
         title: '数量',
@@ -68,7 +68,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '单价',
-        dataIndex: 'danjia',
+        dataIndex: 'prodPrice',
       },
       {
         title: '金额',
@@ -88,7 +88,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '有效幅宽',
-        dataIndex: 'validWidth',
+        dataIndex: 'materialWidth',
       },
       {
         title: '面料公式代码',
@@ -104,7 +104,7 @@ class OrderListPage extends React.Component {
       },
       {
         title: '面料需求',
-        dataIndex: 'materialNeed',
+        dataIndex: 'materialNum',
       },
       {
         title: '面料基础价',
