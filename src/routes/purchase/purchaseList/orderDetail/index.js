@@ -11,6 +11,14 @@ const FormItem = Form.Item;
 const formItemRow = { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
 
 class AdvancedSearchForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      companys: [{compName: '请输入', compNo: ''}],
+      curCompany: {},
+    };
+  }
+
   handleSearch(e) {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -44,6 +52,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const {form: {getFieldDecorator}, swPurOrderBaseResultVo} = this.props;
+    const {curCompany, companys} = this.state;
 
     return (
       <Form
