@@ -217,20 +217,17 @@ class CreateOrderPage extends React.Component {
         title: '品名',
         dataIndex: 'prodName',
       },
+   
       {
-        title: '品种',
-        dataIndex: 'materialType',
-      },
+        title: '规格',
+        dataIndex: 'spec',
+      },  
       {
-        title: '形状',
-        dataIndex: 'prodForm',
-      },
+        title: '型号',
+        dataIndex: 'pattern',
+      }, 
       {
-        title: '长',
-        dataIndex: 'materialLong',
-      },
-      {
-        title: '宽',
+        title: '有效幅宽',
         dataIndex: 'materialWidth',
       },
       {
@@ -242,7 +239,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'price',
       },
       {
-        width: 60,
+        width: 100,
         title: '数量',
         dataIndex: 'num',
         render: (text, record) => this.renderColumns(text, record, 'num'),
@@ -330,10 +327,10 @@ class CreateOrderPage extends React.Component {
       prodName: value.materialName,
       prodLong: value.materialLong,
       prodNo: value.materialNo,
-      prodForm: value.pattern,
-      prodPrice: value.price,
-      prodType: value.spec,
-      prodUnit: value.unit,
+      prodForm: value.prodForm,
+      prodPrice: value.prodPrice,
+      prodType: value.prodType,
+      prodUnit: value.prodUnit,
     });
     this.setState({data});
   }
@@ -344,10 +341,12 @@ class CreateOrderPage extends React.Component {
       materialWidth: value.materialWidth,
       materialLong: value.materialLong,
       materialType: value.materialType,
-      prodName: value.materialName,
-      prodForm: value.pattern,
-      price: value.price,
-      unit: value.unit,
+      materialName: value.materialName,
+      spec: value.materialSpec,
+      pattern: value.materialPattern,
+      price: value.materialPrice,
+      unit: value.materialUnit,
+      num: value.materialNum,
     });
     this.setState({data});
   }
