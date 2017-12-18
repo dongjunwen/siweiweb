@@ -247,10 +247,6 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialNo',
       },
       {
-        title: '物料类别',
-        dataIndex: 'materialType',
-      },
-      {
         title: '品名',
         dataIndex: 'materialName',
       },
