@@ -90,6 +90,22 @@ const Routers = function ({ history, app }) {
       path: '/returnList',
       component: () => import('./routes/returnOrder/returnList/'),
     },
+    {
+      path: '/receiveCreate',
+      component: () => import('./routes/receive/receiveCreate/'),
+    }, {
+      path: '/receiveApply',
+      component: () => import('./routes/receive/receiveApply/'),
+    }, {
+      path: '/receiveAudit01',
+      component: () => import('./routes/receive/receiveAudit01/'),
+    }, {
+      path: '/receiveAudit',
+      component: () => import('./routes/receive/receiveAudit/'),
+    }, {
+      path: '/receiveList',
+      component: () => import('./routes/receive/receiveList/'),
+    },
   ]
 
   return (
