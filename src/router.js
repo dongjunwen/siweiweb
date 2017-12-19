@@ -108,6 +108,9 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/stockVerify',
       component: () => import('./routes/stock/stockVerify'),
+    }, {
+      path: '/stockVerifyQuery',
+      component: () => import('./routes/stock/stockVerifyQuery'),
     },
   ]
 
