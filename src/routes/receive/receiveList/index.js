@@ -20,7 +20,7 @@ class AdvancedSearchForm extends React.Component {
 
   componentWillMount() {
     Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/PUR_STATUS`}),
+      request({url: `${config.APIV0}/api/sysDict/RECV_STATUS`}),
     ]).then((res) => {
       this.setState({
         statusTypes: res[0].data,
@@ -58,24 +58,33 @@ class AdvancedSearchForm extends React.Component {
         layout="horizontal"
         onSubmit={this.handleSearch.bind(this)}
       >
-        <Row>
-          <Col span={6}>
-            <FormItem label="申购日期" {...formItemRow}>
-              {getFieldDecorator('startTime')(
-                <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
-            <FormItem label="~" {...formItemRow} colon={false}>
-              {getFieldDecorator('endTime')(
-                <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
+       <Row>
+       <Col span={6}>
+         <FormItem label="领料日期" {...formItemRow}>
+           {getFieldDecorator('startTime')(
+             <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
+           )}
+         </FormItem>
+       </Col>
+       <Col span={6}>
+         <FormItem label="~" {...formItemRow} colon={false}>
+           {getFieldDecorator('endTime')(
+             <DatePicker style={{width: '100%'}} format={'YYYY-MM-DD'} />
+           )}
+         </FormItem>
+       </Col>
+     </Row>
+     <Row>
+       <Col span={6}>
+         <FormItem label="领料单号" {...formItemRow}>
+           {getFieldDecorator('recvNo')(
+             <Input />
+           )}
+         </FormItem>
+       </Col>   
+       <Col span={6}>
             <FormItem label="状态" {...formItemRow}>
-              {getFieldDecorator('purStatus', {
+              {getFieldDecorator('recvStatus', {
                 initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
               })(
                 <Select allowClear>
@@ -83,27 +92,11 @@ class AdvancedSearchForm extends React.Component {
                 </Select>
               )}
             </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={6}>
-            <FormItem label="采购单号" {...formItemRow}>
-              {getFieldDecorator('purNo')(
-                <Input />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
-            <FormItem label="客户名称" {...formItemRow}>
-              {getFieldDecorator('supplyCompName')(
-                <Input />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}>
-            &emsp;<Button type="primary" htmlType="submit">查询</Button>
-          </Col>
-        </Row>
+          </Col>       
+       <Col span={6}>
+         &emsp;<Button type="primary" htmlType="submit">查询</Button>
+       </Col>
+     </Row>
       </Form>
     );
   }
@@ -124,32 +117,28 @@ class OrderListPage extends React.Component {
     };
     this.columns = [
       {
-        title: '采购单号',
-        dataIndex: 'purNo',
+        title: '领料单号',
+        dataIndex: 'recvNo',
       },
       {
-        title: '申购日期',
-        dataIndex: 'purDate',
+        title: '领料日期',
+        dataIndex: 'recvDate',
       },
       {
-        title: '客户名称',
-        dataIndex: 'supplyCompName',
-      },
-      {
-        title: '采购单状态',
-        dataIndex: 'purStatusName',
-      },
-      {
-        title: '金额',
-        dataIndex: 'purAmt',
+        title: '领料人',
+        dataIndex: 'recver',
       },
       {
         title: '数量',
-        dataIndex: 'purNum',
+        dataIndex: 'num',
       },
       {
-        title: '业务负责人',
-        dataIndex: 'respName',
+        title: '用途',
+        dataIndex: 'useWay',
+      },
+      {
+        title: '当前状态',
+        dataIndex: 'recvStatusName',
       },
       {
         width: 120,
@@ -160,7 +149,7 @@ class OrderListPage extends React.Component {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
-          <a onClick={() => this.getOrderDetail(record.purNo)}>查看详情</a>
+          <a onClick={() => this.getOrderDetail(record.recvNo)}>查看详情</a>
         </div>),
       },
     ];
@@ -184,7 +173,7 @@ class OrderListPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: `${config.APIV0}/api/purchase`, method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/receive`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list || [],
         total: data.data.total,
@@ -194,7 +183,7 @@ class OrderListPage extends React.Component {
 
   getOrderDetail(orderNo) {
     request({
-      url: `${config.APIV0}/api/purchase/${orderNo}`,
+      url: `${config.APIV0}/api/receive/${orderNo}`,
     }).then((res) => {
       this.setState({
         visible: true,
@@ -214,11 +203,11 @@ class OrderListPage extends React.Component {
           columns={this.columns}
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
-          rowKey={record => record.purNo}
+          rowKey={record => record.recvNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          title="采购单详情"
+          title="领料单详情"
           visible={visible}
           width="1000px"
           okText={false}

@@ -244,7 +244,7 @@ class CreateOrderPage extends React.Component {
       materialType: value.materialType,
       materialName: value.materialName,
       spec: value.spec,
-      pattern: value.attern,
+      pattern: value.pattern,
       unit: value.unit,
     });
     this.setState({data});

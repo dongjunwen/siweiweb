@@ -107,6 +107,11 @@ class OrderListPage extends React.Component {
         dataIndex: 'useWay',
       },
       {
+        width: 120,
+        title: '审批意见',
+        dataIndex: 'auditDesc',
+      },
+      {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
@@ -117,7 +122,7 @@ class OrderListPage extends React.Component {
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.orderNo));
+    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.recvNo));
     this.setState({ selectedRowKeys });
   }
 
@@ -164,7 +169,7 @@ class OrderListPage extends React.Component {
         auditAction: action,
         auditDesc: this.state.rejectReason,
         orderNos: this.state.selectedRowKeys,
-        purStatus: status,
+        recvStatus: status,
       },
     }).then((res) => {
       notification.success({
@@ -203,7 +208,7 @@ class OrderListPage extends React.Component {
           style={{marginTop: '16px'}}
           rowSelection={rowSelection}
           dataSource={this.state.data}
-          rowKey={(record, key) => record.purNo}
+          rowKey={(record, key) => record.recvNo}
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal

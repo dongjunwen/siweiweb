@@ -262,7 +262,7 @@ class CreateOrderPage extends React.Component {
       materialType: value.materialType,
       materialName: value.materialName,
       spec: value.spec,
-      pattern: value.attern,
+      pattern: value.pattern,
       unit: value.unit,
     });
     this.setState({data});
@@ -373,7 +373,7 @@ class CreateOrderPage extends React.Component {
           readOnly={this.props.readOnly}
           addNewOrder={this.addNewOrder}
           openSearch={supplyCompNo => this.setState({visible: true, supplyCompNo})}
-          swPurOrderBaseResultVo={this.props.orderDetail.swPurOrderBaseResultVo}
+          swReceiveBaseResultVo={this.props.orderDetail.swReceiveBaseResultVo}
         />
         <Table
           bordered
