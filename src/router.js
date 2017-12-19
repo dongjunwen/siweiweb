@@ -105,6 +105,9 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/receiveList',
       component: () => import('./routes/receive/receiveList/'),
+    }, {
+      path: '/stockVerify',
+      component: () => import('./routes/stock/stockVerify'),
     },
   ]
 
