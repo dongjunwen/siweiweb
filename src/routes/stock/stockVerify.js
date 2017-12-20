@@ -113,7 +113,7 @@ class StockVerifyPage extends React.Component {
           value={text}
           column="supplyCompName"
           source="Comp"
-          editable
+          editable={record.editable}
           onSelect={value => this.handleChangeSupplyCompName(value, index)}
           onChange={value => this.handleChange(value, record.key, 'supplyCompName')}
         />),
@@ -126,7 +126,7 @@ class StockVerifyPage extends React.Component {
           value={text}
           column="materialNo"
           source="Material"
-          editable
+          editable={record.editable}
           onSelect={value => this.handleChangeMaterialNo(value, index)}
           onChange={value => this.handleChange(value, record.key, 'materialNo')}
         />),
@@ -200,17 +200,24 @@ class StockVerifyPage extends React.Component {
       {
         title: '操作',
         fixed: 'right',
-        width: 60,
+        width: 110,
         dataIndex: 'action',
-        render: (data, record, index) => (<Popconfirm
-          okText="删除"
-          cancelText="取消"
-          title="确定删除吗?"
-          overlayStyle={{ width: '200px' }}
-          onConfirm={() => this.deleteRecord(index)}
-        >
-          <a>删除</a>
-        </Popconfirm>),
+        render: (data, record, index) => {
+          const { editable } = record;
+          return (<div>
+            {editable ? <a onClick={() => this.save(record.key)}>确定</a> : <a onClick={() => this.edit(record.key)}>编辑</a>}
+            &nbsp;|&nbsp;
+            <Popconfirm
+              okText="删除"
+              cancelText="取消"
+              title="确定删除吗?"
+              overlayStyle={{ width: '200px' }}
+              onConfirm={() => this.deleteRecord(index)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          </div>)
+        },
       },
     ];
   }
@@ -238,9 +245,30 @@ class StockVerifyPage extends React.Component {
     const newData = [...this.state.data];
     const target = newData.filter(item => key === item.key)[0];
     if (target) {
-      delete target.editable;
-      this.setState({ data: newData });
-      this.cacheData = newData.map(item => ({ ...item }));
+      request({
+        url: `${config.APIV0}/api/stockVerify/check`,
+        method: 'POST',
+        data: {
+          auditUserNo: '',
+          auditUserName: '',
+          auditAction: 'AUDIT_PASS',
+          orderNos: [target.stkInNo],
+          stockStatus: 'WAIT_VERIFY',
+        },
+      }).then((res) => {
+        notification.success({
+          message: '操作成功',
+          description: res.message,
+        });
+        delete target.editable;
+        this.setState({ data: newData });
+        this.cacheData = newData.map(item => ({ ...item }));
+      }).catch((err) => {
+        notification.error({
+          message: '操作失败',
+          description: err.message,
+        });
+      });
     }
   }
 
@@ -358,8 +386,9 @@ class StockVerifyPage extends React.Component {
       url: `${config.APIV0}/api/stockVerify/${reqNo}`,
       method: 'POST',
     }).then((res) => {
+      res.data.forEach(record => record.editable = true);
       this.setState({
-        data: data.concat(res.data),
+        data: res.data.concat(data),
       });
     }).catch((err) => {
       notification.error({
@@ -413,10 +442,10 @@ class StockVerifyPage extends React.Component {
   renderColumns(text, record, column, type = 'input') {
     return (
       <EditableCell
-        editable
         type={type}
         value={text}
         column={column}
+        editable={record.editable}
         onChange={value => this.handleChange(value, record.key, column)}
       />
     );
