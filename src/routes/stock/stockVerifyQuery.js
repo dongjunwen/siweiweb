@@ -21,7 +21,7 @@ class AdvancedSearchForm extends React.Component {
 
   componentWillMount() {
     Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/PUR_STATUS`}),
+      request({url: `${config.APIV0}/api/sysDict/VERIFY_STATUS`}),
       request({url: `${config.APIV0}/api/sysDict/MATERIAL_TYPE`}),
       request({url: `${config.APIV0}/api/sysDict/MATERIAL_STOCK`}),
     ]).then((res) => {
