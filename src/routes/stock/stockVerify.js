@@ -437,7 +437,7 @@ class StockVerifyPage extends React.Component {
           addNewOrder={this.addNewOrder}
           openSearch={() => this.setState({visible: true})}
         />
-        <Button type="primary" onClick={() => this.auditOrders('APPLY', 'WAIT_VERIFY')} disabled={selectedRowKeys.length === 0}>校验完成入库</Button>
+        <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'WAIT_VERIFY')} disabled={selectedRowKeys.length === 0}>校验完成入库</Button>
         <Table
           bordered
           pagination={false}
