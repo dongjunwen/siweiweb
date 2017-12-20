@@ -87,7 +87,7 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label="仓库位置" {...formItemRow}>
-              {getFieldDecorator('location', {
+              {getFieldDecorator('materialStock', {
                 initialValue: this.state.materialStocks[0] && this.state.materialStocks[0].dictCode,
               })(
                 <Select allowClear>
@@ -109,7 +109,7 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="校验状态" {...formItemRow}>
-              {getFieldDecorator('stockStatus', {
+              {getFieldDecorator('status', {
                 initialValue: this.state.statusTypes[0] && this.state.statusTypes[0].dictCode,
               })(
                 <Select allowClear>
@@ -172,11 +172,15 @@ class StockListPage extends React.Component {
       },
       {
         title: '仓库名称',
-        dataIndex: 'location',
+        dataIndex: 'materialStockName',
       },
       {
         title: '来料数量',
         dataIndex: 'num',
+      },
+      {
+        title: '检验状态',
+        dataIndex: 'statusName',
       },
       {
         title: '含潮率',
