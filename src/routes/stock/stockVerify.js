@@ -97,6 +97,8 @@ class StockVerifyPage extends React.Component {
       currIndex: '0',
       supplyCompNo: '',
       selectedRowKeys: [],
+      currentPage: 1,
+      pageSize: 10,
     };
     this.cacheData = this.state.data.map(item => ({ ...item }));
 
@@ -222,14 +224,37 @@ class StockVerifyPage extends React.Component {
     ];
   }
 
+  componentWillMount() {
+    this.getList();
+  }
+
   onSelectChange = (selectedRowKeys, selectedRows) => {
     console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.orderNo));
     this.setState({ selectedRowKeys });
   }
 
-  getList(param) {
-    Object.assign(param, { pageSize: 10, currPage: 1 });
-    request({ url: `${config.APIV0}/api/formular`, method: 'GET', data: param }).then(data => this.setState({ data: data.data.list }))
+  getList(param = {}) {
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      Object.assign(param, {status: 'WAIT_VERIFY'})
+      query.filter = param;
+      this.condition = query;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: `${config.APIV0}/api/stockVerify`, method: 'GET', data: this.condition })
+      .then((data) => {
+        data.data.list.forEach((record) => {
+          record.editable = true;
+          record.key = record.stkInNo;
+        });
+        this.setState({
+          data: data.data.list || [],
+          total: data.data.total,
+          currentPage: data.data.currPage,
+        })
+      });
   }
 
   edit(key) {
@@ -246,15 +271,9 @@ class StockVerifyPage extends React.Component {
     const target = newData.filter(item => key === item.key)[0];
     if (target) {
       request({
-        url: `${config.APIV0}/api/stockVerify/check`,
-        method: 'POST',
-        data: {
-          auditUserNo: '',
-          auditUserName: '',
-          auditAction: 'AUDIT_PASS',
-          orderNos: [target.stkInNo],
-          stockStatus: 'WAIT_VERIFY',
-        },
+        url: `${config.APIV0}/api/stockVerify`,
+        method: 'PUT',
+        data: target,
       }).then((res) => {
         notification.success({
           message: '操作成功',
@@ -275,7 +294,8 @@ class StockVerifyPage extends React.Component {
   handleChange(value, key, column) {
     const newData = [...this.state.data];
     const target = newData.filter(item => key === item.key)[0];
-    if (target) {
+    // 匹配供货商时需拆分供货商信息
+    if (target && !target.supplyCompNo) {
       target[column] = value;
       // 计算价格
       switch (column) {
@@ -323,6 +343,7 @@ class StockVerifyPage extends React.Component {
     const {data} = this.state;
     data[index] = Object.assign(data[index], {
       supplyCompName: value.compName,
+      supplyCompNo: value.compNo,
     });
     this.setState({data});
   }
@@ -386,7 +407,10 @@ class StockVerifyPage extends React.Component {
       url: `${config.APIV0}/api/stockVerify/${reqNo}`,
       method: 'POST',
     }).then((res) => {
-      res.data.forEach(record => record.editable = true);
+      res.data.forEach((record) => {
+        record.editable = true;
+        record.key = record.stkInNo;
+      });
       this.setState({
         data: res.data.concat(data),
       });
@@ -410,6 +434,7 @@ class StockVerifyPage extends React.Component {
   }
 
   auditOrders(action, status) {
+    const {data, selectedRowKeys} = this.state;
     request({
       url: `${config.APIV0}/api/stockVerify/check`,
       method: 'POST',
@@ -418,7 +443,7 @@ class StockVerifyPage extends React.Component {
         auditUserName: '',
         auditAction: action,
         auditDesc: this.state.rejectReason,
-        orderNos: this.state.selectedRowKeys,
+        orderNos: selectedRowKeys,
         stockStatus: status,
       },
     }).then((res) => {
@@ -426,8 +451,13 @@ class StockVerifyPage extends React.Component {
         message: '操作成功',
         description: res.message,
       });
+      selectedRowKeys.map((stkInNo) => {
+        const index = data.findIndex(item => item.stkInNo === stkInNo);
+        return data.splice(index, 1);
+      })
       this.setState({
         selectedRowKeys: [],
+        data,
       });
       // Todo
       // 移除已校验记录
@@ -461,7 +491,6 @@ class StockVerifyPage extends React.Component {
     return (
       <div className="content-inner">
         <WrappedAdvancedSearchForm
-          search={this.getList.bind(this)}
           handleSubmit={this.handleSubmit}
           addNewOrder={this.addNewOrder}
           openSearch={() => this.setState({visible: true})}
@@ -469,13 +498,13 @@ class StockVerifyPage extends React.Component {
         <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'WAIT_VERIFY')} disabled={selectedRowKeys.length === 0}>校验完成入库</Button>
         <Table
           bordered
-          pagination={false}
           scroll={{x: 2300}}
           columns={this.columns}
           rowSelection={rowSelection}
           dataSource={this.state.data}
           style={{ margin: '16px 0' }}
           rowKey={record => record.stkInNo}
+          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
       </div>
     )
