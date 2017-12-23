@@ -111,6 +111,9 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/stockVerifyQuery',
       component: () => import('./routes/stock/stockVerifyQuery'),
+    }, {
+      path: '/stockQuery',
+      component: () => import('./routes/stock/stockQuery'),
     },
   ]
 
