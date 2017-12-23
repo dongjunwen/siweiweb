@@ -295,7 +295,10 @@ class StockVerifyPage extends React.Component {
     const newData = [...this.state.data];
     const target = newData.filter(item => key === item.key)[0];
     // 匹配供货商时需拆分供货商信息
-    if (target && !target.supplyCompNo) {
+    if (target) {
+      if (column === 'supplyCompName' && target.supplyCompNo) {
+        return false;
+      }
       target[column] = value;
       // 计算价格
       switch (column) {
@@ -327,15 +330,11 @@ class StockVerifyPage extends React.Component {
   handleChangeMaterialNo = (value, index) => {
     const {data} = this.state;
     data[index] = Object.assign(data[index], {
-      materialWidth: value.materialWidth,
-      materialLong: value.materialLong,
-      materialType: value.materialType,
       materialName: value.materialName,
-      spec: value.materialSpec,
-      pattern: value.materialPattern,
-      price: value.materialPrice,
-      unit: value.materialUnit,
-      num: value.materialNum,
+      spec: value.spec,
+      pattern: value.pattern,
+      price: value.price,
+      unit: value.unit,
     });
     this.setState({data});
   }
