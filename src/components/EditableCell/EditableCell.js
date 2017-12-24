@@ -127,6 +127,7 @@ class EditableCell extends React.Component {
         break;
       case 'datePicker':
         return (<DatePicker
+          allowClear={false}
           format={dateFormat}
           style={{ margin: '-5px 0' }}
           value={moment(value, dateFormat)}

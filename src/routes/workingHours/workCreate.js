@@ -357,8 +357,9 @@ class WorkCreatePage extends React.Component {
   deleteRecord = (workNos) => {
     const {data} = this.state;
     request({
-      url: `${config.APIV0}/api/work/${workNos.join(',')}`,
-      method: 'DELETE',
+      url: `${config.APIV0}/api/work/delByWorkNos`,
+      method: 'POST',
+      data: {workNos},
     }).then((res) => {
       notification.success({
         message: '操作成功',
