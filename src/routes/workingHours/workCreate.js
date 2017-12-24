@@ -2,6 +2,7 @@ import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePic
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
+import lodash from 'lodash';
 import React from 'react'
 
 const FormItem = Form.Item;
@@ -97,6 +98,7 @@ class WorkCreatePage extends React.Component {
       currIndex: '0',
       supplyCompNo: '',
       selectedRowKeys: [],
+      stepDicts: [{dictCode: 'code', dictDesc: ''}],
       currentPage: 1,
       pageSize: 10,
     };
@@ -120,12 +122,12 @@ class WorkCreatePage extends React.Component {
       },
       {
         title: '工号',
-        dataIndex: 'no',
+        dataIndex: 'userNo',
         render: (text, record) => this.renderColumns(text, record, 'no'),
       },
       {
         title: '姓名',
-        dataIndex: 'name',
+        dataIndex: 'userName',
         render: (text, record) => this.renderColumns(text, record, 'name'),
       },
       {
@@ -139,12 +141,15 @@ class WorkCreatePage extends React.Component {
         render: (text, record) => this.renderColumns(text, record, 'num'),
       },
       {
+        width: 80,
         title: '步骤流程',
         dataIndex: 'stepName',
+        render: (text, record) => this.renderColumns({key: record.stepNo || ''}, record, 'stepName', 'select', this.state.stepDicts.map(item => ({label: item.dictName, value: item.dictValue}))),
       },
       {
         title: '工艺',
         dataIndex: 'processName',
+        render: (text, record) => this.renderColumns(text, record, 'processName'),
       },
       {
         title: '操作',
@@ -161,7 +166,7 @@ class WorkCreatePage extends React.Component {
               cancelText="取消"
               title="确定删除吗?"
               overlayStyle={{ width: '200px' }}
-              onConfirm={() => this.deleteRecord(index)}
+              onConfirm={() => this.deleteRecord([record.workNo])}
             >
               <a>删除</a>
             </Popconfirm>
@@ -173,6 +178,13 @@ class WorkCreatePage extends React.Component {
 
   componentWillMount() {
     // this.getList();
+    request({
+      url: `${config.APIV0}/api/sysDict/STEP_NO`,
+    }).then((res) => {
+      this.setState({
+        stepDicts: res.data,
+      })
+    });
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
@@ -271,6 +283,10 @@ class WorkCreatePage extends React.Component {
         case 'num':
           target.amt = (target.price || 0) * Number(value) || 0;
           break;
+        case 'stepName':
+          target.stepName = value.label;
+          target.stepNo = value.key;
+          break;
         default:
           break;
       }
@@ -338,17 +354,17 @@ class WorkCreatePage extends React.Component {
     this.setState({data});
   }
 
-  deleteRecord = (index) => {
+  deleteRecord = (workNos) => {
     const {data} = this.state;
     request({
-      url: `${config.APIV0}/api/work/${JSON.stringify(data[index].workNo)}`,
+      url: `${config.APIV0}/api/work/${workNos.join(',')}`,
       method: 'DELETE',
     }).then((res) => {
       notification.success({
         message: '操作成功',
         description: res.data,
       })
-      data.splice(index, 1);
+      lodash.remove(data, item => workNos.some(workNo => workNo === item.workNo));
       this.setState({data});
     }).catch((err) => {
       notification.error({
@@ -448,12 +464,13 @@ class WorkCreatePage extends React.Component {
     });
   }
 
-  renderColumns(text, record, column, type = 'input') {
+  renderColumns(text, record, column, type = 'input', sourceData) {
     return (
       <EditableCell
         type={type}
         value={text}
         column={column}
+        sourceData={sourceData}
         editable={record.editable}
         onChange={value => this.handleChange(value, record.key, column)}
       />
@@ -481,7 +498,7 @@ class WorkCreatePage extends React.Component {
           openSearch={() => this.setState({visible: true})}
         />
         <div className="divided-button">
-          <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'WAIT_VERIFY')} disabled={selectedRowKeys.length === 0}>删除</Button>
+          <Button type="primary" onClick={() => this.deleteRecord(selectedRowKeys)} disabled={selectedRowKeys.length === 0}>删除</Button>
           <Button type="primary" onClick={() => window.open(`${config.APIV0}/api/work/downTemplate`)}>下载模板</Button>
           <Upload {...uploadProps} onChange={this.onFileChange}>
             <Button type="primary">导入</Button>

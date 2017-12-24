@@ -171,11 +171,11 @@ class WorkQuery extends React.Component {
       },
       {
         title: '工号',
-        dataIndex: 'no',
+        dataIndex: 'userNo',
       },
       {
         title: '姓名',
-        dataIndex: 'name',
+        dataIndex: 'userName',
       },
       {
         title: '单位',
