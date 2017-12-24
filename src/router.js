@@ -120,6 +120,9 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/workQuery',
       component: () => import('./routes/workingHours/workQuery'),
+    }, {
+      path: '/workModi',
+      component: () => import('./routes/workingHours/workModi'),
     },
   ]
 

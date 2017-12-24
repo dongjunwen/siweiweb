@@ -365,7 +365,10 @@ class WorkCreatePage extends React.Component {
         description: res.data,
       })
       lodash.remove(data, item => workNos.some(workNo => workNo === item.workNo));
-      this.setState({data});
+      this.setState({
+        selectedRowKeys: [],
+        data,
+      });
     }).catch((err) => {
       notification.error({
         message: '操作失败',
