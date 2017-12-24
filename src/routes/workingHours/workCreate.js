@@ -123,12 +123,12 @@ class WorkCreatePage extends React.Component {
       {
         title: '工号',
         dataIndex: 'userNo',
-        render: (text, record) => this.renderColumns(text, record, 'no'),
+        render: (text, record) => this.renderColumns(text, record, 'userNo'),
       },
       {
         title: '姓名',
         dataIndex: 'userName',
-        render: (text, record) => this.renderColumns(text, record, 'name'),
+        render: (text, record) => this.renderColumns(text, record, 'userName'),
       },
       {
         title: '单位',
@@ -144,7 +144,7 @@ class WorkCreatePage extends React.Component {
         width: 80,
         title: '步骤流程',
         dataIndex: 'stepName',
-        render: (text, record) => this.renderColumns({key: record.stepNo || ''}, record, 'stepName', 'select', this.state.stepDicts.map(item => ({label: item.dictName, value: item.dictValue}))),
+        render: (text, record) => this.renderColumns(record.editable ? {key: record.stepNo || ''} : text, record, 'stepName', 'select', this.state.stepDicts.map(item => ({label: item.dictName, value: item.dictValue}))),
       },
       {
         title: '工艺',
@@ -156,7 +156,7 @@ class WorkCreatePage extends React.Component {
         fixed: 'right',
         width: 110,
         dataIndex: 'action',
-        render: (data, record, index) => {
+        render: (data, record) => {
           const { editable } = record;
           return (<div>
             {editable ? <a onClick={() => this.save(record.key)}>保存</a> : <a onClick={() => this.edit(record.key)}>编辑</a>}
@@ -254,7 +254,7 @@ class WorkCreatePage extends React.Component {
       request({
         url: `${config.APIV0}/api/work`,
         method: 'POST',
-        data: {swWorkDetailVo: target},
+        data: target,
       }).then((res) => {
         notification.success({
           message: '操作成功',
@@ -507,6 +507,7 @@ class WorkCreatePage extends React.Component {
         </div>
         <Table
           bordered
+          pagination={false}
           scroll={{x: 1300}}
           columns={this.columns}
           rowSelection={rowSelection}

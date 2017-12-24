@@ -14,16 +14,16 @@ class AdvancedSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      materials: [{dictCode: 'code', dictDesc: ''}],
+      stepDicts: [{dictCode: 'code', dictDesc: ''}],
     };
   }
 
   componentWillMount() {
     Promise.all([
-      request({url: `${config.APIV0}/api/sysDict/MATERIAL_TYPE`}),
+      request({url: `${config.APIV0}/api/sysDict/STEP_NO`}),
     ]).then((res) => {
       this.setState({
-        materials: res[0].data,
+        stepDicts: res[0].data,
       });
     }).catch((err) => {
       notification.error({
@@ -82,7 +82,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const materialOptions = this.state.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>);
+    const stepOptions = this.state.stepDicts.map(step => <Option key={step.dictCode}>{step.dictName}</Option>);
 
     return (
       <Form
@@ -121,18 +121,18 @@ class AdvancedSearchForm extends React.Component {
           </Col>
           <Col span={6}>
             <FormItem label="姓名" {...formItemRow}>
-              {getFieldDecorator('name')(
+              {getFieldDecorator('userName')(
                 <Input />
               )}
             </FormItem>
           </Col>
           <Col span={6}>
             <FormItem label="步骤" {...formItemRow}>
-              {getFieldDecorator('stepName', {
-                initialValue: this.state.materials[0] && this.state.materials[0].dictCode,
+              {getFieldDecorator('stepNo', {
+                initialValue: this.state.stepDicts[0] && this.state.stepDicts[0].dictCode,
               })(
                 <Select allowClear>
-                  {materialOptions}
+                  {stepOptions}
                 </Select>
               )}
             </FormItem>
@@ -159,7 +159,7 @@ class WorkQuery extends React.Component {
     this.columns = [
       {
         title: '日期',
-        dataIndex: 'date',
+        dataIndex: 'workDate',
       },
       {
         title: '订单号',
@@ -195,7 +195,7 @@ class WorkQuery extends React.Component {
       },
       {
         title: '操作人',
-        dataIndex: 'userName',
+        dataIndex: 'modiName',
       },
       {
         title: '操作时间',
