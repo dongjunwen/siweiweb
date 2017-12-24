@@ -114,6 +114,12 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/stockQuery',
       component: () => import('./routes/stock/stockQuery'),
+    }, {
+      path: '/workCreate',
+      component: () => import('./routes/workingHours/workCreate'),
+    }, {
+      path: '/workQuery',
+      component: () => import('./routes/workingHours/workQuery'),
     },
   ]
 
