@@ -1,7 +1,8 @@
-import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker, AutoComplete, Select } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker, AutoComplete, message, Select, Upload } from 'antd'
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
+import lodash from 'lodash';
 import React from 'react'
 
 const FormItem = Form.Item;
@@ -74,11 +75,11 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem label="单据编号" {...formItemRow}>
+            {false && <FormItem label="单据编号" {...formItemRow}>
               {getFieldDecorator('reqNo')(
                 <Input onPressEnter={e => this.props.addNewOrder(e.target.value.trim())} />
               )}
-            </FormItem>
+            </FormItem>}
           </Col>
         </Row>
       </Form>
@@ -87,7 +88,7 @@ class AdvancedSearchForm extends React.Component {
 }
 const WrappedAdvancedSearchForm = Form.create()(AdvancedSearchForm);
 
-class StockVerifyPage extends React.Component {
+class WorkCreatePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -97,6 +98,7 @@ class StockVerifyPage extends React.Component {
       currIndex: '0',
       supplyCompNo: '',
       selectedRowKeys: [],
+      stepDicts: [{dictCode: 'code', dictDesc: ''}],
       currentPage: 1,
       pageSize: 10,
     };
@@ -104,117 +106,67 @@ class StockVerifyPage extends React.Component {
 
     this.columns = [
       {
-        title: '入库单号',
-        dataIndex: 'stkInNo',
+        title: '日期',
+        dataIndex: 'workDate',
+        render: (text, record) => this.renderColumns(text, record, 'workDate', 'datePicker'),
       },
       {
-        title: '供货商',
-        dataIndex: 'supplyCompName',
-        render: (text, record, index) => (<EditableCell
-          type="autoComplete"
-          value={text}
-          column="supplyCompName"
-          source="Comp"
-          editable={record.editable}
-          onSelect={value => this.handleChangeSupplyCompName(value, index)}
-          onChange={value => this.handleChange(value, record.key, 'supplyCompName')}
-        />),
+        title: '订单号',
+        dataIndex: 'orderNo',
+        render: (text, record) => this.renderColumns(text, record, 'orderNo'),
       },
       {
-        title: '物料编码',
-        dataIndex: 'materialNo',
-        render: (text, record, index) => (<EditableCell
-          type="autoComplete"
-          value={text}
-          column="materialNo"
-          source="Material"
-          editable={record.editable}
-          onSelect={value => this.handleChangeMaterialNo(value, index)}
-          onChange={value => this.handleChange(value, record.key, 'materialNo')}
-        />),
+        title: '订单序号',
+        dataIndex: 'orderSeqNo',
+        render: (text, record) => this.renderColumns(text, record, 'orderSeqNo'),
       },
       {
-        title: '品名',
-        dataIndex: 'materialName',
+        title: '工号',
+        dataIndex: 'userNo',
+        render: (text, record) => this.renderColumns(text, record, 'userNo'),
       },
       {
-        title: '规格',
-        dataIndex: 'pattern',
-      },
-      {
-        title: '型号',
-        dataIndex: 'spec',
+        title: '姓名',
+        dataIndex: 'userName',
+        render: (text, record) => this.renderColumns(text, record, 'userName'),
       },
       {
         title: '单位',
         dataIndex: 'unit',
+        render: (text, record) => this.renderColumns(text, record, 'unit'),
       },
       {
-        width: 110,
-        title: '来料数量',
+        title: '数量',
         dataIndex: 'num',
         render: (text, record) => this.renderColumns(text, record, 'num'),
       },
       {
-        width: 110,
-        title: '合格数量',
-        dataIndex: 'standNum',
-        render: (text, record) => this.renderColumns(text, record, 'standNum'),
+        width: 80,
+        title: '步骤流程',
+        dataIndex: 'stepName',
+        render: (text, record) => this.renderColumns(record.editable ? {key: record.stepNo || ''} : text, record, 'stepName', 'select', this.state.stepDicts.map(item => ({label: item.dictName, value: item.dictValue}))),
       },
       {
-        title: '含潮率',
-        dataIndex: 'moisRate',
-        render: (text, record) => this.renderColumns(text, record, 'moisRate'),
-      },
-      {
-        title: '重量',
-        dataIndex: 'weight',
-        render: (text, record) => this.renderColumns(text, record, 'weight'),
-      },
-      {
-        title: '品质',
-        dataIndex: 'quality',
-        render: (text, record) => this.renderColumns(text, record, 'quality'),
-      },
-      {
-        title: '不合格后续动作',
-        dataIndex: 'nextAction',
-        render: (text, record) => (<Select
-          allowClear
-          style={{width: 100}}
-          onChange={value => console.warn(value, record)}
-        >
-          <Option value="1">退货</Option>
-          <Option value="2">补给</Option>
-          <Option value="3">返修</Option>
-        </Select>),
-      },
-      {
-        title: '不合格原因',
-        dataIndex: 'reason',
-        render: (text, record) => this.renderColumns(text, record, 'reason'),
-      },
-      {
-        title: '备注',
-        dataIndex: 'memo',
-        render: (text, record) => this.renderColumns(text, record, 'memo'),
+        title: '工艺',
+        dataIndex: 'processName',
+        render: (text, record) => this.renderColumns(text, record, 'processName'),
       },
       {
         title: '操作',
         fixed: 'right',
         width: 110,
         dataIndex: 'action',
-        render: (data, record, index) => {
+        render: (data, record) => {
           const { editable } = record;
           return (<div>
-            {editable ? <a onClick={() => this.save(record.key)}>确定</a> : <a onClick={() => this.edit(record.key)}>编辑</a>}
+            {editable ? <a onClick={() => this.save(record.key)}>保存</a> : <a onClick={() => this.edit(record.key)}>编辑</a>}
             &nbsp;|&nbsp;
             <Popconfirm
               okText="删除"
               cancelText="取消"
               title="确定删除吗?"
               overlayStyle={{ width: '200px' }}
-              onConfirm={() => this.deleteRecord(index)}
+              onConfirm={() => this.deleteRecord([record.workNo])}
             >
               <a>删除</a>
             </Popconfirm>
@@ -225,12 +177,41 @@ class StockVerifyPage extends React.Component {
   }
 
   componentWillMount() {
-    this.getList();
+    // this.getList();
+    request({
+      url: `${config.APIV0}/api/sysDict/STEP_NO`,
+    }).then((res) => {
+      this.setState({
+        stepDicts: res.data,
+      })
+    });
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
     console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows.map(item => item.orderNo));
     this.setState({ selectedRowKeys });
+  }
+
+  onFileChange = (info) => {
+    if (info.file.status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      if (info.file.response.success) {
+        message.success(`${info.file.name} 导入成功`);
+        info.file.response.data.forEach((item, index) => {
+          item.editable = true;
+          item.key = `${index}`;
+        });
+        this.setState({
+          data: info.file.response.data,
+        });
+      } else {
+        message.error(`${info.file.name} 导入失败，失败原因：${info.file.response.message}`);
+      }
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} 导入失败`);
+    }
   }
 
   getList(param = {}) {
@@ -271,8 +252,8 @@ class StockVerifyPage extends React.Component {
     const target = newData.filter(item => key === item.key)[0];
     if (target) {
       request({
-        url: `${config.APIV0}/api/stockVerify`,
-        method: 'PUT',
+        url: `${config.APIV0}/api/work`,
+        method: 'POST',
         data: target,
       }).then((res) => {
         notification.success({
@@ -296,14 +277,15 @@ class StockVerifyPage extends React.Component {
     const target = newData.filter(item => key === item.key)[0];
     // 匹配供货商时需拆分供货商信息
     if (target) {
-      if (column === 'supplyCompName' && target.supplyCompNo) {
-        return false;
-      }
       target[column] = value;
       // 计算价格
       switch (column) {
         case 'num':
           target.amt = (target.price || 0) * Number(value) || 0;
+          break;
+        case 'stepName':
+          target.stepName = value.label;
+          target.stepNo = value.key;
           break;
         default:
           break;
@@ -372,10 +354,28 @@ class StockVerifyPage extends React.Component {
     this.setState({data});
   }
 
-  deleteRecord = (index) => {
+  deleteRecord = (workNos) => {
     const {data} = this.state;
-    data.splice(index, 1);
-    this.setState({data});
+    request({
+      url: `${config.APIV0}/api/work/delByWorkNos`,
+      method: 'POST',
+      data: {workNos},
+    }).then((res) => {
+      notification.success({
+        message: '操作成功',
+        description: res.data,
+      })
+      lodash.remove(data, item => workNos.some(workNo => workNo === item.workNo));
+      this.setState({
+        selectedRowKeys: [],
+        data,
+      });
+    }).catch((err) => {
+      notification.error({
+        message: '操作失败',
+        description: err.message,
+      })
+    });
   }
 
   handleSubmit = (formValue) => {
@@ -468,12 +468,13 @@ class StockVerifyPage extends React.Component {
     });
   }
 
-  renderColumns(text, record, column, type = 'input') {
+  renderColumns(text, record, column, type = 'input', sourceData) {
     return (
       <EditableCell
         type={type}
         value={text}
         column={column}
+        sourceData={sourceData}
         editable={record.editable}
         onChange={value => this.handleChange(value, record.key, column)}
       />
@@ -486,6 +487,12 @@ class StockVerifyPage extends React.Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
+    const uploadProps = {
+      name: 'uploadFile',
+      withCredentials: true,
+      showUploadList: false,
+      action: `${config.APIV0}/api/work/import`,
+    }
 
     return (
       <div className="content-inner">
@@ -494,23 +501,30 @@ class StockVerifyPage extends React.Component {
           addNewOrder={this.addNewOrder}
           openSearch={() => this.setState({visible: true})}
         />
-        <Button type="primary" onClick={() => this.auditOrders('AUDIT_PASS', 'WAIT_VERIFY')} disabled={selectedRowKeys.length === 0}>校验完成入库</Button>
+        <div className="divided-button">
+          <Button type="primary" onClick={() => this.deleteRecord(selectedRowKeys)} disabled={selectedRowKeys.length === 0}>删除</Button>
+          <Button type="primary" onClick={() => window.open(`${config.APIV0}/api/work/downTemplate`)}>下载模板</Button>
+          <Upload {...uploadProps} onChange={this.onFileChange}>
+            <Button type="primary">导入</Button>
+          </Upload>
+          {false && <Button type="primary" onClick={this.addNewOrder}>新增</Button>}
+        </div>
         <Table
           bordered
-          scroll={{x: 2300}}
+          pagination={false}
+          scroll={{x: 1300}}
           columns={this.columns}
           rowSelection={rowSelection}
           dataSource={this.state.data}
           style={{ margin: '16px 0' }}
-          rowKey={record => record.stkInNo}
-          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
+          rowKey={record => record.workNo}
         />
       </div>
     )
   }
 }
 
-StockVerifyPage.propTypes = {
+WorkCreatePage.propTypes = {
   dispatch: PropTypes.func,
 }
-export default StockVerifyPage
+export default WorkCreatePage

@@ -1,8 +1,11 @@
 import { Table, Form, Row, Col, Input, Button, Select, Icon, notification, DatePicker, AutoComplete } from 'antd';
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
+import moment from 'moment';
 import React from 'react'
 import './style.less'
+
+const Option = Select.Option;
 
 class EditableCell extends React.Component {
   constructor(props) {
@@ -98,7 +101,9 @@ class EditableCell extends React.Component {
   //   }
   // }
 
-  switchInputType(value, type, column, source, record) {
+  switchInputType(value, type, column, source, record, sourceData) {
+    const dateFormat = 'YYYY-MM-DD';
+
     switch (type) {
       case 'autoComplete':
         return (<AutoComplete
@@ -110,6 +115,24 @@ class EditableCell extends React.Component {
           onSelect={value => this.handleSelectAutoComplete(value, source)}
         />)
         break;
+      case 'select':
+        return (<Select
+          labelInValue
+          value={value}
+          style={{ margin: '-5px 0', minWidth: 80 }}
+          onChange={value => this.props.onChange(value)}
+        >
+          {sourceData.map(item => <Option key={item.value}>{item.label}</Option>)}
+        </Select>)
+        break;
+      case 'datePicker':
+        return (<DatePicker
+          allowClear={false}
+          format={dateFormat}
+          style={{ margin: '-5px 0' }}
+          value={moment(value, dateFormat)}
+          onChange={(data, dateString) => this.props.onChange(dateString)}
+        />)
       case 'input':
       default:
         return (<Input
@@ -123,7 +146,7 @@ class EditableCell extends React.Component {
 
   render() {
     // const {value, editable} = this.state;
-    const { editable, value, onChange, type, column, source, record } = this.props;
+    const { editable, value, onChange, type, column, source, record, sourceData } = this.props;
     // const disabledDate = {
     //   dateStart: (currentValue, record) => {
     //     if ((!record.beginTime && !record.endTime) || currentValue === undefined) {
@@ -142,7 +165,7 @@ class EditableCell extends React.Component {
 
     return (<div>
       {editable
-        ? this.switchInputType(value, type, column, source, record)
+        ? this.switchInputType(value, type, column, source, record, sourceData)
         : value
       }
     </div>);

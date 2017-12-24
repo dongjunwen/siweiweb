@@ -159,10 +159,6 @@ class StockListPage extends React.Component {
         dataIndex: 'spec',
       },
       {
-        title: '所属类型',
-        dataIndex: 'sourceType',
-      },
-      {
         title: '单位',
         dataIndex: 'unit',
       },
