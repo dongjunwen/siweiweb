@@ -294,11 +294,11 @@ class WorkModiPage extends React.Component {
   }
 
   deleteRecord = (workNos) => {
+    console.log("workNOs:",workNos);
     const {data} = this.state;
     request({
-      url: `${config.APIV0}/api/work/delByWorkNos`,
-      method: 'POST',
-      data: {workNos},
+      url: `${config.APIV0}/api/work/${workNos}`,
+      method: 'DELETE',
     }).then((res) => {
       notification.success({
         message: '操作成功',
