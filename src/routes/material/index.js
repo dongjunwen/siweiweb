@@ -113,6 +113,10 @@ class MaterialPage extends React.Component {
         dataIndex: 'pattern',
       },
       {
+        title: '单价',
+        dataIndex: 'price',
+      },
+      {
         title: '单位',
         dataIndex: 'unit',
       },

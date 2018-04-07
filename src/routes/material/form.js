@@ -30,6 +30,10 @@ const Fields = {
     name: 'spec',
     userProps: { label: '物料规格', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
+  price: {
+    name: 'price',
+    userProps: { label: '单价', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
   unit: {
     name: 'unit',
     userProps: { label: '物料单位', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
@@ -87,6 +91,11 @@ export default class AdvancedSearchForm extends React.Component {
         </FormItem>
         <FormItem {...Fields.spec.userProps}>
           {getFieldDecorator(Fields.spec.name, { ...Fields.spec.userRules, initialValue: dataDetail.spec })(
+            <Input />
+          )}
+        </FormItem>
+        <FormItem {...Fields.price.userProps}>
+          {getFieldDecorator(Fields.price.name, { ...Fields.price.userRules, initialValue: dataDetail.price })(
             <Input />
           )}
         </FormItem>
