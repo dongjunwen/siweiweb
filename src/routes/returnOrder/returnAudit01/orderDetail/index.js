@@ -274,6 +274,7 @@ class CreateOrderPage extends React.Component {
       {
         title: '金额',
         dataIndex: 'amt',
+        render: text => Math.floor(text * 100) / 100,
       },
       {
         title: '订单号',

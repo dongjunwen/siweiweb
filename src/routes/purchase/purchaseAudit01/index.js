@@ -137,6 +137,7 @@ class OrderListPage extends React.Component {
       {
         title: '金额',
         dataIndex: 'purAmt',
+        render: text => Math.floor(text * 100) / 100,
       },
       {
         title: '数量',
