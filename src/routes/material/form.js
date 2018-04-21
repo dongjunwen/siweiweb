@@ -38,6 +38,14 @@ const Fields = {
     name: 'unit',
     userProps: { label: '物料单位', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
+  materialLong: {
+    name: 'materialLong',
+    userProps: { label: '长', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
+  materialWidth: {
+    name: 'materialWidth',
+    userProps: { label: '宽', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
 };
 export default class AdvancedSearchForm extends React.Component {
   constructor(props) {
@@ -101,6 +109,16 @@ export default class AdvancedSearchForm extends React.Component {
         </FormItem>
         <FormItem {...Fields.unit.userProps}>
           {getFieldDecorator(Fields.unit.name, { ...Fields.unit.userRules, initialValue: dataDetail.unit })(
+            <Input />
+          )}
+        </FormItem>
+        <FormItem {...Fields.materialLong.userProps}>
+          {getFieldDecorator(Fields.materialLong.name, { ...Fields.materialLong.userRules, initialValue: dataDetail.materialLong })(
+            <Input />
+          )}
+        </FormItem>
+        <FormItem {...Fields.materialWidth.userProps}>
+          {getFieldDecorator(Fields.materialWidth.name, { ...Fields.materialWidth.userRules, initialValue: dataDetail.materialWidth })(
             <Input />
           )}
         </FormItem>

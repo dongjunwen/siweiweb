@@ -314,8 +314,18 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodType',
       },
       {
+        title: '型号',
+        dataIndex: 'prodPattern',
+      },
+      {
         title: '形状',
         dataIndex: 'prodForm',
+        render: (text, record) => this.renderColumns(text, record, 'prodForm'),
+      },
+      {
+        title: '色号',
+        dataIndex: 'prodColorNo',
+        render: (text, record) => this.renderColumns(text, record, 'prodColorNo'),
       },
       {
         title: '长',
@@ -433,11 +443,6 @@ class CreateOrderPage extends React.Component {
         render: (text, record) => this.renderColumns(text, record, 'prodPrice1'),
       },
       {
-        title: '是否定价品',
-        dataIndex: 'ifProd',
-        render: (text, record) => this.renderColumns(text, record, 'ifProd'),
-      },
-      {
         title: '分类',
         dataIndex: 'cateType',
         render: (text, record) => this.renderColumns(text, record, 'cateType'),
@@ -536,7 +541,7 @@ class CreateOrderPage extends React.Component {
       prodName: value.materialName,
       prodLong: value.materialLong,
       prodNo: value.materialNo,
-      prodForm: value.pattern,
+      prodPattern: value.pattern,
       prodPrice: value.price,
       prodType: value.spec,
       prodUnit: value.unit,

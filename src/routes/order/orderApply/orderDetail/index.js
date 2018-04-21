@@ -321,8 +321,16 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodType',
       },
       {
+        title: '型号',
+        dataIndex: 'prodPattern',
+      },
+      {
         title: '形状',
         dataIndex: 'prodForm',
+      },
+      {
+        title: '色号',
+        dataIndex: 'prodColorNo',
       },
       {
         title: '长',
