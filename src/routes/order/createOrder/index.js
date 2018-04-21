@@ -282,6 +282,7 @@ class CreateOrderPage extends React.Component {
       orderTypes: [{dictCode: 'code', dictDesc: ''}],
       saleTypes: [{dictCode: 'code', dictDesc: ''}],
       payWays: [{dictCode: 'code', dictDesc: ''}],
+      prodForms: [{label: '', value: ''}],
       currIndex: '0',
     };
     this.cacheData = this.state.data.map(item => ({ ...item }));
@@ -320,7 +321,14 @@ class CreateOrderPage extends React.Component {
       {
         title: '形状',
         dataIndex: 'prodForm',
-        render: (text, record) => this.renderColumns(text, record, 'prodForm'),
+        render: (text, record) => (<EditableCell
+          type="select"
+          value={text}
+          column="prodForm"
+          sourceData={this.state.prodForms}
+          editable={record.editable}
+          onChange={value => this.handleChange(value, record.key, 'prodForm')}
+        />),
       },
       {
         title: '色号',
@@ -483,12 +491,14 @@ class CreateOrderPage extends React.Component {
       request({url: `${config.APIV0}/api/sysDict/SALE_TYPE`}),
       request({url: `${config.APIV0}/api/sysDict/PAY_WAY`}),
       request({url: `${config.APIV0}/api/getCurrentUser`}),
+      request({url: `${config.APIV0}/api/sysDict/PROD_FORM`}),
     ]).then((res) => {
       this.setState({
         orderTypes: res[0].data,
         saleTypes: res[1].data,
         payWays: res[2].data,
         userInfo: res[3].data,
+        prodForms: res[4].data.map(item => ({label: item.dictDesc, value: item.dictValue})),
       });
     });
   }

@@ -117,7 +117,7 @@ class EditableCell extends React.Component {
         break;
       case 'select':
         return (<Select
-          labelInValue
+          // labelInValue
           value={value}
           style={{ margin: '-5px 0', minWidth: 80 }}
           onChange={value => this.props.onChange(value)}

@@ -32,7 +32,7 @@ const Bread = ({ menu, location }) => {
     })
     pathArray.push({
       id: 404,
-      name: 'Not Found',
+      name: '未找到',
     })
   } else {
     getPathArray(current)
