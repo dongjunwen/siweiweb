@@ -1,4 +1,4 @@
-import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker, AutoComplete, message, Modal } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker, Modal } from 'antd'
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
@@ -67,7 +67,6 @@ class AdvancedSearchForm extends React.Component {
   render() {
     const {form: {getFieldDecorator}} = this.props;
     getFieldDecorator('supplyCompNo');
-    const {curCompany, companys} = this.state;
 
     return (
       <Form
@@ -95,16 +94,16 @@ class AdvancedSearchForm extends React.Component {
             <Button type="primary" onClick={this.handleSubmit}>保存</Button>
           </Col>
         </Row>
-        <Row>         
+        <Row>
           <Col span={12}>
             <FormItem label="用途" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
-            {getFieldDecorator('useWay')(
-              <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入用途" />
-            )}
-          </FormItem>
+              {getFieldDecorator('useWay')(
+                <Input.TextArea autosize={{ minRows: 3 }} placeholder="请输入用途" />
+              )}
+            </FormItem>
           </Col>
         </Row>
-        
+
         <Row>
           <Col span={12}>
             <FormItem label="备注" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
@@ -116,7 +115,7 @@ class AdvancedSearchForm extends React.Component {
         </Row>
         <Row>
           <Col span={7}>
-            <Button type="primary" onClick={this.props.addNewOrder}>新增</Button>          
+            <Button type="primary" onClick={this.props.addNewOrder}>新增</Button>
           </Col>
         </Row>
       </Form>
@@ -148,6 +147,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="materialNo"
           source="Material"
@@ -159,25 +159,25 @@ class CreateOrderPage extends React.Component {
       {
         title: '品名',
         dataIndex: 'materialName',
-      },   
+      },
       {
         title: '规格',
         dataIndex: 'spec',
-      },  
+      },
       {
         title: '型号',
         dataIndex: 'pattern',
-      },    
+      },
       {
         title: '单位',
         dataIndex: 'unit',
-      },    
+      },
       {
         width: 100,
         title: '数量',
         dataIndex: 'num',
         render: (text, record) => this.renderColumns(text, record, 'num'),
-      },    
+      },
       {
         title: '备注',
         dataIndex: 'memo',
@@ -225,7 +225,7 @@ class CreateOrderPage extends React.Component {
     }
   }
 
-  
+
   handleChange(value, key, column) {
     const newData = [...this.state.data];
     const target = newData.filter(item => key === item.key)[0];
@@ -234,7 +234,7 @@ class CreateOrderPage extends React.Component {
       this.setState({ data: newData });
     }
   }
-  
+
 
   handleChangeMaterialNo = (value, index) => {
     const {data} = this.state;

@@ -1,4 +1,4 @@
-import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker, AutoComplete, message, Modal } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker, AutoComplete, Modal } from 'antd'
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
@@ -204,6 +204,7 @@ class CreateOrderPage extends React.Component {
         title: '物料编码',
         dataIndex: 'materialNo',
         render: (text, record, index) => (<EditableCell
+          width={180}
           type="autoComplete"
           value={text}
           column="materialNo"
@@ -217,15 +218,14 @@ class CreateOrderPage extends React.Component {
         title: '品名',
         dataIndex: 'prodName',
       },
-   
       {
         title: '规格',
         dataIndex: 'spec',
-      },  
+      },
       {
         title: '型号',
         dataIndex: 'pattern',
-      }, 
+      },
       {
         title: '有效幅宽',
         dataIndex: 'materialWidth',

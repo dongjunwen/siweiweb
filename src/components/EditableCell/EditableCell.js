@@ -103,12 +103,14 @@ class EditableCell extends React.Component {
 
   switchInputType(value, type, column, source, record, sourceData) {
     const dateFormat = 'YYYY-MM-DD';
+    // autoCompleteWidth用来标示自动补全框的宽度
+    const autoCompleteWidth = this.props.width ? this.props.width : 'auto';
 
     switch (type) {
       case 'autoComplete':
         return (<AutoComplete
           value={value}
-          style={{ margin: '-5px 0' }}
+          style={{ margin: '-5px 0', width: autoCompleteWidth }}
           onChange={value => this.props.onChange(value.split(/\s/)[0])}
           dataSource={this.state.data.map(item => item[`${source.toLowerCase()}No`] + ' ' + item[`${source.toLowerCase()}Name`])}
           onSearch={value => this.handleAutoComplete(value, source, record)}
