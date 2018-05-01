@@ -77,7 +77,7 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem label="预计到货日期" {...formItemRow}>
+            <FormItem label="要求到货日期" {...formItemRow}>
               {getFieldDecorator('expectDate', {
                 rules: [{required: true, message: '请选择日期'}],
               })(

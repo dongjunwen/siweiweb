@@ -95,7 +95,7 @@ class AdvancedSearchForm extends React.Component {
             </FormItem>
           </Col>
           <Col span={8}>
-            <FormItem label="预计到货日期" {...formItemRow}>
+            <FormItem label="要求到货日期" {...formItemRow}>
               {getFieldDecorator('expectDate', {
                 initialValue: moment(swPurOrderBaseResultVo.expectDate),
               })(

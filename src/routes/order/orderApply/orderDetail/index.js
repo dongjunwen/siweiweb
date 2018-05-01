@@ -305,7 +305,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
-          width={180}
+          width={450}
           value={text}
           column="prodNo"
           source="Material"
