@@ -191,7 +191,7 @@ class OrderListPage extends React.Component {
     // 字段映射替换
     this.props.form.resetFields();
     selectedRows.forEach((row) => {
-      [row.materialType, row.materialLong, row.materialWidth, row.spec, row.pattern, row.unit, row.num, row.price, row.amt] = [row.prodType, row.prodLong, row.prodWidth, row.materialSpec, row.materialPattern, row.prodUnit, row.prodNum, row.prodPrice, row.prodAmt];
+      [row.materialType, row.materialNo,row.materialLong, row.materialWidth, row.spec, row.pattern, row.unit, row.num, row.price, row.amt] = [row.prodType,row.prodNo, row.prodLong, row.prodWidth, row.spec, row.pattern, row.unit, row.prodNum, row.prodPrice, row.prodAmt];
     })
     this.props.selectOrders(selectedRows);
     this.setState({selectedRows: [], selectedRowKeys: []});
