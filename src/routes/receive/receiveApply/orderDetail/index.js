@@ -108,7 +108,7 @@ class AdvancedSearchForm extends React.Component {
                 <Input />
               )}
             </FormItem>
-          </Col>         
+          </Col>
         </Row>
         <Row>
           <Col span={12}>
@@ -121,7 +121,7 @@ class AdvancedSearchForm extends React.Component {
             </FormItem>
           </Col>
         </Row>
-       
+
         <Row>
           <Col span={12}>
             <FormItem label="备注" {...{ labelCol: { span: 4 }, wrapperCol: { span: 20 } }}>
@@ -136,7 +136,7 @@ class AdvancedSearchForm extends React.Component {
         <Row>
           <Col span={7}>
             <Button type="primary" onClick={this.props.addNewOrder}>新增</Button>
-           
+
           </Col>
         </Row>
       </Form>
@@ -168,6 +168,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialNo',
         render: (text, record, index) => (<EditableCell
           editable
+          width={180}
           value={text}
           source="Material"
           type="autoComplete"
@@ -187,17 +188,17 @@ class CreateOrderPage extends React.Component {
       {
         title: '型号',
         dataIndex: 'pattern',
-      },         
+      },
       {
         title: '单位',
         dataIndex: 'unit',
-      },     
+      },
       {
         width: 100,
         title: '数量',
         dataIndex: 'num',
         render: (text, record) => this.renderColumns(text, record, 'num'),
-      },         
+      },
       {
         title: '备注',
         dataIndex: 'memo',

@@ -281,6 +281,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="prodNo"
           source="Material"
@@ -345,6 +346,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="materialNo"
           source="Material"
@@ -367,6 +369,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialPriceNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="materialPriceNo"
           source="Formular"
@@ -398,6 +401,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'techNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="techNo"
           source="Formular"

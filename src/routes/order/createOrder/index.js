@@ -295,10 +295,10 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '编码',
-        width:500,
         dataIndex: 'prodNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="prodNo"
           source="Material"
@@ -376,23 +376,23 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'area',
         render: (text, record) => this.renderColumns(text, record, 'area'),
       },
-     /* {
-        title: '面料品号',
-        dataIndex: 'materialNo',
-        render: (text, record, index) => (<EditableCell
-          type="autoComplete"
-          value={text}
-          column="materialNo"
-          source="Material"
-          editable={record.editable}
-          onSelect={value => this.handleChangeMaterialNo(value, index)}
-          onChange={value => this.handleChange(value, record.key, 'materialNo')}
-        />),
-      },
-      {
-        title: '面料品名',
-        dataIndex: 'materialName',
-      },*/
+      // {
+      //   title: '面料品号',
+      //   dataIndex: 'materialNo',
+      //   render: (text, record, index) => (<EditableCell
+      //     type="autoComplete"
+      //     value={text}
+      //     column="materialNo"
+      //     source="Material"
+      //     editable={record.editable}
+      //     onSelect={value => this.handleChangeMaterialNo(value, index)}
+      //     onChange={value => this.handleChange(value, record.key, 'materialNo')}
+      //   />),
+      // },
+      // {
+      //   title: '面料品名',
+      //   dataIndex: 'materialName',
+      // },
       {
         title: '有效幅宽',
         dataIndex: 'materialWidth',
@@ -403,6 +403,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialPriceNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           record={record}
           column="materialPriceNo"
@@ -429,42 +430,42 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialPrice',
         render: (text, record) => this.renderColumns(text, record, 'materialPrice'),
       },
-     /* {
-        title: '工艺代码',
-        dataIndex: 'techNo',
-        render: (text, record, index) => (<EditableCell
-          type="autoComplete"
-          value={text}
-          record={record}
-          column="techNo"
-          source="Formular"
-          editable={record.editable}
-          onSelect={value => this.handleChangeTechNo(value, index)}
-          onChange={value => this.handleChange(value, record.key, 'techNo')}
-        />),
-      },
-      {
-        title: '工艺名称',
-        dataIndex: 'techName',
-      },
-      {
-        title: '工艺单价',
-        dataIndex: 'techPrice',
-      },
-      {
-        title: '工艺公式',
-        dataIndex: 'techPriceExpress',
-      },
-      {
-        title: '成品定价',
-        dataIndex: 'prodPrice1',
-        render: (text, record) => this.renderColumns(text, record, 'prodPrice1'),
-      },
-      {
-        title: '分类',
-        dataIndex: 'cateType',
-        render: (text, record) => this.renderColumns(text, record, 'cateType'),
-      },*/
+      // {
+      //   title: '工艺代码',
+      //   dataIndex: 'techNo',
+      //   render: (text, record, index) => (<EditableCell
+      //     type="autoComplete"
+      //     value={text}
+      //     record={record}
+      //     column="techNo"
+      //     source="Formular"
+      //     editable={record.editable}
+      //     onSelect={value => this.handleChangeTechNo(value, index)}
+      //     onChange={value => this.handleChange(value, record.key, 'techNo')}
+      //   />),
+      // },
+      // {
+      //   title: '工艺名称',
+      //   dataIndex: 'techName',
+      // },
+      // {
+      //   title: '工艺单价',
+      //   dataIndex: 'techPrice',
+      // },
+      // {
+      //   title: '工艺公式',
+      //   dataIndex: 'techPriceExpress',
+      // },
+      // {
+      //   title: '成品定价',
+      //   dataIndex: 'prodPrice1',
+      //   render: (text, record) => this.renderColumns(text, record, 'prodPrice1'),
+      // },
+      // {
+      //   title: '分类',
+      //   dataIndex: 'cateType',
+      //   render: (text, record) => this.renderColumns(text, record, 'cateType'),
+      // },
       {
         title: '备注',
         dataIndex: 'memo',

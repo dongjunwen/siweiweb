@@ -1,4 +1,4 @@
-import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, DatePicker, AutoComplete, Select } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Popconfirm, notification, Select } from 'antd'
 import { EditableCell } from 'components'
 import { request, config } from 'utils'
 import PropTypes from 'prop-types'
@@ -112,6 +112,7 @@ class StockVerifyPage extends React.Component {
         dataIndex: 'supplyCompName',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="supplyCompName"
           source="Comp"
@@ -125,6 +126,7 @@ class StockVerifyPage extends React.Component {
         dataIndex: 'materialNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
+          width={180}
           value={text}
           column="materialNo"
           source="Material"

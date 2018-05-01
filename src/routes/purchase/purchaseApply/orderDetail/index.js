@@ -229,6 +229,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialNo',
         render: (text, record, index) => (<EditableCell
           editable
+          width={180}
           value={text}
           source="Material"
           type="autoComplete"
@@ -248,7 +249,7 @@ class CreateOrderPage extends React.Component {
       {
         title: '型号',
         dataIndex: 'pattern',
-      },    
+      },
       {
         title: '有效幅宽',
         dataIndex: 'materialWidth',
@@ -427,18 +428,6 @@ class CreateOrderPage extends React.Component {
     });
   }
 
-  renderColumns(text, record, column, type = 'input') {
-    return (
-      <EditableCell
-        editable
-        type={type}
-        value={text}
-        column={column}
-        onChange={value => this.handleChange(value, record.key, column)}
-      />
-    );
-  }
-
   searchOrder = (orderNo = '') => {
     request({
       url: `${config.APIV0}/api/order/${orderNo.trim()}`,
@@ -464,6 +453,18 @@ class CreateOrderPage extends React.Component {
       visible: false,
       data: data.concat(selectedRows),
     });
+  }
+
+  renderColumns(text, record, column, type = 'input') {
+    return (
+      <EditableCell
+        editable
+        type={type}
+        value={text}
+        column={column}
+        onChange={value => this.handleChange(value, record.key, column)}
+      />
+    );
   }
 
   render () {
