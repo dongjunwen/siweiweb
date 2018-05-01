@@ -295,7 +295,6 @@ class CreateOrderPage extends React.Component {
       },
       {
         title: '编码',
-        width:500,
         dataIndex: 'prodNo',
         render: (text, record, index) => (<EditableCell
           type="autoComplete"
@@ -355,6 +354,10 @@ class CreateOrderPage extends React.Component {
       {
         title: '含税单价',
         dataIndex: 'prodTaxPrice',
+      },
+      {
+        title: '工艺名称',
+        dataIndex: 'techName',
       },
       {
         title: '数量',
@@ -564,6 +567,8 @@ class CreateOrderPage extends React.Component {
       prodNo: value.materialNo,
       prodPattern: value.pattern,
       prodPrice: value.price,
+      prodTaxPrice: value.taxPrice,
+      techName:value.techArt,
       prodType: value.spec,
       prodUnit: value.unit,
     });

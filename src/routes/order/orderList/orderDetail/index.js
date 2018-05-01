@@ -326,6 +326,10 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'prodPrice',
       },
       {
+        title: '含税单价',
+        dataIndex: 'prodTaxPrice',
+      },
+      {
         title: '数量',
         dataIndex: 'prodNum',
         render: (text, record) => this.renderColumns(text, record, 'prodNum'),
@@ -336,11 +340,16 @@ class CreateOrderPage extends React.Component {
         render: text => Math.floor(text * 100) / 100,
       },
       {
+        title: '金额（含税）',
+        dataIndex: 'prodTaxAmt',
+        render: text => Math.floor(text * 100) / 100,
+      },
+      {
         title: '区域',
         dataIndex: 'area',
         render: (text, record) => this.renderColumns(text, record, 'area'),
       },
-      {
+      /*{
         title: '面料品号',
         dataIndex: 'materialNo',
         render: (text, record, index) => (<EditableCell
@@ -356,7 +365,7 @@ class CreateOrderPage extends React.Component {
       {
         title: '面料品名',
         dataIndex: 'materialName',
-      },
+      },*/
       {
         title: '有效幅宽',
         dataIndex: 'materialWidth',
@@ -393,7 +402,7 @@ class CreateOrderPage extends React.Component {
         dataIndex: 'materialPrice',
         render: (text, record) => this.renderColumns(text, record, 'materialPrice'),
       },
-      {
+    /*  {
         title: '工艺代码',
         dataIndex: 'techNo',
         render: (text, record, index) => (<EditableCell
@@ -433,7 +442,7 @@ class CreateOrderPage extends React.Component {
         title: '分类',
         dataIndex: 'cateType',
         render: (text, record) => this.renderColumns(text, record, 'cateType'),
-      },
+      },*/
       {
         title: '备注',
         dataIndex: 'memo',
