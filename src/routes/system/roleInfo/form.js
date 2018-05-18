@@ -6,30 +6,14 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 const Fields = {
-  formularName: {
-    name: 'formularName',
-    userProps: { label: '公式名称', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  roleCode: {
+    name: 'roleCode',
+    userProps: { label: '角色代码', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
-  formularNo: {
-    name: 'formularNo',
-    userProps: { label: '公式代码', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  formularType: {
-    name: 'formularType',
-    userProps: { label: '公式类型', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  formularValue: {
-    name: 'formularValue',
-    userProps: { label: '公式值', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  formularPrice: {
-    name: 'formularPrice',
-    userProps: { label: '公式单价', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  memo: {
-    name: 'memo',
-    userProps: { label: '公式备注', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
+  roleName: {
+    name: 'roleName',
+    userProps: { label: '角色名称', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  }, 
 };
 export default class AdvancedSearchForm extends React.Component {
   constructor(props) {
@@ -53,44 +37,23 @@ export default class AdvancedSearchForm extends React.Component {
 
   render() {
     const { form: { getFieldDecorator }, dataDetail, readOnly } = this.props;
-    const sysDictOptions = this.props.sysDicts.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>)
+    const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
 
     return (
       <Form
         onSubmit={this.handleSubmit.bind(this)}
       >
-        <FormItem {...Fields.formularName.userProps}>
-          {getFieldDecorator(Fields.formularName.name, { ...Fields.formularName.userRules, initialValue: dataDetail.formularName })(
+        <FormItem {...Fields.roleCode.userProps}>
+          {getFieldDecorator(Fields.roleCode.name, { ...Fields.roleCode.userRules, initialValue: dataDetail.roleCode })(
             <Input />
           )}
         </FormItem>
-        <FormItem {...Fields.formularNo.userProps}>
-          {getFieldDecorator(Fields.formularNo.name, { ...Fields.formularNo.userRules, initialValue: dataDetail.formularNo })(
+        <FormItem {...Fields.roleName.userProps}>
+          {getFieldDecorator(Fields.roleName.name, { ...Fields.roleName.userRules, initialValue: dataDetail.roleName })(
             <Input />
           )}
         </FormItem>
-        <FormItem {...Fields.formularType.userProps}>
-          {getFieldDecorator(Fields.formularType.name, { ...Fields.formularType.userRules, initialValue: dataDetail.formularType || this.props.sysDicts[0].dictCode })(
-            <Select>
-              {sysDictOptions}
-            </Select>
-          )}
-        </FormItem>
-        <FormItem {...Fields.formularValue.userProps}>
-          {getFieldDecorator(Fields.formularValue.name, { ...Fields.formularValue.userRules, initialValue: dataDetail.formularValue })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.formularPrice.userProps}>
-          {getFieldDecorator(Fields.formularPrice.name, { ...Fields.formularPrice.userRules, initialValue: dataDetail.formularPrice })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.memo.userProps}>
-          {getFieldDecorator(Fields.memo.name, { ...Fields.memo.userRules, initialValue: dataDetail.memo })(
-            <Input />
-          )}
-        </FormItem>
+       
         <FormItem {...{
           wrapperCol: {
             xs: {

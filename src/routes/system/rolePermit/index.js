@@ -9,13 +9,13 @@ const Option = Select.Option;
 
 // 定义form项目
 const Fields = {
-  materialType: {
-    name: 'materialType',
-    userProps: { label: '物料类型', labelCol: { span: 7 }, wrapperCol: { span: 16 } },
+  roleNo: {
+    name: 'roleCode',
+    userProps: { label: '角色代码', labelCol: { span: 7 }, wrapperCol: { span: 16 } },
   },
-  materialName: {
-    name: 'materialName',
-    userProps: { label: '物料名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+  roleName: {
+    name: 'roleName',
+    userProps: { label: 'roleName', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
 
@@ -41,7 +41,6 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
 
     return (
       <Form
@@ -50,22 +49,15 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem {...Fields.materialType.userProps}>
-              {getFieldDecorator(Fields.materialType.name, { ...Fields.materialType.userRules, initialValue: this.props.materials[0].dictCode })(
-                <Select allowClear>
-                  {/* <Option key="1">面料</Option>
-                  <Option key="2">纱线</Option>
-                  <Option key="3">白纱布</Option>
-                  <Option key="4">半成品（染色后的白坯布）</Option>
-                  <Option key="5">残次品</Option> */}
-                  {materialOptions}
-                </Select>
+            <FormItem {...Fields.roleCode.userProps}>
+              {getFieldDecorator(Fields.roleCode.name, { ...Fields.roleCode.userRules})(
+                <Input />
               )}
             </FormItem>
           </Col>
           <Col span={6}>
-            <FormItem {...Fields.materialName.userProps}>
-              {getFieldDecorator(Fields.materialName.name, { ...Fields.materialName.userRules })(
+            <FormItem {...Fields.roleName.userProps}>
+              {getFieldDecorator(Fields.roleName.name, { ...Fields.roleName.userRules })(
                 <Input />
               )}
             </FormItem>
@@ -97,37 +89,13 @@ class MaterialPage extends React.Component {
 
     this.columns = [
       {
-        title: '品种编号',
-        dataIndex: 'materialNo',
+        title: '角色代码',
+        dataIndex: 'roleCode',
       },
       {
-        title: '品名',
-        dataIndex: 'materialName',
-      },
-      {
-        title: '规格',
-        dataIndex: 'spec',
-      },
-      {
-        title: '型号',
-        dataIndex: 'pattern',
-      },
-      {
-        title: '单价',
-        dataIndex: 'price',
-      },
-      {
-        title: '单位',
-        dataIndex: 'unit',
-      },
-      {
-        title: '物料类型',
-        dataIndex: 'materialTypeName',
-      },
-      {
-        title: '备注',
-        dataIndex: 'memo',
-      },
+        title: '角色名称',
+        dataIndex: 'roleName',
+      },    
       {
         title: '操作',
         dataIndex: 'action',
@@ -148,12 +116,6 @@ class MaterialPage extends React.Component {
     ];
   }
 
-  componentWillMount() {
-    request({
-      url: `${config.APIV0}/api/sysDict/MATERIAL_TYPE`,
-      method: 'get',
-    }).then(data => this.setState({ materials: data.data }));
-  }
 
   componentDidMount() {
     this.getList({});
@@ -168,7 +130,7 @@ class MaterialPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: `${config.APIV0}/api/material`, method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/sysRole`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list,
         total: data.data.total,
@@ -186,20 +148,20 @@ class MaterialPage extends React.Component {
   }
 
   deleteRecord(id) {
-    request({ url: `${config.APIV0}/api/material/${id}`, method: 'DELETE' })
+    request({ url: `${config.APIV0}/api/sysRole/${id}`, method: 'DELETE' })
       .then(() => this.getList({}))
       .catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   addRecord(data) {
     request({
-      url: `${config.APIV0}/api/material`,
+      url: `${config.APIV0}/api/sysRole`,
       method: this.state.modify ? 'PUT' : 'POST',
       data
     }).then(() => {
       this.setState({
         visible: false,
-        dataDetail: {materialName:undefined,materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined}
+        dataDetail: {roleCode:undefined,roleName: undefined}
       });
       this.getList({});
     }).catch(err => {
@@ -224,7 +186,7 @@ class MaterialPage extends React.Component {
         />
         <Modal
           visible={this.state.visible}
-          title="修改物料信息"
+          title="修改角色信息"
           footer={null}
           onCancel={() => this.setState({ visible: false })}
         >
