@@ -123,6 +123,16 @@ const Routers = function ({ history, app }) {
     }, {
       path: '/workModi',
       component: () => import('./routes/workingHours/workModi'),
+    },{
+      path: '/userManager',
+      component: () => import('./routes/system/userManager'),
+    },
+    {
+      path: '/roleInfo',
+      component: () => import('./routes/system//roleInfo'),
+    }, {
+      path: '/rolePermit',
+      component: () => import('./routes/system//rolePermit'),
     },
   ]
 
