@@ -3,7 +3,7 @@ import { Form, Row, Col, Input, Button, notification, Select } from 'antd'
 import { request } from 'utils'
 
 const FormItem = Form.Item;
-const Option = Select.Option;
+//const Option = Select.Option;
 
 const Fields = {
   userNo: {
@@ -26,16 +26,12 @@ const Fields = {
     name: 'emailAddr',
     userProps: { label: '邮箱地址', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
-  status: {
-    name: 'status',
-    userProps: { label: '账号状态', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
   memo: {
     name: 'memo',
     userProps: { label: '备注', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
 };
-export default class AdvancedSearchForm extends React.Component {
+export default class UserSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,12 +53,12 @@ export default class AdvancedSearchForm extends React.Component {
 
   render() {
     const { form: { getFieldDecorator }, dataDetail, readOnly } = this.props;
-    //const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
 
     return (
       <Form
         onSubmit={this.handleSubmit.bind(this)}
       >
+        <label>新用户初始密码为:123456</label>
         <FormItem {...Fields.userNo.userProps}>
           {getFieldDecorator(Fields.userNo.name, { ...Fields.userNo.userRules,initialValue: dataDetail.userNo })(
             <Input />
@@ -75,9 +71,7 @@ export default class AdvancedSearchForm extends React.Component {
         </FormItem>
         <FormItem {...Fields.nickName.userProps}>
           {getFieldDecorator(Fields.nickName.name, { ...Fields.nickName.userRules, initialValue: dataDetail.nickName  })(
-            /*<Select>
-              {materialOptions}
-            </Select>*/
+           <Input />
           )}
         </FormItem>
         <FormItem {...Fields.phoneNum.userProps}>
@@ -90,16 +84,13 @@ export default class AdvancedSearchForm extends React.Component {
             <Input />
           )}
         </FormItem>
-        <FormItem {...Fields.status.userProps}>
-          {getFieldDecorator(Fields.status.name, {   ...Fields.status.userRules,initialValue: dataDetail.name })(
-            <Input />
-          )}
-        </FormItem>
+      
          <FormItem {...Fields.memo.userProps}>
           {getFieldDecorator(Fields.memo.name, {  ...Fields.memo.userRules, initialValue: dataDetail.memo })(
             <Input />
           )}
         </FormItem>
+        
         <FormItem {...{
           wrapperCol: {
             xs: {

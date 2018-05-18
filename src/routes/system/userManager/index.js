@@ -27,11 +27,11 @@ const Fields = {
   },
 };
 
-class AdvancedSearchForm extends React.Component {
+class UserSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      material: '',
+      userManger: '',
     };
   }
 
@@ -93,7 +93,7 @@ class AdvancedSearchForm extends React.Component {
     );
   }
 }
-const WrappedAdvancedSearchForm = Form.create()(AdvancedSearchForm);
+const WrappedAdvancedSearchForm = Form.create()(UserSearchForm);
 const WrappedModalFrom = Form.create()(ModalFrom);
 
 class UserPage extends React.Component {
@@ -142,16 +142,8 @@ class UserPage extends React.Component {
         dataIndex: 'action',
         render: (data, record) => (<div>
           <a onClick={() => this.setModal(record, false, true)}>查看</a> |
-          <a onClick={() => this.setModal(record, true, false)}> 修改</a> |
-          <Popconfirm
-            title="确定删除吗?"
-            overlayStyle={{ width: '200px' }}
-            onConfirm={() => this.deleteRecord(record.userNo)}
-            okText="删除"
-            cancelText="取消"
-          >
-            <a> 删除</a>
-          </Popconfirm>
+          <a onClick={() => this.setModal(record, true, false)}>修改</a> |                  
+          <a onClick={() => this.updateRecord(record.userNo)}>启禁用</a>          
         </div>),
       },
     ];
@@ -194,15 +186,22 @@ class UserPage extends React.Component {
       .catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
+  
+  updateRecord(id) {
+    request({ url: `${config.APIV0}/api/user/${id}`, method: 'PUT' })
+      .then(() => this.getList({}))
+      .catch(err => notification.error({message: '操作失败', description: err.message}));
+  }
+
   addRecord(data) {
     request({
-      url: `${config.APIV0}/api/user`,
+      url: this.state.modify ?`${config.APIV0}/api/user/updateUser`:`${config.APIV0}/api/user/`,
       method: this.state.modify ? 'PUT' : 'POST',
       data
     }).then(() => {
       this.setState({
         visible: false,
-        dataDetail: {materialName:undefined,materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined}
+        dataDetail: {userNo:undefined,userName: undefined,phoneNum: undefined,emailAddr:undefined,nickName: undefined,memo: undefined}
       });
       this.getList({});
     }).catch(err => {

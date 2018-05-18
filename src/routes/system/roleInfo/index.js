@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Form, Row, Col, Input, Button, Select, Modal, Popconfirm, notification } from 'antd'
+import { Table, Form, Row, Col, Input, Button, Modal, Popconfirm, notification, Select } from 'antd'
 import PropTypes from 'prop-types'
 import { request, config } from 'utils'
 import ModalFrom from './form'
@@ -9,13 +9,13 @@ const Option = Select.Option;
 
 // 定义form项目
 const Fields = {
-  materialType: {
-    name: 'materialType',
-    userProps: { label: '物料类型', labelCol: { span: 7 }, wrapperCol: { span: 16 } },
+  formularNo: {
+    name: 'formularNo',
+    userProps: { label: '公式代码', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
-  materialName: {
-    name: 'materialName',
-    userProps: { label: '物料名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+  formularType: {
+    name: 'formularType',
+    userProps: { label: '公式类型', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
 
@@ -23,7 +23,7 @@ class AdvancedSearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      material: '',
+      marketNo: '',
     };
   }
 
@@ -41,7 +41,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
+    const sysDictOptions = this.props.sysDicts.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>)
 
     return (
       <Form
@@ -50,22 +50,17 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem {...Fields.materialType.userProps}>
-              {getFieldDecorator(Fields.materialType.name, { ...Fields.materialType.userRules, initialValue: this.props.materials[0].dictCode })(
+            <FormItem {...Fields.formularType.userProps}>
+              {getFieldDecorator(Fields.formularType.name, { ...Fields.formularType.userRules, initialValue: this.props.sysDicts[0].dictCode })(
                 <Select allowClear>
-                  {/* <Option key="1">面料</Option>
-                  <Option key="2">纱线</Option>
-                  <Option key="3">白纱布</Option>
-                  <Option key="4">半成品（染色后的白坯布）</Option>
-                  <Option key="5">残次品</Option> */}
-                  {materialOptions}
+                  {sysDictOptions}
                 </Select>
               )}
             </FormItem>
           </Col>
           <Col span={6}>
-            <FormItem {...Fields.materialName.userProps}>
-              {getFieldDecorator(Fields.materialName.name, { ...Fields.materialName.userRules })(
+            <FormItem {...Fields.formularNo.userProps}>
+              {getFieldDecorator(Fields.formularNo.name, { ...Fields.formularNo.userRules })(
                 <Input />
               )}
             </FormItem>
@@ -82,47 +77,35 @@ class AdvancedSearchForm extends React.Component {
 const WrappedAdvancedSearchForm = Form.create()(AdvancedSearchForm);
 const WrappedModalFrom = Form.create()(ModalFrom);
 
-class MaterialPage extends React.Component {
+class FormularPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-      total: 0,
       pageSize: 10,
+      dataDetail: {},
       currentPage: 1,
       visible: false,
       readOnly: false,
-      materials: [{ dictCode: 'dd', dictName: 'dd' }],
+      sysDicts: [{ dictCode: 'dd', dictName: 'dd' }],
     };
 
     this.columns = [
       {
-        title: '品种编号',
-        dataIndex: 'materialNo',
+        title: '公式代码',
+        dataIndex: 'formularNo',
       },
       {
-        title: '品名',
-        dataIndex: 'materialName',
+        title: '描述',
+        dataIndex: 'formularName',
       },
       {
-        title: '规格',
-        dataIndex: 'spec',
-      },
-      {
-        title: '型号',
-        dataIndex: 'pattern',
+        title: '公式',
+        dataIndex: 'formularValue',
       },
       {
         title: '单价',
-        dataIndex: 'price',
-      },
-      {
-        title: '单位',
-        dataIndex: 'unit',
-      },
-      {
-        title: '物料类型',
-        dataIndex: 'materialTypeName',
+        dataIndex: 'formularPrice',
       },
       {
         title: '备注',
@@ -135,11 +118,11 @@ class MaterialPage extends React.Component {
           <a onClick={() => this.setModal(record, false, true)}>查看</a> |
           <a onClick={() => this.setModal(record, true, false)}> 修改</a> |
           <Popconfirm
-            title="确定删除吗?"
-            overlayStyle={{ width: '200px' }}
-            onConfirm={() => this.deleteRecord(record.materialNo)}
             okText="删除"
             cancelText="取消"
+            title="确定删除吗?"
+            overlayStyle={{ width: '200px' }}
+            onConfirm={() => this.deleteRecord(record.formularNo)}
           >
             <a> 删除</a>
           </Popconfirm>
@@ -150,30 +133,10 @@ class MaterialPage extends React.Component {
 
   componentWillMount() {
     request({
-      url: `${config.APIV0}/api/sysDict/MATERIAL_TYPE`,
+      url: `${config.APIV0}/api/sysDict/FORMULAR_TYPE`,
       method: 'get',
-    }).then(data => this.setState({ materials: data.data }));
-  }
-
-  componentDidMount() {
+    }).then(data => this.setState({ sysDicts: data.data }));
     this.getList({});
-  }
-
-  getList(param) {
-    const query = {};
-    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
-    if (typeof param !== 'number') {
-      query.filter = param;
-      this.condition = query;
-    } else {
-      this.condition.currPage = param;
-    }
-    request({ url: `${config.APIV0}/api/material`, method: 'GET', data: this.condition })
-      .then(data => this.setState({
-        data: data.data.list,
-        total: data.data.total,
-        currentPage: data.data.currPage,
-      }))
   }
 
   setModal(data, modify, readOnly) {
@@ -185,35 +148,44 @@ class MaterialPage extends React.Component {
     })
   }
 
+  getList(param) {
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      query.filter = param;
+      this.condition = query;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: `${config.APIV0}/api/formular`, method: 'GET', data: this.condition })
+      .then(data => this.setState({
+        data: data.data.list,
+        total: data.data.total,
+        currentPage: data.data.currPage,
+      }))
+  }
+
   deleteRecord(id) {
-    request({ url: `${config.APIV0}/api/material/${id}`, method: 'DELETE' })
-      .then(() => this.getList({}))
+    request({ url: `${config.APIV0}/api/formular/${id}`, method: 'delete' })
+      .then((data) => {
+        this.getList({});
+        notification.success({ message: '操作成功', description: data.data });
+      })
       .catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   addRecord(data) {
-    request({
-      url: `${config.APIV0}/api/material`,
-      method: this.state.modify ? 'PUT' : 'POST',
-      data
-    }).then(() => {
-      this.setState({
-        visible: false,
-        dataDetail: {materialName:undefined,materialNo: undefined,materialType: undefined,pattern:undefined,spec: undefined,unit: undefined}
-      });
-      this.getList({});
-    }).catch(err => {
-      notification.error({
-        message: '操作失败',
-        description: err.message,
-      })
-    })
+    request({ url: `${config.APIV0}/api/formular`, method: this.state.modify ? 'PUT' : 'POST', data })
+      .then(() => {
+        this.setState({ visible: false });
+        this.getList({})
+      }).catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm materials={this.state.materials} search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
+        <WrappedAdvancedSearchForm sysDicts={this.state.sysDicts} search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
           bordered
@@ -223,19 +195,19 @@ class MaterialPage extends React.Component {
           pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
         />
         <Modal
-          visible={this.state.visible}
-          title="修改物料信息"
           footer={null}
+          title="编辑公式"
+          visible={this.state.visible}
           onCancel={() => this.setState({ visible: false })}
         >
-          <WrappedModalFrom dataDetail={this.state.dataDetail} materials={this.state.materials} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
+          <WrappedModalFrom sysDicts={this.state.sysDicts} dataDetail={this.state.dataDetail} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
         </Modal>
       </div>
     )
   }
 }
 
-MaterialPage.propTypes = {
+FormularPage.propTypes = {
   dispatch: PropTypes.func,
 }
-export default MaterialPage
+export default FormularPage

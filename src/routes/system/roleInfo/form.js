@@ -6,45 +6,29 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 const Fields = {
-  materialName: {
-    name: 'materialName',
-    userProps: { label: '物料名称', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  formularName: {
+    name: 'formularName',
+    userProps: { label: '公式名称', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
-  materialNo: {
-    name: 'materialNo',
-    userProps: { label: '物料编码', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  formularNo: {
+    name: 'formularNo',
+    userProps: { label: '公式代码', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
-  materialType: {
-    name: 'materialType',
-    userProps: { label: '物料类型', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  formularType: {
+    name: 'formularType',
+    userProps: { label: '公式类型', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
+  formularValue: {
+    name: 'formularValue',
+    userProps: { label: '公式值', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
+  formularPrice: {
+    name: 'formularPrice',
+    userProps: { label: '公式单价', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
   memo: {
     name: 'memo',
-    userProps: { label: '备注', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  pattern: {
-    name: 'pattern',
-    userProps: { label: '物料型号', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  spec: {
-    name: 'spec',
-    userProps: { label: '物料规格', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  price: {
-    name: 'price',
-    userProps: { label: '单价', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  unit: {
-    name: 'unit',
-    userProps: { label: '物料单位', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  materialLong: {
-    name: 'materialLong',
-    userProps: { label: '长', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
-  },
-  materialWidth: {
-    name: 'materialWidth',
-    userProps: { label: '宽', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+    userProps: { label: '公式备注', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
 };
 export default class AdvancedSearchForm extends React.Component {
@@ -69,56 +53,36 @@ export default class AdvancedSearchForm extends React.Component {
 
   render() {
     const { form: { getFieldDecorator }, dataDetail, readOnly } = this.props;
-    const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
+    const sysDictOptions = this.props.sysDicts.map(sysDict => <Option key={sysDict.dictCode}>{sysDict.dictName}</Option>)
 
     return (
       <Form
         onSubmit={this.handleSubmit.bind(this)}
       >
-        <FormItem {...Fields.materialName.userProps}>
-          {getFieldDecorator(Fields.materialName.name, { ...Fields.materialName.userRules, initialValue: dataDetail.materialName })(
+        <FormItem {...Fields.formularName.userProps}>
+          {getFieldDecorator(Fields.formularName.name, { ...Fields.formularName.userRules, initialValue: dataDetail.formularName })(
             <Input />
           )}
         </FormItem>
-        <FormItem {...Fields.materialNo.userProps}>
-          {getFieldDecorator(Fields.materialNo.name, { ...Fields.materialNo.userRules, initialValue: dataDetail.materialNo })(
+        <FormItem {...Fields.formularNo.userProps}>
+          {getFieldDecorator(Fields.formularNo.name, { ...Fields.formularNo.userRules, initialValue: dataDetail.formularNo })(
             <Input />
           )}
         </FormItem>
-        <FormItem {...Fields.materialType.userProps}>
-          {getFieldDecorator(Fields.materialType.name, { ...Fields.materialType.userRules, initialValue: dataDetail.materialType || this.props.materials[0].dictCode })(
+        <FormItem {...Fields.formularType.userProps}>
+          {getFieldDecorator(Fields.formularType.name, { ...Fields.formularType.userRules, initialValue: dataDetail.formularType || this.props.sysDicts[0].dictCode })(
             <Select>
-              {materialOptions}
+              {sysDictOptions}
             </Select>
           )}
         </FormItem>
-        <FormItem {...Fields.pattern.userProps}>
-          {getFieldDecorator(Fields.pattern.name, { ...Fields.pattern.userRules, initialValue: dataDetail.pattern })(
+        <FormItem {...Fields.formularValue.userProps}>
+          {getFieldDecorator(Fields.formularValue.name, { ...Fields.formularValue.userRules, initialValue: dataDetail.formularValue })(
             <Input />
           )}
         </FormItem>
-        <FormItem {...Fields.spec.userProps}>
-          {getFieldDecorator(Fields.spec.name, { ...Fields.spec.userRules, initialValue: dataDetail.spec })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.price.userProps}>
-          {getFieldDecorator(Fields.price.name, { ...Fields.price.userRules, initialValue: dataDetail.price })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.unit.userProps}>
-          {getFieldDecorator(Fields.unit.name, { ...Fields.unit.userRules, initialValue: dataDetail.unit })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.materialLong.userProps}>
-          {getFieldDecorator(Fields.materialLong.name, { ...Fields.materialLong.userRules, initialValue: dataDetail.materialLong })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.materialWidth.userProps}>
-          {getFieldDecorator(Fields.materialWidth.name, { ...Fields.materialWidth.userRules, initialValue: dataDetail.materialWidth })(
+        <FormItem {...Fields.formularPrice.userProps}>
+          {getFieldDecorator(Fields.formularPrice.name, { ...Fields.formularPrice.userRules, initialValue: dataDetail.formularPrice })(
             <Input />
           )}
         </FormItem>
