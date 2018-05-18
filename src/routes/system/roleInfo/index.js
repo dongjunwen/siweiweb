@@ -9,7 +9,7 @@ const Option = Select.Option;
 
 // 定义form项目
 const Fields = {
-  roleNo: {
+  roleCode: {
     name: 'roleCode',
     userProps: { label: '角色代码', labelCol: { span: 7 }, wrapperCol: { span: 16 } },
   },
@@ -74,7 +74,7 @@ class AdvancedSearchForm extends React.Component {
 const WrappedAdvancedSearchForm = Form.create()(AdvancedSearchForm);
 const WrappedModalFrom = Form.create()(ModalFrom);
 
-class MaterialPage extends React.Component {
+class RoleInfoPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -84,7 +84,7 @@ class MaterialPage extends React.Component {
       currentPage: 1,
       visible: false,
       readOnly: false,
-      materials: [{ dictCode: 'dd', dictName: 'dd' }],
+      roleInfos: [{ roleCode: 'dd', roleName: 'dd' }],
     };
 
     this.columns = [
@@ -105,7 +105,7 @@ class MaterialPage extends React.Component {
           <Popconfirm
             title="确定删除吗?"
             overlayStyle={{ width: '200px' }}
-            onConfirm={() => this.deleteRecord(record.materialNo)}
+            onConfirm={() => this.deleteRecord(record.roleCode)}
             okText="删除"
             cancelText="取消"
           >
@@ -175,7 +175,7 @@ class MaterialPage extends React.Component {
   render () {
     return (
       <div className="content-inner">
-        <WrappedAdvancedSearchForm materials={this.state.materials} search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
+        <WrappedAdvancedSearchForm roleInfos={this.state.roleInfos} search={this.getList.bind(this)} setModal={() => this.setModal({}, false, false)} />
         <h2 style={{ margin: '16px 0' }}>查询结果</h2>
         <Table
           bordered
@@ -190,14 +190,14 @@ class MaterialPage extends React.Component {
           footer={null}
           onCancel={() => this.setState({ visible: false })}
         >
-          <WrappedModalFrom dataDetail={this.state.dataDetail} materials={this.state.materials} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
+          <WrappedModalFrom dataDetail={this.state.dataDetail} roleInfos={this.state.roleInfos} readOnly={this.state.readOnly} submit={value => !this.state.readOnly && this.addRecord(value)} />
         </Modal>
       </div>
     )
   }
 }
 
-MaterialPage.propTypes = {
+RoleInfoPage.propTypes = {
   dispatch: PropTypes.func,
 }
-export default MaterialPage
+export default RoleInfoPage

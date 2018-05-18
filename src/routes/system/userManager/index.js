@@ -228,8 +228,7 @@ class UserPage extends React.Component {
                 onChange: this.getList.bind(this), 
                 defaultCurrent: 1, 
                 current: this.state.currentPage, 
-                total: this.state.total,
-                pageSizeOptions:[10, 50, 100, 150]
+                total: this.state.total
              } 
           }
         />

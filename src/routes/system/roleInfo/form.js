@@ -37,7 +37,6 @@ export default class AdvancedSearchForm extends React.Component {
 
   render() {
     const { form: { getFieldDecorator }, dataDetail, readOnly } = this.props;
-    const materialOptions = this.props.materials.map(material => <Option key={material.dictCode}>{material.dictName}</Option>)
 
     return (
       <Form
