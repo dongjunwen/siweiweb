@@ -172,7 +172,7 @@ class MaterialPage extends React.Component {
       .then(data => this.setState({
         data: data.data.list,
         total: data.data.total,
-        currentPage: data.data.currPage,
+        currentPage: data.data.currPage,        
       }))
   }
 
@@ -220,7 +220,7 @@ class MaterialPage extends React.Component {
           columns={this.columns}
           dataSource={this.state.data}
           rowKey={(record, key) => key}
-          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
+          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total , pageSizeOptions : ['10','50', '100', '150']}}
         />
         <Modal
           visible={this.state.visible}

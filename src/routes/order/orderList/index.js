@@ -285,7 +285,15 @@ class OrderListPage extends React.Component {
           style={{marginTop: '16px'}}
           dataSource={this.state.data}
           rowKey={(record, key) => record.orderNo}
-          pagination={{ pageSize: this.state.pageSize, onChange: this.getList.bind(this), defaultCurrent: 1, current: this.state.currentPage, total: this.state.total }}
+          pagination={
+            { pageSize: this.state.pageSize, 
+              onChange: this.getList.bind(this),
+               defaultCurrent: 1, 
+               current: this.state.currentPage,
+                total: this.state.total ,
+                pageSizeOptions:['10','50', '100', '150']
+              }
+          }
         />
         <Modal
           title="订单详情"
