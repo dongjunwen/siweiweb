@@ -133,7 +133,14 @@ class UserPage extends React.Component {
         title: '状态',
         dataIndex: 'statusName',
       },
-     
+      {
+        title: '所属角色',
+        dataIndex: 'roleCode',
+      },
+      {
+        title: '所属部门',
+        dataIndex: 'departNo',
+      },
       {
         title: '操作',
         dataIndex: 'action',

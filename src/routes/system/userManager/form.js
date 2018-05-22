@@ -30,6 +30,14 @@ const Fields = {
     name: 'memo',
     userProps: { label: '备注', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
   },
+  roleCode: {
+    name: 'roleCode',
+    userProps: { label: '角色代码', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
+  departNo: {
+    name: 'departNo',
+    userProps: { label: '部门编号', labelCol: { span: 6 }, wrapperCol: { span: 16 } },
+  },
 };
 export default class UserSearchForm extends React.Component {
   constructor(props) {
@@ -81,6 +89,18 @@ export default class UserSearchForm extends React.Component {
         </FormItem>
         <FormItem {...Fields.emailAddr.userProps}>
           {getFieldDecorator(Fields.emailAddr.name, {  ...Fields.emailAddr.userRules, initialValue: dataDetail.emailAddr })(
+            <Input />
+          )}
+        </FormItem>
+
+         <FormItem {...Fields.roleCode.userProps}>
+          {getFieldDecorator(Fields.roleCode.name, {  ...Fields.roleCode.userRules, initialValue: dataDetail.roleCode })(
+            <Input />
+          )}
+        </FormItem>
+
+         <FormItem {...Fields.departNo.userProps}>
+          {getFieldDecorator(Fields.departNo.name, {  ...Fields.departNo.userRules, initialValue: dataDetail.departNo })(
             <Input />
           )}
         </FormItem>
