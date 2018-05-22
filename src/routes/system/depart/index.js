@@ -8,9 +8,9 @@ const FormItem = Form.Item;
 
 // 定义form项目
 const Fields = {
-  compName: {
-    name: 'compName',
-    userProps: { label: '公司名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
+  departName: {
+    name: 'departName',
+    userProps: { label: '部门名称', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
   },
 };
 
@@ -44,8 +44,8 @@ class AdvancedSearchForm extends React.Component {
       >
         <Row>
           <Col span={6}>
-            <FormItem {...Fields.compName.userProps}>
-              {getFieldDecorator(Fields.compName.name, { ...Fields.compName.userRules })(
+            <FormItem {...Fields.departName.userProps}>
+              {getFieldDecorator(Fields.departName.name, { ...Fields.departName.userRules })(
                 <Input />
               )}
             </FormItem>
@@ -74,15 +74,10 @@ class DepartPage extends React.Component {
       visible: false,
       readOnly: false,
     };
-
     this.columns = [
       {
         title: '公司编码',
         dataIndex: 'compNo',
-      },
-      {
-        title: '公司名称',
-        dataIndex: 'compName',
       },
       {
         title: '部门编码',
@@ -96,6 +91,7 @@ class DepartPage extends React.Component {
         title: '上级部门',
         dataIndex: 'fhDepartNo',
       },
+     
       {
         title: '操作',
         dataIndex: 'action',
@@ -120,21 +116,6 @@ class DepartPage extends React.Component {
     this.getList({});
   }
 
-  getList(param) {
-    Object.assign(param, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
-    if (typeof param !== 'number') {
-      this.condition = param;
-    } else {
-      this.condition.currPage = param;
-    }
-    request({ url: `${config.APIV0}/api/depar`, method: 'GET', data: this.condition })
-      .then(data => this.setState({
-        data: data.data.list,
-        total: data.data.total,
-        currentPage: data.data.currPage,
-      }))
-  }
-
   setModal(data, modify, readOnly) {
     this.setState({
       visible: true,
@@ -144,21 +125,38 @@ class DepartPage extends React.Component {
     })
   }
 
-  addRecord(data) {
-    request({ url: `${config.APIV0}/api/comp`, method: this.state.modify ? 'PUT' : 'POST', data })
-      .then((res) => {
-        this.setState({ visible: false }, this.getList({}))
-        notification.success({ message: '操作成功', description: res.data })
-      });
+  getList(param) {
+    const query = {};
+    Object.assign(query, { currPage: this.state.currentPage, pageSize: this.state.pageSize });
+    if (typeof param !== 'number') {
+      query.filter = param;
+      this.condition = query;
+    } else {
+      this.condition.currPage = param;
+    }
+    request({ url: `${config.APIV0}/api/depart`, method: 'GET', data: this.condition })
+      .then(data => this.setState({
+        data: data.data.list,
+        total: data.data.total,
+        currentPage: data.data.currPage,
+      }))
   }
 
-  deleteRecord (id) {
+  deleteRecord(id) {
     request({ url: `${config.APIV0}/api/depart/${id}`, method: 'delete' })
       .then((data) => {
-        notification.success({ message: '操作成功', description: data.data });
+        notification.success({ message: '操作成功', description: data.data })
         this.getList({});
       })
-      .catch(err => console.warn(err, this));
+      .catch(err => notification.error({message: '操作失败', description: err.message}));
+  }
+  addRecord(data) {
+    request({ url: `${config.APIV0}/api/depart`, method: this.state.modify ? 'PUT' : 'POST', data })
+      .then((res) => {
+        this.getList({});
+        this.setState({ visible: false });
+        notification.success({ message: '操作成功', description: res.data })
+      }).catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   render () {

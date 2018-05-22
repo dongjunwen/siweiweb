@@ -9,14 +9,11 @@ const Option = Select.Option;
 
 // 定义form项目
 const Fields = {
-  roleNo: {
+  roleCode: {
     name: 'roleCode',
     userProps: { label: '角色代码', labelCol: { span: 7 }, wrapperCol: { span: 16 } },
   },
-  roleName: {
-    name: 'roleName',
-    userProps: { label: 'roleName', labelCol: { span: 8 }, wrapperCol: { span: 16 } },
-  },
+ 
 };
 
 class AdvancedSearchForm extends React.Component {
@@ -55,13 +52,7 @@ class AdvancedSearchForm extends React.Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}>
-            <FormItem {...Fields.roleName.userProps}>
-              {getFieldDecorator(Fields.roleName.name, { ...Fields.roleName.userRules })(
-                <Input />
-              )}
-            </FormItem>
-          </Col>
+          
           <Col span={6} offset="1">
             <Button type="primary" htmlType="submit">查询</Button>
             &emsp;<Button type="primary" onClick={this.props.setModal}>新增</Button>
@@ -74,7 +65,7 @@ class AdvancedSearchForm extends React.Component {
 const WrappedAdvancedSearchForm = Form.create()(AdvancedSearchForm);
 const WrappedModalFrom = Form.create()(ModalFrom);
 
-class MaterialPage extends React.Component {
+class RoleSourcePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -89,23 +80,25 @@ class MaterialPage extends React.Component {
 
     this.columns = [
       {
+        title: '主键id',
+        dataIndex: 'id',
+      },
+      {
         title: '角色代码',
         dataIndex: 'roleCode',
       },
       {
-        title: '角色名称',
-        dataIndex: 'roleName',
+        title: '资源代码',
+        dataIndex: 'sourceNo',
       },    
       {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
-          <a onClick={() => this.setModal(record, false, true)}>查看</a> |
-          <a onClick={() => this.setModal(record, true, false)}> 修改</a> |
           <Popconfirm
             title="确定删除吗?"
             overlayStyle={{ width: '200px' }}
-            onConfirm={() => this.deleteRecord(record.materialNo)}
+            onConfirm={() => this.deleteRecord(record.id)}
             okText="删除"
             cancelText="取消"
           >
@@ -130,7 +123,7 @@ class MaterialPage extends React.Component {
     } else {
       this.condition.currPage = param;
     }
-    request({ url: `${config.APIV0}/api/sysRole`, method: 'GET', data: this.condition })
+    request({ url: `${config.APIV0}/api/sysRoleResource`, method: 'GET', data: this.condition })
       .then(data => this.setState({
         data: data.data.list,
         total: data.data.total,
@@ -148,14 +141,14 @@ class MaterialPage extends React.Component {
   }
 
   deleteRecord(id) {
-    request({ url: `${config.APIV0}/api/sysRole/${id}`, method: 'DELETE' })
+    request({ url: `${config.APIV0}/api/sysRoleResource/${id}`, method: 'DELETE' })
       .then(() => this.getList({}))
       .catch(err => notification.error({message: '操作失败', description: err.message}));
   }
 
   addRecord(data) {
     request({
-      url: `${config.APIV0}/api/sysRole`,
+      url: `${config.APIV0}/api/sysRoleResource`,
       method: this.state.modify ? 'PUT' : 'POST',
       data
     }).then(() => {
@@ -186,7 +179,7 @@ class MaterialPage extends React.Component {
         />
         <Modal
           visible={this.state.visible}
-          title="修改角色信息"
+          title="角色资源"
           footer={null}
           onCancel={() => this.setState({ visible: false })}
         >
@@ -197,7 +190,7 @@ class MaterialPage extends React.Component {
   }
 }
 
-MaterialPage.propTypes = {
+RoleSourcePage.propTypes = {
   dispatch: PropTypes.func,
 }
-export default MaterialPage
+export default RoleSourcePage

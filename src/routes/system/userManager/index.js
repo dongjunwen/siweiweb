@@ -133,17 +133,23 @@ class UserPage extends React.Component {
         title: '状态',
         dataIndex: 'statusName',
       },
-      {
-        title: '备注',
-        dataIndex: 'memo',
-      },
+     
       {
         title: '操作',
         dataIndex: 'action',
         render: (data, record) => (<div>
           <a onClick={() => this.setModal(record, false, true)}>查看</a> |
           <a onClick={() => this.setModal(record, true, false)}>修改</a> |                  
-          <a onClick={() => this.updateRecord(record.userNo)}>启禁用</a>          
+          <a onClick={() => this.updateRecord(record.userNo)}>{record.status=='Y'?'禁用':'启用'}</a>|
+          <Popconfirm
+            okText="删除"
+            cancelText="取消"
+            title="确定删除吗?"
+            overlayStyle={{ width: '200px' }}
+            onConfirm={() => this.deleteRecord(record.userNo)}
+          >
+            <a> 删除</a>
+          </Popconfirm>          
         </div>),
       },
     ];
@@ -201,7 +207,7 @@ class UserPage extends React.Component {
     }).then(() => {
       this.setState({
         visible: false,
-        dataDetail: {userNo:undefined,userName: undefined,phoneNum: undefined,emailAddr:undefined,nickName: undefined,memo: undefined}
+        dataDetail: {userNo:undefined,userName:undefined,phoneNum:undefined,emailAddr:undefined,nickName:undefined,memo:undefined}
       });
       this.getList({});
     }).catch(err => {

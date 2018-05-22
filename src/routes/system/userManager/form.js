@@ -85,11 +85,7 @@ export default class UserSearchForm extends React.Component {
           )}
         </FormItem>
       
-         <FormItem {...Fields.memo.userProps}>
-          {getFieldDecorator(Fields.memo.name, {  ...Fields.memo.userRules, initialValue: dataDetail.memo })(
-            <Input />
-          )}
-        </FormItem>
+        
         
         <FormItem {...{
           wrapperCol: {
