@@ -66,62 +66,86 @@ export default class UserSearchForm extends React.Component {
       <Form
         onSubmit={this.handleSubmit.bind(this)}
       >
-        <label>新用户初始密码为:123456</label>
-        <FormItem {...Fields.userNo.userProps}>
-          {getFieldDecorator(Fields.userNo.name, { ...Fields.userNo.userRules,initialValue: dataDetail.userNo })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.userName.userProps}>
-          {getFieldDecorator(Fields.userName.name, {  ...Fields.userName.userRules,initialValue: dataDetail.userName })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.nickName.userProps}>
-          {getFieldDecorator(Fields.nickName.name, { ...Fields.nickName.userRules, initialValue: dataDetail.nickName  })(
-           <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.phoneNum.userProps}>
-          {getFieldDecorator(Fields.phoneNum.name, {  ...Fields.phoneNum.userRules,initialValue: dataDetail.phoneNum })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...Fields.emailAddr.userProps}>
-          {getFieldDecorator(Fields.emailAddr.name, {  ...Fields.emailAddr.userRules, initialValue: dataDetail.emailAddr })(
-            <Input />
-          )}
-        </FormItem>
-
-         <FormItem {...Fields.roleCode.userProps}>
-          {getFieldDecorator(Fields.roleCode.name, {  ...Fields.roleCode.userRules, initialValue: dataDetail.roleCode })(
-            <Input />
-          )}
-        </FormItem>
-
-         <FormItem {...Fields.departNo.userProps}>
-          {getFieldDecorator(Fields.departNo.name, {  ...Fields.departNo.userRules, initialValue: dataDetail.departNo })(
-            <Input />
-          )}
-        </FormItem>
-      
+        <Row>
+          <Col span={12}> <label>新用户初始密码为:123456</label></Col>
+          <Col span={12}> 
+                <FormItem {...{
+                wrapperCol: {
+                  xs: {
+                    span: 24,
+                    offset: 0,
+                  },
+                  sm: {
+                    span: 14,
+                    offset: 6,
+                  },
+                },
+              }}
+              >
+                {!readOnly && <Button type="primary" htmlType="submit">保存</Button>}
+              </FormItem>
+          </Col>
+        </Row>
+       
+       <Row>
+          <Col span={12}>
+              <FormItem {...Fields.userNo.userProps}>
+              {getFieldDecorator(Fields.userNo.name, { ...Fields.userNo.userRules,initialValue: dataDetail.userNo })(
+                <Input />
+              )}
+            </FormItem>
+            </Col>
+            <Col span={12}>
+            <FormItem {...Fields.userName.userProps}>
+              {getFieldDecorator(Fields.userName.name, {  ...Fields.userName.userRules,initialValue: dataDetail.userName })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+              <FormItem {...Fields.nickName.userProps}>
+              {getFieldDecorator(Fields.nickName.name, { ...Fields.nickName.userRules, initialValue: dataDetail.nickName  })(
+              <Input />
+              )}
+            </FormItem>
+            </Col>
+            <Col span={12}>
+            <FormItem {...Fields.phoneNum.userProps}>
+              {getFieldDecorator(Fields.phoneNum.name, {  ...Fields.phoneNum.userRules,initialValue: dataDetail.phoneNum })(
+                <Input />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={30}>
+            <FormItem {...Fields.emailAddr.userProps}>
+            {getFieldDecorator(Fields.emailAddr.name, {  ...Fields.emailAddr.userRules, initialValue: dataDetail.emailAddr })(
+              <Input />
+            )}
+          </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={16}>
+            <FormItem {...Fields.roleCode.userProps}>
+                {getFieldDecorator(Fields.roleCode.name, {  ...Fields.roleCode.userRules, initialValue: dataDetail.roleCode })(
+                  <Input />
+                )}
+              </FormItem>        
+            </Col>
+            <Col span={16}>
+            <FormItem {...Fields.departNo.userProps}>
+              {getFieldDecorator(Fields.departNo.name, {  ...Fields.departNo.userRules, initialValue: dataDetail.departNo })(
+                <Input />
+              )}
+            </FormItem>
+            </Col>
+        </Row>  
         
-        
-        <FormItem {...{
-          wrapperCol: {
-            xs: {
-              span: 24,
-              offset: 0,
-            },
-            sm: {
-              span: 14,
-              offset: 6,
-            },
-          },
-        }}
-        >
-          {!readOnly && <Button type="primary" htmlType="submit">保存</Button>}
-        </FormItem>
+       
       </Form>
     );
   }

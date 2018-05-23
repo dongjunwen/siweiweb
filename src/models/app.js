@@ -73,18 +73,19 @@ export default {
         const { data } = yield call(menusService.query)
         const { permissions } = user
         let menu = data
-        if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
-          permissions.visit = data.map(item => item.id)
-        } else {
-          menu = data.filter((item) => {
-            const cases = [
-              permissions.visit.includes(item.id),
-              item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true,
-              item.bpid ? permissions.visit.includes(item.bpid) : true,
-            ]
-            return cases.every(_ => _)
-          })
-        }
+        permissions.visit = data.map(item => item.id)
+       // if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
+        //  permissions.visit = data.map(item => item.id)
+       // } else {
+        //  menu = data.filter((item) => {
+        //    const cases = [
+        //      permissions.visit.includes(item.id),
+        //      item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true,
+         //     item.bpid ? permissions.visit.includes(item.bpid) : true,
+         //   ]
+         //   return cases.every(_ => _)
+         // })
+       // }
         yield put({
           type: 'updateState',
           payload: {
